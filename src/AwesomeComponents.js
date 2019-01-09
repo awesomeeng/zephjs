@@ -18,7 +18,6 @@ class AwesomeComponents {
 
 		this[$REQUIRED] = {};
 		this[$COMPONENTS] = {};
-
 	}
 
 	get Component() {
@@ -28,6 +27,8 @@ class AwesomeComponents {
 	init() {
 		return new Promise(async (resolve,reject)=>{
 			try {
+				delete this.init;
+
 				this[$COMPONENT] = await this.require("awesome:Component.js");
 
 				document.dispatchEvent(new Event("awesome:ready"));
@@ -97,51 +98,15 @@ class AwesomeComponents {
 		if (!name) throw new Error("Missing name.");
 		if (typeof name!=="string") throw new Error("Invalid name; must be a string.");
 
-		if (name.endsWith(".js")) return this.importJS(name);
-		if (name.endsWith(".html")) return this.importHTML(name);
-		if (name.endsWith(".css")) return this.importCSS(name);
+		if (name.endsWith(".js")) return fetchJS.call(this,name);
+		if (name.endsWith(".html")) return fetchHTML.call(this,name);
+		if (name.endsWith(".css")) return fetchCSS.call(this,name);
 
-		let js = await this.importJS("./"+name+".js");
-		let html = await this.importJS("./"+name+".html");
-		let css = await this.importJS("./"+name+".css");
+		let js = await fetchJS.call(this,"./"+name+".js");
+		let html = await fetchJS.call(this,"./"+name+".html");
+		let css = await fetchJS.call(this,"./"+name+".css");
 
 		return this.define(name,js,html,css);
-	}
-
-	importJS(url) {
-		if (!url) throw new Error("Missing url.");
-		if (typeof url!=="string") throw new Error("Invalid url; must be a string.");
-
-		url = this.resolve(url);
-		if (this[$REQUIRED][url]) return this[$REQUIRED][url];
-
-		let content = fetchAsText(url);
-		this[$REQUIRED][url] = content;
-		return content;
-	}
-
-	importHTML(url) {
-		if (!url) throw new Error("Missing url.");
-		if (typeof url!=="string") throw new Error("Invalid url; must be a string.");
-
-		url = this.resolve(url);
-		if (this[$REQUIRED][url]) return this[$REQUIRED][url];
-
-		let content = fetchAsText(url);
-		this[$REQUIRED][url] = content;
-		return content;
-	}
-
-	importCSS(url) {
-		if (!url) throw new Error("Missing url.");
-		if (typeof url!=="string") throw new Error("Invalid url; must be a string.");
-
-		url = this.resolve(url);
-		if (this[$REQUIRED][url]) return this[$REQUIRED][url];
-
-		let content = fetchAsText(url);
-		this[$REQUIRED][url] = content;
-		return content;
 	}
 
 	unrequire(url) {
@@ -165,6 +130,42 @@ const fetchAsText = function fetchAsText(url) {
 			return reject(ex);
 		}
 	});
+};
+
+const fetchJS = function fetchJS(url) {
+	if (!url) throw new Error("Missing url.");
+	if (typeof url!=="string") throw new Error("Invalid url; must be a string.");
+
+	url = this.resolve(url);
+	if (this[$REQUIRED][url]) return this[$REQUIRED][url];
+
+	let content = fetchAsText(url);
+	this[$REQUIRED][url] = content;
+	return content;
+};
+
+const fetchHTML = function fetchHTML(url) {
+	if (!url) throw new Error("Missing url.");
+	if (typeof url!=="string") throw new Error("Invalid url; must be a string.");
+
+	url = this.resolve(url);
+	if (this[$REQUIRED][url]) return this[$REQUIRED][url];
+
+	let content = fetchAsText(url);
+	this[$REQUIRED][url] = content;
+	return content;
+};
+
+const fetchCSS = function fetchCSS(url) {
+	if (!url) throw new Error("Missing url.");
+	if (typeof url!=="string") throw new Error("Invalid url; must be a string.");
+
+	url = this.resolve(url);
+	if (this[$REQUIRED][url]) return this[$REQUIRED][url];
+
+	let content = fetchAsText(url);
+	this[$REQUIRED][url] = content;
+	return content;
 };
 
 window.AwesomeComponents = new AwesomeComponents();
