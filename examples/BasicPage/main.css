@@ -1,0 +1,16 @@
+:root {
+	width: 300px;
+	margin: 50px auto;
+}
+
+.hello {
+	background: #440000;
+	color: white;
+	font-size: 48px;
+}
+
+.world {
+	background: #000044;
+	color: white;
+	font-size: 48px;
+}
