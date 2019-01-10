@@ -8,6 +8,8 @@ const $HTML = Symbol("html");
 const $CSS = Symbol("css");
 const $ELEMENT = Symbol("element");
 
+asdf/asdf/sadf/qrt14tgw%T@%$erf;
+
 class Component {
 	constructor(name,js,html,css) {
 		this[$NAME] = name;
@@ -45,6 +47,10 @@ class Component {
 
 				shadow.innerHTML = html;
 
+				let style = document.createElement("style");
+				style.textContent = css;
+				shadow.appendChild(style);
+
 				fire(env.created||[]);
 			}
 
@@ -66,6 +72,7 @@ class Component {
 		});
 		let c = "("+componentElementClass.toString().replace(/TO_BE_REPLACED/,env.from)+")";
 		this[$ELEMENT] = eval(c);
+
 		customElements.define(name,this[$ELEMENT]);
 	}
 
