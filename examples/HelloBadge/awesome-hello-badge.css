@@ -1,0 +1,37 @@
+:host {
+	display: block;
+	margin: 25px;
+	border: 2px outset black;
+	border-radius: 25px;
+	width: 400px;
+	height: 250px;
+	overflow: hidden;
+}
+
+.top {
+	background: #71e6f5;
+}
+
+.top > .hello {
+	text-align: center;
+	font-size: 48px;
+	font-weight: bold;
+	font-family: sans-serif;
+}
+
+.top > .greeting {
+	text-align: center;
+	font-size: 24px;
+	font-family: sans-serif;
+}
+
+.name {
+	background: red;
+	display: block;
+	text-align: center;
+	align-self: center;
+	font-size: 48px;
+	font-family: cursive;
+	font-weight: bold;
+	text-transform: uppercase;
+}

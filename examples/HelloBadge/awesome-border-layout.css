@@ -1,0 +1,14 @@
+:host {
+	display: grid;
+	grid-template-rows: min-content auto min-content;
+	height: 100%;
+}
+
+.center {
+	display: grid;
+	grid-template-columns: min-content auto min-content;
+}
+
+.center .center {
+	background: orange;
+}
