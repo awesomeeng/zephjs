@@ -3,21 +3,14 @@
 "use strict";
 
 (()=>{
-	// const BASEPATH = [...document.querySelectorAll("script")].reduce((awesome,script)=>{
-	// 	if (awesome) return awesome;
-	// 	if (script.src && script.src.match(/AwesomeComponents\.min\.js/)) return script.src;
-	// 	if (script.src && script.src.match(/AwesomeComponents\.js/)) return script.src;
-	// 	return null;
-	// },null);
-
-	const $COMPONENTS = Symbol("components");
 	const $NAME = Symbol("name");
-	const $URL = Symbol("url");
+	const $ORIGIN = Symbol("origin");
 	const $CODE = Symbol("code");
 	const $MARKUP = Symbol("markup");
 	const $STYLE = Symbol("style");
 	const $TEXT = Symbol("text");
-	const $ORIGIN = Symbol("origin");
+
+	const COMPONENTS = {};
 
 	const resolveURL = function resolve(path,baseurl=document.URL) {
 		if (!path) throw new Error("Missing path.");
@@ -76,18 +69,10 @@
 		static defineComponent(origin,js,asName) {
 			return new Promise(async (resolve,reject)=>{
 				try {
-					let components = [];
 					let context = {};
 
-					console.log(1,origin.toString(),context);
 					let code = await ComponentCode.generateComponentCode(origin,js,context);
-					console.log(2,origin.toString(),context);
 					if (!context.name && !context.defined) throw new Error("Invalid url; unable to import anything.");
-
-					if (context.defined) {
-						components.concat(context.defined);
-						delete context.defined;
-					}
 
 					if (context.name) {
 						let markup = await ComponentMarkup.generateComponentMarkup(origin,context.html || "");
@@ -100,10 +85,11 @@
 
 						customElements.define(context.name,clazz);
 
-						let component = new Component(origin,context.name);
-						components.push(component);
+						let component = new Component(origin,context.name,code,markup,style);
+						COMPONENTS[context.name] = component;
 					}
-					resolve(components);
+
+					resolve();
 				}
 				catch (ex) {
 					return reject(ex);
@@ -112,15 +98,15 @@
 		}
 
 		constructor(url,name,code,markup,style) {
-			this[$URL] = url;
+			this[$ORIGIN] = url;
 			this[$NAME] = name;
 			this[$CODE] = code;
 			this[$MARKUP] = markup;
 			this[$STYLE] = style;
 		}
 
-		get url() {
-			return this[$URL];
+		get origin() {
+			return this[$ORIGIN];
 		}
 
 		get name() {
@@ -229,19 +215,7 @@
 
 		constructor(origin,code,context) {
 			this[$ORIGIN] = origin;
-			this[$TEXT] = code;
-
-			let func;
-			if (typeof code==="string") {
-				let wrapped = "()=>{"+code+"}";
-				func = eval(wrapped);
-			}
-			else if (code instanceof Function) {
-				func = code;
-			}
-			else {
-				throw new Error("Code must be a string or a Function.");
-			}
+			this[$TEXT] = code.toString();
 
 			/* eslint-disable no-unused-vars */
 			let define = this.define.bind(this,context,origin);
@@ -255,6 +229,18 @@
 			let onRemove = this.onRemove.bind(this,context);
 			let onAttribute = this.onAttribute.bind(this,context);
 			/* eslint-enable no-unused-vars */
+
+			let func;
+			if (typeof code==="string") {
+				let wrapped = "()=>{"+code+"}";
+				func = eval(wrapped);
+			}
+			else if (code instanceof Function) {
+				func = eval(code.toString());
+			}
+			else {
+				throw new Error("Code must be a string or a Function.");
+			}
 
 			func();
 		}
@@ -431,19 +417,15 @@
 	}
 
 	class AwesomeComponentsClass {
-		constructor() {
-			this[$COMPONENTS] = {};
-		}
-
 		get components() {
-			return Object.keys(this[$COMPONENTS]);
+			return Object.keys(COMPONENTS);
 		}
 
 		getComponent(name) {
 			if (!name) throw new Error("Missing name.");
 			if (typeof name!=="string") throw new Error("Invalid name; must be a string.");
 
-			return this[$COMPONENTS][name];
+			return COMPONENTS[name];
 		}
 
 		import(url,asName) {
@@ -455,10 +437,8 @@
 
 			return new Promise(async (resolve,reject)=>{
 				try {
-					let component = await Component.generateComponent(url,asName);
-					this[$COMPONENTS][component.name] = component;
-
-					resolve(component);
+					await Component.generateComponent(url,asName);
+					resolve();
 				}
 				catch (ex) {
 					// let error = new Error("Error importing component '"+url+"' > "+ex.message);
