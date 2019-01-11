@@ -16,6 +16,10 @@
 		if (!path) throw new Error("Missing path.");
 		if (!(path instanceof URL) && typeof path!=="string") throw new Error("Invalid path; must be a string or URL.");
 
+		if (typeof path==="string") {
+			if (path.startsWith("data:")) return new URL(path);
+		}
+
 		return new URL(path,baseurl);
 	};
 
@@ -196,6 +200,11 @@
 			return new Promise(async (resolve,reject)=>{
 				try {
 					let url;
+
+					if (js.toString().startsWith("data:")) {
+						js = js.toString().replace(/^data:.*,/,"");
+					}
+
 					if (isURLOrPath(js)) {
 						url = resolveURL(js);
 						if (url.pathname.endsWith(".js")) {
