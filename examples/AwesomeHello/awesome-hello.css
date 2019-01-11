@@ -8,10 +8,10 @@
 	border-radius: 100px;
 }
 
-.hello {
+:host > .hello {
 }
 
-.name {
+:host > .hello > .name {
 	background: #00FF00;
 	font-weight: bold;
 	text-transform: uppercase;
@@ -20,5 +20,5 @@
 	padding: 0px 5px;
 }
 
-.world {
+:host > .greeting {
 }
