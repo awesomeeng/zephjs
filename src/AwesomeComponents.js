@@ -17,6 +17,7 @@
 	const $MARKUP = Symbol("markup");
 	const $STYLE = Symbol("style");
 	const $TEXT = Symbol("text");
+	const $ORIGIN = Symbol("origin");
 
 	const resolveURL = function resolve(path,baseurl=document.URL) {
 		if (!path) throw new Error("Missing path.");
@@ -69,29 +70,45 @@
 			if (name.indexOf(".")<0) url.pathname = url.pathname + ".js";
 			name = name.replace(/\..+$/,"");
 
+			return Component.defineComponent(url,url,asName);
+		}
+
+		static defineComponent(origin,js,asName) {
 			return new Promise(async (resolve,reject)=>{
 				try {
+					let components = [];
 					let context = {};
-					let code = await ComponentCode.generateComponentCode(url,context);
-					if (Object.keys(context).length<1) throw new Error("Invalid url; unable to import anything.");
 
-					let markup = await ComponentMarkup.generateComponentMarkup(url,context.html || "");
-					let style = await ComponentStyle.generateComponentStyle(url,context.css || "");
-					let clazz = ComponentClass.generateComponentClass(context,code,markup,style);
+					console.log(1,origin.toString(),context);
+					let code = await ComponentCode.generateComponentCode(origin,js,context);
+					console.log(2,origin.toString(),context);
+					if (!context.name && !context.defined) throw new Error("Invalid url; unable to import anything.");
 
-					context.name = asName || context.name || name;
-					if (!context.name) throw new Error("Component was not named.");
-					if (context.name && context.name.indexOf("-")<0) throw new Error("Invalid name; must contain at least one dash character.");
+					if (context.defined) {
+						components.concat(context.defined);
+						delete context.defined;
+					}
 
-					customElements.define(context.name,clazz);
+					if (context.name) {
+						let markup = await ComponentMarkup.generateComponentMarkup(origin,context.html || "");
+						let style = await ComponentStyle.generateComponentStyle(origin,context.css || "");
+						let clazz = ComponentClass.generateComponentClass(context,code,markup,style);
 
-					resolve(new Component(url,context.name));
+						context.name = asName || context.name || name;
+						if (!context.name) throw new Error("Component was not named.");
+						if (context.name && context.name.indexOf("-")<0) throw new Error("Invalid name; must contain at least one dash character.");
+
+						customElements.define(context.name,clazz);
+
+						let component = new Component(origin,context.name);
+						components.push(component);
+					}
+					resolve(components);
 				}
 				catch (ex) {
 					return reject(ex);
 				}
 			});
-
 		}
 
 		constructor(url,name,code,markup,style) {
@@ -189,18 +206,19 @@
 	}
 
 	class ComponentCode {
-		static generateComponentCode(js,context={}) {
+		static generateComponentCode(origin,js,context={}) {
 			return new Promise(async (resolve,reject)=>{
 				try {
 					let url;
 					if (isURLOrPath(js)) {
 						url = resolveURL(js);
 						if (url.pathname.endsWith(".js")) {
+							origin = url;
 							js = await fetchText(url);
 						}
 					}
 
-					let code = new ComponentCode(js,context,url||document.URL);
+					let code = new ComponentCode(origin||document.URL,js,context);
 					resolve(code);
 				}
 				catch (ex) {
@@ -209,14 +227,25 @@
 			});
 		}
 
-		constructor(code,context,url) {
+		constructor(origin,code,context) {
+			this[$ORIGIN] = origin;
 			this[$TEXT] = code;
 
-			let func = "()=>{"+code+"}";
-			func = eval(func);
+			let func;
+			if (typeof code==="string") {
+				let wrapped = "()=>{"+code+"}";
+				func = eval(wrapped);
+			}
+			else if (code instanceof Function) {
+				func = code;
+			}
+			else {
+				throw new Error("Code must be a string or a Function.");
+			}
 
 			/* eslint-disable no-unused-vars */
-			let requires = this.requires.bind(this,context,url);
+			let define = this.define.bind(this,context,origin);
+			let requires = this.requires.bind(this,context,origin);
 			let name = this.name.bind(this,context);
 			let from = this.from.bind(this,context);
 			let html = this.html.bind(this,context);
@@ -234,6 +263,23 @@
 			return this[$TEXT];
 		}
 
+		get origin() {
+			return this[$ORIGIN];
+		}
+
+		define(context,origin,code,asName) {
+			if (!code) throw new Error("Missing code.");
+			if (!(code instanceof Function)) throw new Error("Invalid code; must be a Function.");
+			if (asName && typeof asName!=="string") throw new Error("Invalid asName; must be a string.");
+			if (asName && asName.indexOf("-")<0) throw new Error("Invalid asName; must contain at least one dash character.");
+
+			let component = Component.defineComponent(origin,code,asName);
+			if (component) {
+				context.defined = context.defined || [];
+				context.defined.push(component);
+			}
+		}
+
 		requires(context,baseurl,url,asName) {
 			if (!url) throw new Error("Missing url.");
 			if (!(url instanceof URL) && typeof url!=="string") throw new Error("Invalid url; must be a string or URL.");
@@ -242,7 +288,7 @@
 			if (asName && asName.indexOf("-")<0) throw new Error("Invalid asName; must contain at least one dash character.");
 
 			url = resolveURL(url,baseurl);
-			AwesomeComponents.import(url,asName);
+			window.AwesomeComponents.import(url,asName);
 		}
 
 		name(context,name) {
@@ -315,17 +361,18 @@
 	}
 
 	class ComponentMarkup {
-		static generateComponentMarkup(baseurl,html) {
+		static generateComponentMarkup(origin,html) {
 			return new Promise(async (resolve,reject)=>{
 				try {
 					if (isURLOrPath(html)) {
-						let url = resolveURL(html,baseurl);
+						let url = resolveURL(html,origin);
 						if (url.pathname.endsWith(".html")) {
+							origin = url;
 							html = await fetchText(url);
 						}
 					}
 
-					let markup = new ComponentMarkup(html);
+					let markup = new ComponentMarkup(origin||document.URL,html);
 					resolve(markup);
 				}
 				catch (ex) {
@@ -334,27 +381,33 @@
 			});
 		}
 
-		constructor(markup) {
+		constructor(origin,markup) {
+			this[$ORIGIN] = origin;
 			this[$TEXT] = markup;
 		}
 
 		get text() {
 			return this[$TEXT];
 		}
+
+		get origin() {
+			return this[$ORIGIN];
+		}
 	}
 
 	class ComponentStyle {
-		static generateComponentStyle(baseurl,css) {
+		static generateComponentStyle(origin,css) {
 			return new Promise(async (resolve,reject)=>{
 				try {
 					if (isURLOrPath(css)) {
-						let url = resolveURL(css,baseurl);
+						let url = resolveURL(css,origin);
 						if (url.pathname.endsWith(".css")) {
+							origin = url;
 							css = await fetchText(url);
 						}
 					}
 
-					let style = new ComponentMarkup(css);
+					let style = new ComponentMarkup(origin||document.URL,css);
 					resolve(style);
 				}
 				catch (ex) {
@@ -363,12 +416,17 @@
 			});
 		}
 
-		constructor(style) {
+		constructor(origin,style) {
+			this[$ORIGIN] = origin;
 			this[$TEXT] = style;
 		}
 
 		get text() {
 			return this[$TEXT];
+		}
+
+		get origin() {
+			return this[$ORIGIN];
 		}
 	}
 
