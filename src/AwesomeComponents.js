@@ -192,14 +192,15 @@
 		static generateComponentCode(js,context={}) {
 			return new Promise(async (resolve,reject)=>{
 				try {
+					let url;
 					if (isURLOrPath(js)) {
-						let url = resolveURL(js);
+						url = resolveURL(js);
 						if (url.pathname.endsWith(".js")) {
 							js = await fetchText(url);
 						}
 					}
 
-					let code = new ComponentCode(js,context);
+					let code = new ComponentCode(js,context,url||document.URL);
 					resolve(code);
 				}
 				catch (ex) {
@@ -208,13 +209,14 @@
 			});
 		}
 
-		constructor(code,context) {
+		constructor(code,context,url) {
 			this[$TEXT] = code;
 
 			let func = "()=>{"+code+"}";
 			func = eval(func);
 
 			/* eslint-disable no-unused-vars */
+			let requires = this.requires.bind(this,context,url);
 			let name = this.name.bind(this,context);
 			let from = this.from.bind(this,context);
 			let html = this.html.bind(this,context);
@@ -230,6 +232,17 @@
 
 		get text() {
 			return this[$TEXT];
+		}
+
+		requires(context,baseurl,url,asName) {
+			if (!url) throw new Error("Missing url.");
+			if (!(url instanceof URL) && typeof url!=="string") throw new Error("Invalid url; must be a string or URL.");
+			if (typeof url==="string") url = resolveURL(url);
+			if (asName && typeof asName!=="string") throw new Error("Invalid asName; must be a string.");
+			if (asName && asName.indexOf("-")<0) throw new Error("Invalid asName; must contain at least one dash character.");
+
+			url = resolveURL(url,baseurl);
+			AwesomeComponents.import(url,asName);
 		}
 
 		name(context,name) {
@@ -359,7 +372,7 @@
 		}
 	}
 
-	class AwesomeComponents {
+	class AwesomeComponentsClass {
 		constructor() {
 			this[$COMPONENTS] = {};
 		}
@@ -402,7 +415,7 @@
 		}
 	}
 
-	window.AwesomeComponents = new AwesomeComponents();
+	window.AwesomeComponents = new AwesomeComponentsClass();
 
 	// do this last to let things know AwesomeComponents is ready.
 	setTimeout(()=>{
