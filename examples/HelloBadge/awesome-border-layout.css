@@ -5,10 +5,17 @@
 }
 
 .center {
-	display: grid;
-	grid-template-columns: min-content auto min-content;
+	display: flex;
 }
 
-.center .center {
-	background: orange;
+.center > .west {
+	flex: 0 1 auto;
+}
+
+.center > .center {
+	flex: 1 0 auto;
+}
+
+.center > .east {
+	flex: 0 1 auto;
 }
