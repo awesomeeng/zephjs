@@ -67,7 +67,10 @@
 			if (name.indexOf(".")<0) url.pathname = url.pathname + ".js";
 			name = name.replace(/\..+$/,"");
 
-			return Component.defineComponent(url,url,asName);
+			let origin = url;
+			if (origin.toString().startsWith("data:")) origin = "data:";
+
+			return Component.defineComponent(origin,url,asName);
 		}
 
 		static defineComponent(origin,js,asName) {
@@ -131,6 +134,10 @@
 
 		create() {
 			return document.createElement(name);
+		}
+
+		undefine() {
+			delete COMPONENTS[this.name];
 		}
 	}
 
@@ -214,6 +221,14 @@
 					}
 
 					let code = new ComponentCode(origin||document.URL,js,context);
+
+					if (context.defined) {
+						let promised = context.defined.filter((def)=>{
+							return def instanceof Promise;
+						});
+						await Promise.all(promised);
+					}
+
 					resolve(code);
 				}
 				catch (ex) {
@@ -458,6 +473,23 @@
 					// reject(error);
 					reject(ex);
 				}
+			});
+		}
+
+		removeComponent(name) {
+			if (!name) throw new Error("Missing name.");
+			if (typeof name!=="string") throw new Error("Invalid name; must be a string.");
+
+			let component = COMPONENTS[name];
+			if (!component) return;
+
+			component.undefine();
+		}
+
+		removeAllComponents() {
+			let components = this.components;
+			components.forEach((name)=>{
+				this.removeComponent(name);
 			});
 		}
 	}
