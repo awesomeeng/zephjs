@@ -176,7 +176,7 @@
 					styleElement.textContent = style.text;
 					shadow.appendChild(styleElement);
 
-					fire(context.created||[]);
+					fire(context.created||[],this);
 				}
 
 				connectedCallback() {
