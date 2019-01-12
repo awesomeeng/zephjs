@@ -180,19 +180,19 @@
 				}
 
 				connectedCallback() {
-					fire(context.add||[]);
+					fire(context.add||[],this);
 				}
 
 				disconnectedCallback() {
-					fire(context.remove||[]);
+					fire(context.remove||[],this);
 				}
 
 				adoptedCallback() {
-					fire(context.adopted||[]);
+					fire(context.adopted||[],this);
 				}
 
 				attributeChangedCallback(attribute,oldValue,newValue) {
-					fire(context.attributes[attribute]||[],oldValue,newValue);
+					fire(context.attributes[attribute]||[],this,oldValue,newValue);
 				}
 			});
 			let c = "("+componentElementClass.toString().replace(/TO_BE_REPLACED/,context.from||"HTMLElement")+")";

@@ -145,6 +145,4 @@ describe("AwesomeComponents",function(){
 		`,"*-for-testing");
 		assert.deepStrictEqual(window.AwesomeComponents.components,["component-one-for-testing","component-two-for-testing","component-three-for-testing"]);
 	});
-
-
 });
