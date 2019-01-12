@@ -96,5 +96,55 @@ describe("AwesomeComponents",function(){
 		assert(!window.AwesomeComponents.getComponent("test-component"));
 	});
 
+	it("as prefix",async function(){
+		await window.AwesomeComponents.import(`data:,
+			name("test-component");
+		`,"wonderful-*");
+		assert(window.AwesomeComponents.getComponent("wonderful-test-component"));
+		assert(!window.AwesomeComponents.getComponent("test-component"));
+	});
+
+	it("as suffix",async function(){
+		await window.AwesomeComponents.import(`data:,
+			name("test-component");
+		`,"*-wonderful");
+		assert(window.AwesomeComponents.getComponent("test-component-wonderful"));
+		assert(!window.AwesomeComponents.getComponent("test-component"));
+	});
+
+	it("as collection prefix",async function(){
+		await window.AwesomeComponents.import(`data:,
+			define(()=>{
+				name("component-one");
+			});
+
+			define(()=>{
+				name("component-two");
+			});
+
+			define(()=>{
+				name("component-three");
+			});
+		`,"testing-*");
+		assert.deepStrictEqual(window.AwesomeComponents.components,["testing-component-one","testing-component-two","testing-component-three"]);
+	});
+
+	it("as collection suffix",async function(){
+		await window.AwesomeComponents.import(`data:,
+			define(()=>{
+				name("component-one");
+			});
+
+			define(()=>{
+				name("component-two");
+			});
+
+			define(()=>{
+				name("component-three");
+			});
+		`,"*-for-testing");
+		assert.deepStrictEqual(window.AwesomeComponents.components,["component-one-for-testing","component-two-for-testing","component-three-for-testing"]);
+	});
+
 
 });

@@ -78,7 +78,7 @@
 				try {
 					let context = {};
 
-					let code = await ComponentCode.generateComponentCode(origin,js,context);
+					let code = await ComponentCode.generateComponentCode(origin,js,context,asName);
 					if (!context.name && !context.defined) throw new Error("Invalid url; unable to import anything.");
 
 					if (context.name) {
@@ -86,7 +86,12 @@
 						let style = await ComponentStyle.generateComponentStyle(origin,context.css || "");
 						let clazz = ComponentClass.generateComponentClass(context,code,markup,style);
 
-						context.name = asName || context.name || name;
+						context.name = context.name || name;
+						if (asName) {
+							if (asName.startsWith("*")) context.name = context.name+asName.slice(1);
+							else if (asName.endsWith("*")) context.name = asName.slice(0,-1)+context.name;
+							else context.name = asName;
+						}
 						if (!context.name) throw new Error("Component was not named.");
 						if (context.name && context.name.indexOf("-")<0) throw new Error("Invalid name; must contain at least one dash character.");
 
@@ -203,7 +208,7 @@
 	}
 
 	class ComponentCode {
-		static generateComponentCode(origin,js,context={}) {
+		static generateComponentCode(origin,js,context={},asName=undefined) {
 			return new Promise(async (resolve,reject)=>{
 				try {
 					let url;
@@ -220,7 +225,7 @@
 						}
 					}
 
-					let code = new ComponentCode(origin||document.URL,js,context);
+					let code = new ComponentCode(origin||document.URL,js,context,asName);
 
 					if (context.defined) {
 						let promised = context.defined.filter((def)=>{
@@ -237,12 +242,12 @@
 			});
 		}
 
-		constructor(origin,code,context) {
+		constructor(origin,code,context,asName) {
 			this[$ORIGIN] = origin;
 			this[$TEXT] = code.toString();
 
 			/* eslint-disable no-unused-vars */
-			let define = this.define.bind(this,context,origin);
+			let define = this.define.bind(this,context,origin,asName);
 			let requires = this.requires.bind(this,context,origin);
 			let name = this.name.bind(this,context);
 			let from = this.from.bind(this,context);
@@ -277,11 +282,13 @@
 			return this[$ORIGIN];
 		}
 
-		define(context,origin,code,asName) {
+		define(context,origin,prefixOrSuffix,code,asName) {
 			if (!code) throw new Error("Missing code.");
 			if (!(code instanceof Function)) throw new Error("Invalid code; must be a Function.");
 			if (asName && typeof asName!=="string") throw new Error("Invalid asName; must be a string.");
 			if (asName && asName.indexOf("-")<0) throw new Error("Invalid asName; must contain at least one dash character.");
+
+			if (!asName && prefixOrSuffix && (prefixOrSuffix.endsWith("*") || prefixOrSuffix.startsWith("*"))) asName = prefixOrSuffix;
 
 			let component = Component.defineComponent(origin,code,asName);
 			if (component) {
