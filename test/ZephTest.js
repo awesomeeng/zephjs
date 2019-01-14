@@ -20,15 +20,15 @@ describe("Zeph",function(){
 
 	it("methods",function(){
 		assert(window.Zeph);
-		assert(window.Zeph.import);
+		assert(window.Zeph.load);
 		assert(window.Zeph.components);
 		assert(window.Zeph.getComponent);
 		assert(window.Zeph.removeComponent);
 		assert(window.Zeph.removeAllComponents);
 	});
 
-	it("import",async function(){
-		await window.Zeph.import(`data:,
+	it("load",async function(){
+		await window.Zeph.load(`data:,
 			name("test-component");
 		`);
 		assert(window.Zeph.components.indexOf("test-component")>-1);
@@ -44,7 +44,7 @@ describe("Zeph",function(){
 	});
 
 	it("undefine",async function(){
-		await window.Zeph.import(`data:,
+		await window.Zeph.load(`data:,
 			name("test-component");
 		`);
 		assert(window.Zeph.components.indexOf("test-component")>-1);
@@ -54,7 +54,7 @@ describe("Zeph",function(){
 	});
 
 	it("collections",async function(){
-		await window.Zeph.import(`data:,
+		await window.Zeph.load(`data:,
 			define(()=>{
 				name("component-one");
 			});
@@ -71,7 +71,7 @@ describe("Zeph",function(){
 	});
 
 	it("markup",async function(){
-		await window.Zeph.import(`data:,
+		await window.Zeph.load(`data:,
 			name("test-component");
 			html("this is html.");
 		`);
@@ -80,7 +80,7 @@ describe("Zeph",function(){
 	});
 
 	it("style",async function(){
-		await window.Zeph.import(`data:,
+		await window.Zeph.load(`data:,
 			name("test-component");
 			css("this is css.");
 		`);
@@ -89,7 +89,7 @@ describe("Zeph",function(){
 	});
 
 	it("as",async function(){
-		await window.Zeph.import(`data:,
+		await window.Zeph.load(`data:,
 			name("test-component");
 		`,"my-test-comp");
 		assert(window.Zeph.getComponent("my-test-comp"));
@@ -97,7 +97,7 @@ describe("Zeph",function(){
 	});
 
 	it("as prefix",async function(){
-		await window.Zeph.import(`data:,
+		await window.Zeph.load(`data:,
 			name("test-component");
 		`,"wonderful-*");
 		assert(window.Zeph.getComponent("wonderful-test-component"));
@@ -105,7 +105,7 @@ describe("Zeph",function(){
 	});
 
 	it("as suffix",async function(){
-		await window.Zeph.import(`data:,
+		await window.Zeph.load(`data:,
 			name("test-component");
 		`,"*-wonderful");
 		assert(window.Zeph.getComponent("test-component-wonderful"));
@@ -113,7 +113,7 @@ describe("Zeph",function(){
 	});
 
 	it("as collection prefix",async function(){
-		await window.Zeph.import(`data:,
+		await window.Zeph.load(`data:,
 			define(()=>{
 				name("component-one");
 			});
@@ -130,7 +130,7 @@ describe("Zeph",function(){
 	});
 
 	it("as collection suffix",async function(){
-		await window.Zeph.import(`data:,
+		await window.Zeph.load(`data:,
 			define(()=>{
 				name("component-one");
 			});

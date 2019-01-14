@@ -11,6 +11,7 @@
 	const $TEXT = Symbol("text");
 
 	const COMPONENTS = {};
+	const PENDING = {};
 
 	const resolveURL = function resolve(path,baseurl=document.URL) {
 		if (!path) throw new Error("Missing path.");
@@ -69,6 +70,7 @@
 
 			let origin = url;
 			if (origin.toString().startsWith("data:")) origin = "data:";
+			if (PENDING[origin]) return Promise.resolve();
 
 			return Component.defineComponent(origin,url,asName);
 		}
@@ -76,6 +78,11 @@
 		static defineComponent(origin,js,asName) {
 			return new Promise(async (resolve,reject)=>{
 				try {
+					PENDING[origin] = true;
+					setTimeout(()=>{
+						document.dispatchEvent(new Event("zeph:loading",origin));
+					},0);
+
 					let context = {};
 
 					let code = await ComponentCode.generateComponentCode(origin,js,context,asName);
@@ -99,6 +106,17 @@
 
 						let component = new Component(origin,context.name,code,markup,style);
 						COMPONENTS[context.name] = component;
+					}
+
+					delete PENDING[origin];
+					setTimeout(()=>{
+						document.dispatchEvent(new Event("zeph:loaded",origin));
+					},0);
+					if (Object.keys(PENDING).length<1) {
+						setTimeout(()=>{
+							if (Object.keys(PENDING).length>0) return;
+							document.dispatchEvent(new Event("zeph:ready"));
+						},5);
 					}
 
 					resolve();
@@ -143,6 +161,7 @@
 
 		undefine() {
 			delete COMPONENTS[this.name];
+			delete PENDING[this.origin];
 		}
 	}
 
@@ -176,23 +195,23 @@
 					styleElement.textContent = style.text;
 					shadow.appendChild(styleElement);
 
-					fire(context.created||[],this);
+					fire(context.create||[],this,this.shadowRoot);
 				}
 
 				connectedCallback() {
-					fire(context.add||[],this);
+					fire(context.add||[],this,this.shadowRoot);
 				}
 
 				disconnectedCallback() {
-					fire(context.remove||[],this);
+					fire(context.remove||[],this,this.shadowRoot);
 				}
 
 				adoptedCallback() {
-					fire(context.adopted||[],this);
+					fire(context.adopt||[],this,this.shadowRoot);
 				}
 
 				attributeChangedCallback(attribute,oldValue,newValue) {
-					fire(context.attributes[attribute]||[],this,oldValue,newValue);
+					fire(context.attributes[attribute]||[],this,this.shadowRoot,oldValue,newValue);
 				}
 			});
 			let c = "("+componentElementClass.toString().replace(/TO_BE_REPLACED/,context.from||"HTMLElement")+")";
@@ -374,6 +393,14 @@
 			context.remove.push(listener);
 		}
 
+		onAdopt(context,listener) {
+			if (!listener) throw new Error("Missing listener function.");
+			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
+
+			context.adopt = context.adopt || [];
+			context.adopt.push(listener);
+		}
+
 		onAttribute(context,attribute,listener) {
 			if (!listener) throw new Error("Missing listener function.");
 			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
@@ -515,7 +542,7 @@
 
 	// do this last to let things know Zeph is ready.
 	setTimeout(()=>{
-		document.dispatchEvent(new Event("zeph:ready"));
+		document.dispatchEvent(new Event("zeph:initialized"));
 	},0);
 
 })();
