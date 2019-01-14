@@ -80,10 +80,14 @@
 				try {
 					PENDING[origin] = true;
 					setTimeout(()=>{
-						document.dispatchEvent(new Event("zeph:loading",origin));
+						document.dispatchEvent(new CustomEvent("zeph:loading",{
+							bubbles: false,
+							detail: origin
+						}));
 					},0);
 
 					let context = {};
+
 
 					let code = await ComponentCode.generateComponentCode(origin,js,context,asName);
 					if (!context.name && !context.pending) throw new Error("Invalid url; unable to load anything: "+origin);
@@ -110,12 +114,18 @@
 
 					delete PENDING[origin];
 					setTimeout(()=>{
-						document.dispatchEvent(new Event("zeph:loaded",origin));
+						document.dispatchEvent(new CustomEvent("zeph:loaded",{
+							bubbles: false,
+							detail: origin
+						}));
 					},0);
 					if (Object.keys(PENDING).length<1) {
 						setTimeout(()=>{
 							if (Object.keys(PENDING).length>0) return;
-							document.dispatchEvent(new Event("zeph:ready"));
+							document.dispatchEvent(new CustomEvent("zeph:ready",{
+								bubbles: false,
+								detail: Object.keys(COMPONENTS)
+							}));
 						},5);
 					}
 
@@ -542,7 +552,9 @@
 
 	// do this last to let things know Zeph is ready.
 	setTimeout(()=>{
-		document.dispatchEvent(new Event("zeph:initialized"));
+		document.dispatchEvent(new CustomEvent("zeph:initialized",{
+			bubbles: false
+		}));
 	},0);
 
 })();
