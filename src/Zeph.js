@@ -79,7 +79,7 @@
 					let context = {};
 
 					let code = await ComponentCode.generateComponentCode(origin,js,context,asName);
-					if (!context.name && !context.defined) throw new Error("Invalid url; unable to import anything.");
+					if (!context.name && !context.pending) throw new Error("Invalid url; unable to load anything: "+origin);
 
 					if (context.name) {
 						let markup = await ComponentMarkup.generateComponentMarkup(origin,context.html || "");
@@ -227,8 +227,8 @@
 
 					let code = new ComponentCode(origin||document.URL,js,context,asName);
 
-					if (context.defined) {
-						let promised = context.defined.filter((def)=>{
+					if (context.pending) {
+						let promised = context.pending.filter((def)=>{
 							return def instanceof Promise;
 						});
 						await Promise.all(promised);
@@ -249,6 +249,7 @@
 			/* eslint-disable no-unused-vars */
 			let define = this.define.bind(this,context,origin,asName);
 			let requires = this.requires.bind(this,context,origin);
+			let load = this.load.bind(this,context,origin);
 			let name = this.name.bind(this,context);
 			let from = this.from.bind(this,context);
 			let html = this.html.bind(this,context);
@@ -290,22 +291,31 @@
 
 			if (!asName && prefixOrSuffix && (prefixOrSuffix.endsWith("*") || prefixOrSuffix.startsWith("*"))) asName = prefixOrSuffix;
 
-			let component = Component.defineComponent(origin,code,asName);
-			if (component) {
-				context.defined = context.defined || [];
-				context.defined.push(component);
+			let pending = Component.defineComponent(origin,code,asName);
+			if (pending) {
+				context.pending = context.pending || [];
+				context.pending.push(pending);
 			}
 		}
 
 		requires(context,baseurl,url,asName) {
 			if (!url) throw new Error("Missing url.");
 			if (!(url instanceof URL) && typeof url!=="string") throw new Error("Invalid url; must be a string or URL.");
-			if (typeof url==="string") url = resolveURL(url);
+			if (typeof url==="string") url = resolveURL(url,baseurl);
 			if (asName && typeof asName!=="string") throw new Error("Invalid asName; must be a string.");
 			if (asName && asName.indexOf("-")<0) throw new Error("Invalid asName; must contain at least one dash character.");
 
 			url = resolveURL(url,baseurl);
-			window.Zeph.import(url,asName);
+
+			let pending = window.Zeph.load(url,asName);
+			if (pending) {
+				context.pending = context.pending || [];
+				context.pending.push(pending);
+			}
+		}
+
+		load(context,baseurl,url,asName) {
+			this.requires(context,baseurl,url,asName);
 		}
 
 		name(context,name) {
@@ -459,7 +469,7 @@
 			return COMPONENTS[name];
 		}
 
-		import(url,asName) {
+		load(url,asName) {
 			if (!url) throw new Error("Missing url.");
 			if (!(url instanceof URL) && typeof url!=="string") throw new Error("Invalid url; must be a string or URL.");
 			if (typeof url==="string") url = resolveURL(url);
@@ -472,10 +482,10 @@
 					resolve();
 				}
 				catch (ex) {
-					// let error = new Error("Error importing component '"+url+"' > "+ex.message);
+					// let error = new Error("Error loading component '"+url+"' > "+ex.message);
 					// error.stack = ex.stack;
 					// error.stack = error.stack.split(/\r\n|\n/g);
-					// error.stack.unshift("Zeph:import ("+name+")");
+					// error.stack.unshift("Zeph:load ("+name+")");
 					// error.stack = error.stack.join("\n");
 					// reject(error);
 					reject(ex);

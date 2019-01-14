@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global name,from,html,css,onCreate,onAdd,onRemove,onAttribute */
+/* global name,from,html,css */
 
 "use strict";
 
