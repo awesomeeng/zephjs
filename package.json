@@ -6,7 +6,7 @@
   "contributors": [
     "Glen R. Goodwin"
   ],
-  "main": "./src/AwesomeComponents.js",
+  "main": "./src/Zeph.js",
   "engines": {
     "node": ">=10.5.0"
   },

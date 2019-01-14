@@ -2,17 +2,15 @@
 <html lang="en" dir="ltr">
 	<head>
 		<meta charset="utf-8">
-		<title>Zeph - Examples - ExampleCollection</title>
+		<title>Zeph - Examples - BasicComponent</title>
 		<script src="../../src/Zeph.js" type="text/javascript"></script>
 		<script>
 			document.addEventListener("zeph:ready",()=>{
-				Zeph.import("example-components");
+				Zeph.import("awesome-hello");
 			});
 		</script>
 	</head>
 	<body>
-		<component-one></component-one>
-		<component-two></component-two>
-		<component-three></component-three>
+		<awesome-hello>Homer Simpson</awesome-hello>
 	</body>
 </html>

@@ -305,7 +305,7 @@
 			if (asName && asName.indexOf("-")<0) throw new Error("Invalid asName; must contain at least one dash character.");
 
 			url = resolveURL(url,baseurl);
-			window.AwesomeComponents.import(url,asName);
+			window.Zeph.import(url,asName);
 		}
 
 		name(context,name) {
@@ -447,7 +447,7 @@
 		}
 	}
 
-	class AwesomeComponentsClass {
+	class ZephClass {
 		get components() {
 			return Object.keys(COMPONENTS);
 		}
@@ -475,7 +475,7 @@
 					// let error = new Error("Error importing component '"+url+"' > "+ex.message);
 					// error.stack = ex.stack;
 					// error.stack = error.stack.split(/\r\n|\n/g);
-					// error.stack.unshift("AwesomeComponents:import ("+name+")");
+					// error.stack.unshift("Zeph:import ("+name+")");
 					// error.stack = error.stack.join("\n");
 					// reject(error);
 					reject(ex);
@@ -501,11 +501,11 @@
 		}
 	}
 
-	window.AwesomeComponents = new AwesomeComponentsClass();
+	window.Zeph = new ZephClass();
 
-	// do this last to let things know AwesomeComponents is ready.
+	// do this last to let things know Zeph is ready.
 	setTimeout(()=>{
-		document.dispatchEvent(new Event("awesome:ready"));
+		document.dispatchEvent(new Event("zeph:ready"));
 	},0);
 
 })();

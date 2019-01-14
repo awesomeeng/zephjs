@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-// This is a server for running AwesomeComponents in a test mode.
+// This is a server for running Zeph in a test mode.
 // DO NOT USE OUTSIDE OF DEVELOPMENT.
 
 "use strict";
