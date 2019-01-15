@@ -15,6 +15,10 @@ class Event {
 
 }
 
+class CustomEvent {
+
+}
+
 class HTMLElement {
 
 }
@@ -22,6 +26,7 @@ class HTMLElement {
 global.window = {};
 
 global.window.customElements = new CustomElements();
+global.window.CustomEvent = CustomEvent;
 global.window.Event = Event;
 global.window.HTMLElement = Event;
 global.window.URL = NodeURL.URL;

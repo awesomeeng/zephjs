@@ -195,6 +195,8 @@
 				constructor() {
 					super();
 
+					let element = this;
+
 					let shadow  = this.attachShadow({
 						mode:"open"
 					});
@@ -204,6 +206,27 @@
 					let styleElement = document.createElement("style");
 					styleElement.textContent = style.text;
 					shadow.appendChild(styleElement);
+
+					// register events from onEvent
+					if (context.events) {
+						context.events.forEach((obj)=>{
+							this.addEventListener(obj.eventName,(event)=>{
+								obj.listener.call(element,event,element,shadow);
+							});
+						});
+					}
+
+					// register events from onEventAt
+					if (context.eventsAt) {
+						context.eventsAt.forEach((obj)=>{
+							let selected = [...shadow.querySelectorAll(obj.selector)];
+							selected.forEach((sel)=>{
+								sel.addEventListener(obj.eventName,(event)=>{
+									obj.listener.call(sel,event,sel,element,shadow);
+								});
+							});
+						});
+					}
 
 					fire(context.create||[],this,this.shadowRoot);
 				}
@@ -221,7 +244,7 @@
 				}
 
 				attributeChangedCallback(attribute,oldValue,newValue) {
-					fire(context.attributes[attribute]||[],this,this.shadowRoot,oldValue,newValue);
+					fire(context.attributes[attribute]||[],oldValue,newValue,this,this.shadowRoot);
 				}
 			});
 			let c = "("+componentElementClass.toString().replace(/TO_BE_REPLACED/,context.from||"HTMLElement")+")";
@@ -283,10 +306,14 @@
 			let from = this.from.bind(this,context);
 			let html = this.html.bind(this,context);
 			let css = this.css.bind(this,context);
+			let mapAttribute = this.mapAttribute.bind(this,context);
+			let mapAttributeToContent = this.mapAttributeToContent.bind(this,context);
 			let onCreate = this.onCreate.bind(this,context);
 			let onAdd = this.onAdd.bind(this,context);
 			let onRemove = this.onRemove.bind(this,context);
 			let onAttribute = this.onAttribute.bind(this,context);
+			let onEvent = this.onEvent.bind(this,context);
+			let onEventAt = this.onEventAt.bind(this,context);
 			/* eslint-enable no-unused-vars */
 
 			let func;
@@ -379,6 +406,42 @@
 			context.css = css;
 		}
 
+		mapAttribute(context,sourceAttribute,selector,targetAttribute=sourceAttribute,transform=(x)=>{return x;}) {
+			if (!sourceAttribute) throw new Error("Missing sourceAttribute name.");
+			if (typeof sourceAttribute!=="string") throw new Error("Invalid sourceAttribute name; must be a string.");
+			if (!targetAttribute) throw new Error("Missing targetAttribute name.");
+			if (typeof targetAttribute!=="string") throw new Error("Invalid targetAttribute name; must be a string.");
+			if (!selector) throw new Error("Missing selector name.");
+			if (typeof selector!=="string") throw new Error("Invalid selector name; must be a string.");
+			if (!transform) throw new Error("Missing transform name.");
+			if (!(transform instanceof Function)) throw new Error("Invalid transform name; must be a Function.");
+
+			this.onAttribute(context,sourceAttribute,(old,gnu,element,content)=>{
+				let elements = [...content.querySelectorAll(selector)];
+				if (elements.length<1) return;
+				elements.forEach((e)=>{
+					e.setAttribute(targetAttribute,transform(gnu)||"");
+				});
+			});
+		}
+
+		mapAttributeToContent(context,sourceAttribute,selector,transform=(x)=>{return x;}) {
+			if (!sourceAttribute) throw new Error("Missing sourceAttribute name.");
+			if (typeof sourceAttribute!=="string") throw new Error("Invalid sourceAttribute name; must be a string.");
+			if (!selector) throw new Error("Missing selector name.");
+			if (typeof selector!=="string") throw new Error("Invalid selector name; must be a string.");
+			if (!transform) throw new Error("Missing transform name.");
+			if (!(transform instanceof Function)) throw new Error("Invalid transform name; must be a Function.");
+
+			this.onAttribute(context,sourceAttribute,(old,gnu,element,content)=>{
+				let elements = [...content.querySelectorAll(selector)];
+				if (elements.length<1) return;
+				elements.forEach((e)=>{
+					e.textContent = transform(gnu);
+				});
+			});
+		}
+
 		onCreate(context,listener) {
 			if (!listener) throw new Error("Missing listener function.");
 			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
@@ -412,15 +475,36 @@
 		}
 
 		onAttribute(context,attribute,listener) {
-			if (!listener) throw new Error("Missing listener function.");
-			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
 			if (!attribute) throw new Error("Missing attribute name.");
 			if (typeof attribute!=="string") throw new Error("Invalid attribute name; must be a string.");
+			if (!listener) throw new Error("Missing listener function.");
+			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
 
+			context.observed = context.observed || [];
 			context.observed.push(attribute);
 			context.attributes = context.attributes || {};
 			context.attributes[attribute] = context.attributes[attribute] || [];
 			context.attributes[attribute].push(listener);
+		}
+
+		onEvent(context,eventName,listener) {
+			if (!eventName) throw new Error("Missing eventName name.");
+			if (typeof eventName!=="string") throw new Error("Invalid eventName; must be a string.");
+			if (!listener) throw new Error("Missing listener function.");
+			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
+
+			context.events = context.events || [];
+			context.events.push({eventName,listener});
+		}
+
+		onEventAt(context,selector,eventName,listener) {
+			if (!eventName) throw new Error("Missing eventName name.");
+			if (typeof eventName!=="string") throw new Error("Invalid eventName; must be a string.");
+			if (!listener) throw new Error("Missing listener function.");
+			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
+
+			context.eventsAt = context.events || [];
+			context.eventsAt.push({selector,eventName,listener});
 		}
 	}
 
