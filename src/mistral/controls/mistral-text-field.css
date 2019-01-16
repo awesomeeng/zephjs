@@ -1,3 +1,7 @@
+:host {
+	display: block;
+}
+
 .field {
 	position: relative;
 	padding-top: 14pt;

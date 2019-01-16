@@ -1,4 +1,5 @@
 button {
+	width: 100%;
 	border: 3px solid #3399FF;
 	border-radius: 3px;
 	background: transparent;

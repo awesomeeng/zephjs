@@ -21,7 +21,6 @@ onCreate((element,content)=>{
 
 	let selected = element.querySelector("mistral-tab[selected]");
 	let tabs = [...(element.querySelectorAll("mistral-tab"))];
-	console.log(1,element,tabs);
 
 	if (!selected) {
 		selected = tabs[0];

@@ -35,3 +35,13 @@ mapAttribute("required","mistral-text-field");
 mapAttribute("tabindex","mistral-text-field");
 mapAttribute("type","mistral-text-field");
 mapAttribute("value","mistral-text-field");
+
+onEventAt("mistral-text-field","change",(event,selected,element)=>{
+	element.value = selected.value;
+	element.dispatchEvent(new CustomEvent("change",{
+		bubbles: false,
+		detail: {
+			value: selected.value
+		}
+	}));
+});

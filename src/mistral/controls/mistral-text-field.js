@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global name,html,css,mapAttribute,mapAttributeToContent */
+/* global name,html,css,onEventAt,onAttribute,mapAttribute,mapAttributeToContent */
 
 "use strict";
 
@@ -36,3 +36,29 @@ mapAttribute("required","input");
 mapAttribute("tabindex","input");
 mapAttribute("type","input");
 mapAttribute("value","input");
+
+onEventAt("input","keydown",(event,selected,element)=>{
+	element.value = selected.value;
+	element.dispatchEvent(new CustomEvent("change",{
+		bubbles: false,
+		detail: {
+			value: selected.value
+		}
+	}));
+});
+
+onEventAt("input","keyup",(event,selected,element)=>{
+	element.value = selected.value;
+	element.dispatchEvent(new CustomEvent("change",{
+		bubbles: false,
+		detail: {
+			value: selected.value
+		}
+	}));
+});
+
+onAttribute("value",(old,gnu,element,content)=>{
+	element.value = gnu;
+	let input = content.querySelector("input");
+	if (input) input.value = gnu;
+});

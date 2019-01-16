@@ -106,7 +106,7 @@
 		</style>
 	</head>
 	<body>
-		<mistral-toggle-box title="Containers" opened>
+		<mistral-toggle-box title="Containers">
 			<div class="entry">
 				<div class="label">Toggle Box</div>
 				<div class="name">mistral-toggle-box</div>
@@ -195,7 +195,48 @@
 
 		</mistral-toggle-box>
 
-		<mistral-toggle-box title="Controls">
+		<mistral-toggle-box title="Controls" opened>
+			<mistral-toggle-box title="Forms" opened>
+				<div class="entry">
+					<div class="label">Form</div>
+					<div class="name">mistral-form</div>
+					<div class="enabled">
+						<mistral-form name="login_form">
+							<h4>Example Login Form</h4>
+							<mistral-form name="fields">
+								<mistral-text-field label="Username" name="username"></mistral-text-field>
+								<mistral-password-field label="Basic Password Field" name="password" style="margin-top: 15px;"></mistral-password-field>
+							</mistral-form>
+							<div style="clear:both; margin-top: 15px;">
+								<mistral-button name="cancel" style="float:left; width: 150px;">Cancel</mistral-button>
+								<mistral-button name="login" style="float:right; width: 150px;">Login</mistral-button>
+							</div>
+						</mistral-form>
+					</div>
+					<div class="disabled">
+					</div>
+					<script>
+						document.addEventListener("zeph:ready",()=>{
+							let login = document.querySelector("mistral-form[name=login_form] mistral-button[name=login]");
+							if (login) {
+								login.addEventListener("click",(event)=>{
+									let form = document.querySelector("mistral-form[name=login_form]");
+									console.log(form.value);
+								})
+							}
+
+							let cancel = document.querySelector("mistral-form[name=login_form] mistral-button[name=cancel]");
+							if (cancel) {
+								cancel.addEventListener("click",(event)=>{
+									let form = document.querySelector("mistral-form[name=login_form]");
+									form.value = {};
+								})
+							}
+						});
+					</script>
+				</div>
+			</mistral-toggle-box>
+
 			<mistral-toggle-box title="Buttons">
 				<div class="entry">
 					<div class="label">Button</div>

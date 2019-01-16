@@ -7,6 +7,7 @@
 load("./mistral/containers/mistral-toggle-box.js");
 load("./mistral/containers/mistral-tab-box.js");
 
+load("./mistral/controls/mistral-form.js");
 load("./mistral/controls/mistral-button.js");
 load("./mistral/controls/mistral-toggle-button.js");
 load("./mistral/controls/mistral-text-field.js");
