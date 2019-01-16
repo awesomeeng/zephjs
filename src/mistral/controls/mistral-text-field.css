@@ -1,0 +1,95 @@
+.field {
+	position: relative;
+	padding-top: 14pt;
+}
+
+.field > label {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	display: block;
+	font-size: 10pt;
+	margin-bottom: 2px;
+	opacity: 1;
+}
+
+.field > .required {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	display: block;
+	font-size: 10pt;
+	margin-top: 2px;
+	opacity: 1;
+	text-align: right;
+}
+
+.field > .error {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	display: block;
+	font-size: 10pt;
+	margin-top: 2px;
+	color: red;
+	opacity: 1;
+	text-align: right;
+}
+
+:host([error]) .field > .error {
+	opacity: 1;
+	transition: opacity 1s;
+}
+
+:host([error]) .field > .required {
+	opacity: 0;
+	transition: opacity 0.5s;
+}
+
+.field > .wrapper {
+	display: block;
+	border: 3px solid #3399FF;
+	border-radius: 3px;
+	background: transparent;
+	font-size: 18pt;
+	clip-path: polygon(0 0, 100% 0%, 100% 25%, calc(100% - 4px) 25%, calc(100% - 4px) 75%, 100% 75%, 100% 100%, 0% 100%, 0% 75%, 4px 75%, 4px 25%, 0% 25%);
+	transition: background 0.25s, border-color 0.25s, clip-path: 1s;
+	cursor: pointer;
+	padding: 2px 5px;
+}
+
+.field > .wrapper:focus,
+.field > .wrapper:focus-within {
+	border-color: #66CCFF;
+	background: rgba(60,120,255,0.2);
+	transition: background 0.25s, border-color 0.25s, clip-path: 1s;
+}
+
+:host([error]) .field > .wrapper {
+	border-color: #FF6666;
+	background: rgba(255,60,60,0.2);
+}
+
+.field > .wrapper > input {
+	font-size: 18pt;
+	width: 100%;
+	border: none;
+	outline: none;
+	background: transparent;
+}
+
+:host([disabled] .field > .wrapper) {
+	border-color: #AAAAAA;
+	cursor: not-allowed;
+}
+
+:host(:not([disabled]) .field > .wrapper:active),
+:host(:not([disabled]) .field > .wrapper:focus),
+:host(:not([disabled]) .field > .wrapper:focus-within) {
+	background: rgba(60,120,255,0.4);
+	clip-path: polygon(0 0, 100% 0%, 100% 40%, calc(100% - 4px) 40%, calc(100% - 4px) 60%, 100% 60%, 100% 100%, 0% 100%, 0% 60%, 4px 60%, 4px 40%, 0% 40%);
+	transition: background 0.25s, border-color 0.25s, clip-path: 1s;
+}

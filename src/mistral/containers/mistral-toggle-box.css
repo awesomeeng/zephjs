@@ -1,0 +1,78 @@
+.titlebar {
+	display: grid;
+	grid-template-columns: min-content auto;
+	cursor: pointer;
+	border: 2px solid #3399FF;
+	border-radius: 3px;
+	clip-path: polygon(0 0, 100% 0%, 100% 25%, calc(100% - 4px) 25%, calc(100% - 4px) 75%, 100% 75%, 100% 100%, 0% 100%, 0% 75%, 4px 75%, 4px 25%, 0% 25%);
+	padding: 5px;
+	user-select: none;
+}
+
+.titlebar > .icon {
+	margin-right: 6pt;
+}
+
+.titlebar > .icon.icon-closed {
+	display: block;
+	width: auto;
+}
+
+.titlebar > .icon.icon-closed .closed-default {
+	width: 0px;
+	height: 0px;
+	border-top: 6pt solid transparent;
+	border-bottom: 6pt solid transparent;
+	border-left: 6pt solid #3399FF;
+	margin-left: 6pt;
+}
+
+.titlebar > .icon.icon-opened {
+	display: block;
+	width: auto;
+}
+
+.titlebar > .icon.icon-opened .opened-default {
+	width: 0px;
+	height: 0px;
+	border-left: 6pt solid transparent;
+	border-right: 6pt solid transparent;
+	border-top: 6pt solid #3399FF;
+	margin-top: 4pt;
+}
+
+.titlebar > .title {
+	font-size: 12pt;
+	font-weight: bold;
+}
+
+.body {
+	display: none;
+}
+
+:host([opened]) .body {
+	display: block;
+}
+
+:host([opened]) .icon.icon-closed {
+	display: none;
+	width: 0px;
+}
+
+:host(:not([opened])) .icon.icon-opened {
+	display: none;
+	width: 0px;
+}
+
+:host([disabled]) .titlebar {
+	border-color: #AAAAAA;
+	cursor: not-allowed;
+}
+
+:host([disabled]) .titlebar > .icon.icon-closed .closed-default {
+	border-left-color: #AAAAAA;
+}
+
+:host([disabled]) .titlebar > .icon.icon-opened .opened-default {
+	border-top-color: #AAAAAA;
+}

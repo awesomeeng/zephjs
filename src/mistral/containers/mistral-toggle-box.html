@@ -1,0 +1,16 @@
+<slot name="title">
+	<div class="titlebar">
+		<div class="icon icon-opened">
+			<slot name="opened"><div class="opened-default"></div></slot>
+		</div>
+		<div class="icon icon-closed">
+			<slot name="closed"><div class="closed-default"></div></slot>
+		</div>
+		<div class="title">
+			this is the title.
+		</div>
+	</div>
+</slot>
+<div class="body">
+	<slot>this is the body.</slot>
+</div>

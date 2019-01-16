@@ -1,0 +1,9 @@
+{
+    "name": "Zeph/examples/UsingMistral",
+    "version": "1.0.0",
+    "author": "the awesome engineering company",
+    "license": "(c) 2018, The Awesome Engineering Company, inc",
+    "dependencies": {
+        "@awesomeeng/awesome-components": "*"
+    }
+}

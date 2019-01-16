@@ -1,0 +1,26 @@
+button {
+	border: 3px solid #3399FF;
+	border-radius: 3px;
+	background: transparent;
+	font-size: 18pt;
+	clip-path: polygon(0 0, 100% 0%, 100% 25%, calc(100% - 4px) 25%, calc(100% - 4px) 75%, 100% 75%, 100% 100%, 0% 100%, 0% 75%, 4px 75%, 4px 25%, 0% 25%);
+	transition: background 0.25s, border-color 0.25s, clip-path: 1s;
+	cursor: pointer;
+}
+
+button[disabled] {
+	border-color: #AAAAAA;
+	cursor: not-allowed;
+}
+
+button:hover:not([disabled]) {
+	border-color: #66CCFF;
+	background: rgba(60,120,255,0.2);
+	transition: background 0.25s, border-color 0.25s, clip-path: 1s;
+}
+
+button:active:not([disabled]) {
+	background: rgba(60,120,255,0.4);
+	clip-path: polygon(0 0, 100% 0%, 100% 40%, calc(100% - 4px) 40%, calc(100% - 4px) 60%, 100% 60%, 100% 100%, 0% 100%, 0% 60%, 4px 60%, 4px 40%, 0% 40%);
+	transition: background 0.25s, border-color 0.25s, clip-path: 1s;
+}

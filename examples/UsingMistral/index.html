@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>Zeph - Examples - UsingMistral</title>
+		<script src="../../src/Zeph.js" type="text/javascript"></script>
+		<script>
+			document.addEventListener("zeph:loading",(event)=>{
+				console.log("zeph:loading",event.detail.toString());
+			});
+			document.addEventListener("zeph:loaded",(event)=>{
+				console.log("zeph:loaded",event.detail.toString());
+			});
+			document.addEventListener("zeph:ready",()=>{
+				console.log("zeph:ready");
+			});
+			document.addEventListener("zeph:initialized",()=>{
+				console.log("zeph:initialized");
+				Zeph.load("../../src/Mistral.js");
+			});
+		</script>
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: sans-serif;
+			}
+
+			h1 {
+				font-size: 36px;
+				font-weight: bold;
+				text-decoration: underline;
+			}
+
+			h2 {
+				font-size: 24px;
+				font-weight: bold;
+				text-decoration: underline;
+			}
+
+			mistral-toggle-box {
+				margin-bottom: 10px;
+				margin-top: 10px;
+				display: block;
+				padding-left: 10px;
+			}
+
+			.entry {
+				display: grid;
+				grid-template:
+					"a c c d d"
+					"b c c d d"
+					"e c c d d";
+				grid-column-gap: 25px;
+				background: transparent;
+				border: 1px dotted #AAA;
+				margin: 5px 10px;
+				padding: 5px 10px;
+				transition: background 0.25s;
+			}
+
+			.entry:hover {
+				background: #EEEEEE;
+				transition: background 0.25s;
+			}
+
+			.entry > .label {
+				grid-area: a;
+				font-size: 18px;
+				font-weight: bold;
+				width: 200px;
+				min-width: 200px;
+				max-width: 200px;
+			}
+
+			.entry > .name {
+				grid-area: b;
+				font-size: 13px;
+				width: 200px;
+				min-width: 200px;
+				max-width: 200px;
+				white-space: nowrap;
+			}
+
+			.entry > .enabled {
+				grid-area: c;
+				display: block;
+			}
+
+			.entry > .enabled > * {
+				margin-top: 3px;
+				margin-bottom: 3px;
+			}
+
+			.entry > .disabled {
+				grid-area: d;
+				display: block;
+			}
+
+			.entry > .disabled > * {
+				margin-top: 3px;
+				margin-bottom: 3px;
+			}
+		</style>
+	</head>
+	<body>
+		<mistral-toggle-box title="Containers" opened>
+			<div class="entry">
+				<div class="label">Toggle Box</div>
+				<div class="name">mistral-toggle-box</div>
+				<div class="enabled">
+					<mistral-toggle-box title="Some colorful boxes">
+						<div style="width: 50px; height: 50px; background: red; float: left; margin: 5px;"></div>
+						<div style="width: 50px; height: 50px; background: green; float: left; margin: 5px;"></div>
+						<div style="width: 50px; height: 50px; background: blue; float: left; margin: 5px;"></div>
+					</mistral-toggle-box>
+				</div>
+				<div class="disabled">
+					<mistral-toggle-box title="Some colorful boxes" disabled>
+						<div style="width: 50px; height: 50px; background: red; float: left; margin: 5px;"></div>
+						<div style="width: 50px; height: 50px; background: green; float: left; margin: 5px;"></div>
+						<div style="width: 50px; height: 50px; background: blue; float: left; margin: 5px;"></div>
+					</mistral-toggle-box>
+				</div>
+				<script>
+				</script>
+			</div>
+			<div class="entry">
+				<div class="label">Tab Box</div>
+				<div class="name">mistral-tab-box</div>
+				<div class="enabled">
+					<mistral-tab-box>
+						<mistral-tab title="Red">
+							<div style="width: 50px; height: 50px; background: red; margin: 5px;"></div>
+						</mistral-tab>
+						<mistral-tab title="Green">
+							<div style="width: 50px; height: 50px; background: green; margin: 5px;"></div>
+						</mistral-tab>
+						<mistral-tab title="Blue">
+							<div style="width: 50px; height: 50px; background: blue; margin: 5px;"></div>
+						</mistral-tab>
+					</mistral-tab-box>
+					<mistral-tab-box layout="bottom">
+						<mistral-tab title="Red">
+							<div style="width: 50px; height: 50px; background: red; margin: 5px;"></div>
+						</mistral-tab>
+						<mistral-tab title="Green">
+							<div style="width: 50px; height: 50px; background: green; margin: 5px;"></div>
+						</mistral-tab>
+						<mistral-tab title="Blue">
+							<div style="width: 50px; height: 50px; background: blue; margin: 5px;"></div>
+						</mistral-tab>
+					</mistral-tab-box>
+					<mistral-tab-box layout="left">
+						<mistral-tab title="Red">
+							<div style="width: 50px; height: 50px; background: red; margin: 5px;"></div>
+						</mistral-tab>
+						<mistral-tab title="Green">
+							<div style="width: 50px; height: 50px; background: green; margin: 5px;"></div>
+						</mistral-tab>
+						<mistral-tab title="Blue">
+							<div style="width: 50px; height: 50px; background: blue; margin: 5px;"></div>
+						</mistral-tab>
+					</mistral-tab-box>
+					<mistral-tab-box layout="right">
+						<mistral-tab title="Red">
+							<div style="width: 50px; height: 50px; background: red; margin: 5px;"></div>
+						</mistral-tab>
+						<mistral-tab title="Green">
+							<div style="width: 50px; height: 50px; background: green; margin: 5px;"></div>
+						</mistral-tab>
+						<mistral-tab title="Blue">
+							<div style="width: 50px; height: 50px; background: blue; margin: 5px;"></div>
+						</mistral-tab>
+					</mistral-tab-box>
+				</div>
+				<div class="disabled">
+					<mistral-tab-box disabled>
+						<mistral-tab title="Red">
+							<div style="width: 50px; height: 50px; background: red; margin: 5px;"></div>
+						</mistral-tab>
+						<mistral-tab title="Green">
+							<div style="width: 50px; height: 50px; background: green; margin: 5px;"></div>
+						</mistral-tab>
+						<mistral-tab title="Blue">
+							<div style="width: 50px; height: 50px; background: blue; margin: 5px;"></div>
+						</mistral-tab>
+					</mistral-tab-box>
+				</div>
+				<script>
+				</script>
+			</div>
+
+		</mistral-toggle-box>
+
+		<mistral-toggle-box title="Controls">
+			<mistral-toggle-box title="Buttons">
+				<div class="entry">
+					<div class="label">Button</div>
+					<div class="name">mistral-button</div>
+					<div class="enabled">
+						<mistral-button>Click me!</mistral-button>
+					</div>
+					<div class="disabled">
+						<mistral-button disabled >Click me!</mistral-button>
+					</div>
+					<script>
+						document.addEventListener("zeph:ready",()=>{
+							document.querySelectorAll("mistral-button").forEach((button)=>{
+								button.addEventListener("click",(event)=>{
+									console.log(event);
+								})
+							});
+						});
+					</script>
+				</div>
+
+				<div class="entry">
+					<div class="label">Toggle Button</div>
+					<div class="name">mistral-toggle-button</div>
+					<div class="enabled">
+						<mistral-toggle-button>Click me!</mistral-toggle-button>
+						<mistral-toggle-button selected>Click me!</mistral-toggle-button>
+					</div>
+					<div class="disabled">
+						<mistral-toggle-button disabled>Click me!</mistral-toggle-button>
+						<mistral-toggle-button disabled>Click me!</mistral-toggle-button>
+					</div>
+					<script>
+						document.addEventListener("zeph:ready",()=>{
+							document.querySelectorAll("mistral-toggle-button").forEach((button)=>{
+								button.addEventListener("change",(event)=>{
+									console.log(event);
+								})
+							});
+						});
+					</script>
+				</div>
+			</mistral-toggle-box>
+
+			<mistral-toggle-box title="Text Fields">
+				<div class="entry">
+					<div class="label">Text Field</div>
+					<div class="name">mistral-text-field</div>
+					<div class="enabled">
+						<mistral-text-field label="Basic Text Field" ></mistral-text-field>
+						<mistral-text-field label="With Placeholder" placeholder="placeholder text"></mistral-text-field>
+						<mistral-text-field label="With Required" required></mistral-text-field>
+						<mistral-text-field label="With Error" error="This has an error!"></mistral-text-field>
+					</div>
+					<div class="disabled">
+						<mistral-text-field label="Disabled" value="12345" disabled ></mistral-text-field>
+					</div>
+					<script>
+						document.addEventListener("zeph:ready",()=>{
+							document.querySelectorAll("mistral-text-field").forEach((button)=>{
+								button.addEventListener("change",(event)=>{
+									console.log(event);
+								})
+							});
+						});
+					</script>
+				</div>
+				<div class="entry">
+					<div class="label">Password Field</div>
+					<div class="name">mistral-password-field</div>
+					<div class="enabled">
+						<mistral-password-field label="Basic Password Field" ></mistral-password-field>
+						<mistral-password-field label="With Placeholder" placeholder="placeholder text"></mistral-password-field>
+						<mistral-password-field label="With Required" required></mistral-password-field>
+						<mistral-password-field label="With Error" error="This has an error!"></mistral-password-field>
+					</div>
+					<div class="disabled">
+						<mistral-password-field label="Disabled" value="12345" disabled ></mistral-password-field>
+					</div>
+					<script>
+						document.addEventListener("zeph:ready",()=>{
+							document.querySelectorAll("mistral-password-field").forEach((button)=>{
+								button.addEventListener("change",(event)=>{
+									console.log(event);
+								})
+							});
+						});
+					</script>
+				</div>
+			</mistral-toggle-box>
+
+		</mistral-toggle-box>
+
+
+
+	</body>
+</html>
