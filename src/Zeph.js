@@ -186,6 +186,13 @@
 				});
 			};
 
+			let fireImmediately = (listeners,...args)=>{
+				listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
+				listeners.forEach((listener)=>{
+					return listener.apply(listener,args);
+				});
+			};
+
 			const TO_BE_REPLACED = (class {});
 			const componentElementClass = (class ComponentElement extends TO_BE_REPLACED {
 				static get observedAttributes() {
@@ -206,6 +213,8 @@
 					let styleElement = document.createElement("style");
 					styleElement.textContent = style.text;
 					shadow.appendChild(styleElement);
+
+					fireImmediately(context.create||[],this,this.shadowRoot);
 
 					// register events from onEvent
 					if (context.events) {
@@ -228,7 +237,6 @@
 						});
 					}
 
-					fire(context.create||[],this,this.shadowRoot);
 				}
 
 				connectedCallback() {
