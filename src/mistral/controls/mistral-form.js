@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global name,html,css,mapAttribute,onCreate */
+/* global name,html,css,bindAttributes,onCreate */
 
 "use strict";
 
@@ -9,16 +9,16 @@ html("./mistral-form.html");
 css("./mistral-form.css");
 
 // inherited from FORM
-mapAttribute("accept","input");
-mapAttribute("accept-charset","input");
-mapAttribute("action","input");
-mapAttribute("autocapitalize","input");
-mapAttribute("autocomplete","input");
-mapAttribute("enctype","input");
-mapAttribute("method","input");
-mapAttribute("name","input");
-mapAttribute("novalidate","input");
-mapAttribute("target","input");
+bindAttributes("accept","input");
+bindAttributes("accept-charset","input");
+bindAttributes("action","input");
+bindAttributes("autocapitalize","input");
+bindAttributes("autocomplete","input");
+bindAttributes("enctype","input");
+bindAttributes("method","input");
+bindAttributes("name","input");
+bindAttributes("novalidate","input");
+bindAttributes("target","input");
 
 onCreate((element)=>{
 	let makePath = function makePath(start,end) {

@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global requires,name,html,css,onCreate,onEventAt */
+/* global requires,name,html,css,bindAttributes,onCreate,onEventAt */
 
 "use strict";
 
@@ -12,6 +12,8 @@ requires("mistral-tab");
 name("mistral-tab-box");
 html("./mistral-tab-box.html");
 css("./mistral-tab-box.css");
+
+bindAttributes("disabled",".tab-header");
 
 onCreate((element,content)=>{
 	let layout = element.getAttribute("layout") || "top";
@@ -50,5 +52,3 @@ onEventAt(".header > .tab-header","click",(event,selected,element,content)=>{
 	selected.setAttribute("selected","");
 	selected[$BODY].setAttribute("selected","");
 });
-
-mapAttribute("disabled",".tab-header");

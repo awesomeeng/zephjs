@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global requires,name,html,css,mapAttribute */
+/* global requires,name,html,css,bindAttributes */
 
 "use strict";
 
@@ -11,30 +11,30 @@ html("./mistral-password-field.html");
 css("./mistral-password-field.css");
 
 // inherited from mistral-text-field
-mapAttribute("name","mistral-text-field");
-mapAttribute("label","mistral-text-field");
-mapAttribute("error","mistral-text-field");
+bindAttributes("name","mistral-text-field");
+bindAttributes("label","mistral-text-field");
+bindAttributes("error","mistral-text-field");
 
 // inherited from INPUT[type=text]
-mapAttribute("maxlength","mistral-text-field");
-mapAttribute("minlength","mistral-text-field");
-mapAttribute("pattern","mistral-text-field");
-mapAttribute("placeholder","mistral-text-field");
-mapAttribute("size","mistral-text-field");
-mapAttribute("spellcheck","mistral-text-field");
+bindAttributes("maxlength","mistral-text-field");
+bindAttributes("minlength","mistral-text-field");
+bindAttributes("pattern","mistral-text-field");
+bindAttributes("placeholder","mistral-text-field");
+bindAttributes("size","mistral-text-field");
+bindAttributes("spellcheck","mistral-text-field");
 
 // inherited from INPUT
-mapAttribute("autocomplete","mistral-text-field");
-mapAttribute("autofocus","mistral-text-field");
-mapAttribute("disabled","mistral-text-field");
-mapAttribute("form","mistral-text-field");
-mapAttribute("list","mistral-text-field");
-mapAttribute("name","mistral-text-field");
-mapAttribute("readonly","mistral-text-field");
-mapAttribute("required","mistral-text-field");
-mapAttribute("tabindex","mistral-text-field");
-mapAttribute("type","mistral-text-field");
-mapAttribute("value","mistral-text-field");
+bindAttributes("autocomplete","mistral-text-field");
+bindAttributes("autofocus","mistral-text-field");
+bindAttributes("disabled","mistral-text-field");
+bindAttributes("form","mistral-text-field");
+bindAttributes("list","mistral-text-field");
+bindAttributes("name","mistral-text-field");
+bindAttributes("readonly","mistral-text-field");
+bindAttributes("required","mistral-text-field");
+bindAttributes("tabindex","mistral-text-field");
+bindAttributes("type","mistral-text-field");
+bindAttributes("value","mistral-text-field");
 
 onEventAt("mistral-text-field","change",(event,selected,element)=>{
 	element.value = selected.value;

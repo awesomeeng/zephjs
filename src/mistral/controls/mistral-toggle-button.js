@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global name,html,css,mapAttribute,onEvent */
+/* global name,html,css,bindAttributes,onEvent */
 
 "use strict";
 
@@ -8,11 +8,11 @@ name("mistral-toggle-button");
 html("./mistral-toggle-button.html");
 css("./mistral-toggle-button.css");
 
-mapAttribute("autofocus","button");
-mapAttribute("disabled","button");
-mapAttribute("name","button");
-mapAttribute("type","button");
-mapAttribute("value","button");
+bindAttributes("autofocus","button");
+bindAttributes("disabled","button");
+bindAttributes("name","button");
+bindAttributes("type","button");
+bindAttributes("value","button");
 
 onEvent("click",(event,element)=>{
 	if (element.hasAttribute("disabled") && (element.getAttribute("disabled")===true || element.getAttribute("disabled")==="")) {

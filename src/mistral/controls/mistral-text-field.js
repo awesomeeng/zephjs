@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global name,html,css,onEventAt,onAttribute,mapAttribute,mapAttributeToContent */
+/* global name,html,css,onEventAt,onAttribute,bindAttributes,bindAttributeToContent */
 
 "use strict";
 
@@ -9,33 +9,33 @@ html("./mistral-text-field.html");
 css("./mistral-text-field.css");
 
 // specific to this componenet
-mapAttribute("name","label","for");
-mapAttributeToContent("label","label");
-mapAttributeToContent("required",".required",(value)=>{
+bindAttributes("name","label","for");
+bindAttributeToContent("label","label");
+bindAttributeToContent("required",".required",(value)=>{
 	return value || "required";
 });
-mapAttributeToContent("error",".error");
+bindAttributeToContent("error",".error");
 
 // inherited from INPUT[type=text]
-mapAttribute("maxlength","input");
-mapAttribute("minlength","input");
-mapAttribute("pattern","input");
-mapAttribute("placeholder","input");
-mapAttribute("size","input");
-mapAttribute("spellcheck","input");
+bindAttributes("maxlength","input");
+bindAttributes("minlength","input");
+bindAttributes("pattern","input");
+bindAttributes("placeholder","input");
+bindAttributes("size","input");
+bindAttributes("spellcheck","input");
 
 // inherited from INPUT
-mapAttribute("autocomplete","input");
-mapAttribute("autofocus","input");
-mapAttribute("disabled","input");
-mapAttribute("form","input");
-mapAttribute("list","input");
-mapAttribute("name","input");
-mapAttribute("readonly","input");
-mapAttribute("required","input");
-mapAttribute("tabindex","input");
-mapAttribute("type","input");
-mapAttribute("value","input");
+bindAttributes("autocomplete","input");
+bindAttributes("autofocus","input");
+bindAttributes("disabled","input");
+bindAttributes("form","input");
+bindAttributes("list","input");
+bindAttributes("name","input");
+bindAttributes("readonly","input");
+bindAttributes("required","input");
+bindAttributes("tabindex","input");
+bindAttributes("type","input");
+bindAttributes("value","input");
 
 onEventAt("input","keydown",(event,selected,element)=>{
 	element.value = selected.value;

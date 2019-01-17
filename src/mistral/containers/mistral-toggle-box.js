@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global name,html,css,mapAttributeToContent,onEventAt */
+/* global name,html,css,bindAttributeToContent,onEventAt */
 
 "use strict";
 
@@ -8,7 +8,8 @@ name("mistral-toggle-box");
 html("./mistral-toggle-box.html");
 css("./mistral-toggle-box.css");
 
-mapAttributeToContent("title","div.title");
+bindAttributeToContent("title","div.title");
+
 onEventAt("div.titlebar","click",(event,selected,element)=>{
 	event.stopPropagation();
 	event.stopImmediatePropagation();
