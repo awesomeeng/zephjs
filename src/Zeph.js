@@ -215,106 +215,82 @@
 					styleElement.textContent = style.text;
 					shadow.appendChild(styleElement);
 
+					// fire our create event. We need to do this here and immediately
+					// so the onCreate handlers can do whatever setup they need to do
+					// before we go off and register bindings and events.
 					fireImmediately(context.create||[],this,this.shadowRoot);
 
 					if (context.bindings) {
-						let mutations = [];
-						let watchAttributes = false;
-						let watchContent = false;
-
 						context.bindings.forEach((binding)=>{
-							if (binding.source.type==="attribute") watchAttributes = true;
-							if (binding.source.type==="content") watchContent = true;
+							if (!binding) return;
 
-							let matcher = null;
-							let getter = null;
-							let handler = null;
+							let srcele = binding.source.element;
+							if (srcele===".") srcele = [element];
+							else if (typeof srcele==="string") srcele = [...shadow.querySelectorAll(srcele)];
+							else if (srcele instanceof HTMLElement) srcele = [srcele];
 
-							if (binding.source.type==="attribute") {
-								matcher = (record)=>{
-									if (record.type==="attributes" && record.attributeName===binding.source.name) return true;
-									return false;
-								};
-								getter = ()=>{
-									return element.getAttribute(binding.source.name);
-								};
-							}
-							else if (binding.source.type==="content") {
-								matcher = (record)=>{
-									if (record.type==="characterData" || record.type==="childList") return true;
-									return false;
-								};
-								getter = ()=>{
-									return element.textContent;
-								};
-							}
+							srcele.forEach((srcele)=>{
+								let handler;
+								if (binding.target.type==="attribute") {
+									handler = (value)=>{
+										value = binding.transform(value);
+										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+										targets.forEach((target)=>{
+											if (value===undefined) {
+												target.removeAttribute(binding.target.name);
+											}
+											else if (target.getAttribute(binding.target.name)!==value) {
+												target.setAttribute(binding.target.name,value);
+											}
+										});
+									};
+								}
+								else if (binding.target.type==="content") {
+									handler = (value)=>{
+										if (value===undefined) return;
+										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+										targets.forEach((target)=>{
+											if (target.textContent!==value) target.textContent = value===undefined || value===null ? "" : value;
+										});
+									};
+								}
+								else if (binding.target.type==="property") {
+									handler = (value)=>{
+										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+										targets.forEach((target)=>{
+											if (value===undefined) {
+												delete target[binding.target.name];
+											}
+											else if (target[binding.target.name]!==value) {
+												target[binding.target.name] = value;
+											}
+										});
+									};
+								}
+								if (!handler) return;
 
-							if (binding.target.type==="attribute") {
-								handler = (value)=>{
-									value = binding.transform(value);
-									if (value===undefined) return;
-									if (value===null) value = "";
-									let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
-									targets.forEach((target)=>{
-										target.setAttribute(binding.target.name,binding.transform(value));
-									});
-								};
-							}
-							else if (binding.target.type==="content") {
-								handler = (value)=>{
-									if (value===undefined) return;
-									let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
-									targets.forEach((target)=>{
-										target.textContent = binding.transform(value);
-									});
-								};
-							}
-							else if (binding.target.type==="property") {
-								handler = (value)=>{
-									if (value===undefined) return;
-									let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
-									targets.forEach((target)=>{
-										target[binding.target.name] = binding.transform(value);
-									});
-								};
-							}
+								if (!srcele[$OBSERVER]) {
+									srcele[$OBSERVER] = new ElementObserver(srcele);
+									srcele[$OBSERVER].start();
+								}
 
-							if (!matcher || !handler) {
-								console.warn("Binding did not match a known binding type",binding);
-								return;
-							}
+								// first we run the handler for the initial alignment,
+								// then we register the observer.
+								let observer = srcele[$OBSERVER];
+								if (binding.source.type==="attribute") {
+									let value = srcele.getAttribute(binding.source.name);
+									handler(value,binding.source.name,srcele);
 
-							mutations.push({matcher,getter,handler});
+									observer.addAttributeObserver(binding.source.name,handler);
+								}
+								else if (binding.source.type==="content") {
+									let value = srcele.textContent;
+									handler(value,null,srcele);
 
-							// Execute this immediately to ensure data set.
-							let value = binding.transform(getter());
-							if (value===null) value = "";
-							if (value!==undefined) handler(binding.transform(value));
+									observer.addContentObserver(handler);
+								}
+							});
 						});
-
-						if (mutations.length>0) {
-							if (this[$OBSERVER]) {
-								this[$OBSERVER].disconnect();
-								this[$OBSERVER] = null;
-							}
-
-							let observer = new MutationObserver((records)=>{
-								records.forEach((record)=>{
-									mutations.forEach((mutation)=>{
-										if (mutation.matcher(record)) {
-											mutation.handler(mutation.getter());
-										}
-									});
-
-								});
-							});
-							observer.observe(element,{
-								attributes: watchAttributes,
-								characterData: watchContent,
-								childList: watchContent
-							});
-							this[$OBSERVER] = observer;
-						}
 					}
 
 					// register events from onEvent
@@ -429,6 +405,14 @@
 			let bindContents = this.bindContents.bind(this,context);
 			let bindContentToContent = this.bindContentToContent.bind(this,context);
 			let bindContentToProperty = this.bindContentToProperty.bind(this,context);
+			let bindOtherAttributes = this.bindOtherAttributes.bind(this,context);
+			let bindOtherAttributeToAttribute = this.bindOtherAttributeToAttribute.bind(this,context);
+			let bindOtherAttributeToContent = this.bindOtherAttributeToContent.bind(this,context);
+			let bindOtherAttributeToProperty = this.bindOtherAttributeToProperty.bind(this,context);
+			let bindOtherContentToAttribute = this.bindOtherContentToAttribute.bind(this,context);
+			let bindOtherContents = this.bindOtherContents.bind(this,context);
+			let bindOtherContentToContent = this.bindOtherContentToContent.bind(this,context);
+			let bindOtherContentToProperty = this.bindOtherContentToProperty.bind(this,context);
 			/* eslint-enable no-unused-vars */
 
 			let func;
@@ -521,7 +505,9 @@
 			context.css = css;
 		}
 
-		binding(context,sourceType,sourceName,targetElement,targetType,targetName,transformFunction) {
+		binding(context,sourceElement,sourceType,sourceName,targetElement,targetType,targetName,transformFunction) {
+			if (!sourceElement) throw new Error("Missing sourceElement.");
+			if (typeof sourceElement!=="string" && !(sourceElement instanceof HTMLElement)) throw new Error("Invalid sourceElement; must be a string or an instance of HTMLElement.");
 			if (!sourceType) throw new Error("Missing sourceType.");
 			if (typeof sourceType!=="string") throw new Error("Invalid sourceType; must be a string.");
 			sourceType = sourceType.toLowerCase();
@@ -542,6 +528,7 @@
 			context.bindings = context.bindings || [];
 			context.bindings.push({
 				source: {
+					element: sourceElement,
 					type: sourceType,
 					name: sourceName
 				},
@@ -555,35 +542,67 @@
 		}
 
 		bindAttributes(context,sourceName,targetElement,targetName=sourceName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,"attribute",sourceName,targetElement,"attribute",targetName,transformFunction);
+			return this.binding(context,".","attribute",sourceName,targetElement,"attribute",targetName,transformFunction);
 		}
 
 		bindAttributeToAttribute(context,sourceName,targetElement,targetName=sourceName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,"attribute",sourceName,targetElement,"attribute",targetName,transformFunction);
+			return this.binding(context,".","attribute",sourceName,targetElement,"attribute",targetName,transformFunction);
 		}
 
 		bindAttributeToContent(context,sourceName,targetElement,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,"attribute",sourceName,targetElement,"content",".",transformFunction);
+			return this.binding(context,".","attribute",sourceName,targetElement,"content",".",transformFunction);
 		}
 
 		bindAttributeToProperty(context,sourceName,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,"attribute",sourceName,targetElement,"property",targetName,transformFunction);
+			return this.binding(context,".","attribute",sourceName,targetElement,"property",targetName,transformFunction);
 		}
 
 		bindContentToAttribute(context,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,"content",targetElement,"attribute",targetName,transformFunction);
+			return this.binding(context,".","content",targetElement,"attribute",targetName,transformFunction);
 		}
 
 		bindContents(context,targetElement,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,"content",".",targetElement,"content",".",transformFunction);
+			return this.binding(context,".","content",".",targetElement,"content",".",transformFunction);
 		}
 
 		bindContentToContent(context,targetElement,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,"content",".",targetElement,"content",".",transformFunction);
+			return this.binding(context,".","content",".",targetElement,"content",".",transformFunction);
 		}
 
 		bindContentToProperty(context,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,"content",".",targetElement,"property",targetName,transformFunction);
+			return this.binding(context,".","content",".",targetElement,"property",targetName,transformFunction);
+		}
+
+		bindOtherAttributes(context,sourceElement,sourceName,targetElement,targetName=sourceName,transformFunction=(x)=>{ return x; }) {
+			return this.binding(context,sourceElement,"attribute",sourceName,targetElement,"attribute",targetName,transformFunction);
+		}
+
+		bindOtherAttributeToAttribute(context,sourceElement,sourceName,targetElement,targetName=sourceName,transformFunction=(x)=>{ return x; }) {
+			return this.binding(context,sourceElement,"attribute",sourceName,targetElement,"attribute",targetName,transformFunction);
+		}
+
+		bindOtherAttributeToContent(context,sourceElement,sourceName,targetElement,transformFunction=(x)=>{ return x; }) {
+			return this.binding(context,sourceElement,"attribute",sourceName,targetElement,"content",".",transformFunction);
+		}
+
+		bindOtherAttributeToProperty(context,sourceElement,sourceName,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
+			return this.binding(context,sourceElement,"attribute",sourceName,targetElement,"property",targetName,transformFunction);
+		}
+
+		bindOtherContentToAttribute(context,sourceElement,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
+			return this.binding(context,sourceElement,"content",targetElement,"attribute",targetName,transformFunction);
+		}
+
+		bindOtherContents(context,sourceElement,targetElement,transformFunction=(x)=>{ return x; }) {
+			return this.binding(context,sourceElement,"content",".",targetElement,"content",".",transformFunction);
+		}
+
+		bindOtherContentToContent(context,sourceElement,targetElement,transformFunction=(x)=>{ return x; }) {
+			return this.binding(context,sourceElement,"content",".",targetElement,"content",".",transformFunction);
+		}
+
+		bindOtherContentToProperty(context,sourceElement,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
+			return this.binding(context,sourceElement,"content",".",targetElement,"property",targetName,transformFunction);
 		}
 
 		onCreate(context,listener) {
@@ -719,6 +738,106 @@
 
 		get origin() {
 			return this[$ORIGIN];
+		}
+	}
+
+	class ElementObserver {
+		constructor(element) {
+			if (!element) throw new Error("Missing element.");
+			if (!(element instanceof HTMLElement)) throw new Error("Invalid element; must be an instance of HTMLElement.");
+
+			this.element = element;
+			this.attributes = {};
+			this.content = [];
+			this.observer = new MutationObserver(this.handleMutation.bind(this));
+		}
+
+		addAttributeObserver(attribute,handler) {
+			if (!attribute) throw new Error("Missing attribute.");
+			if (typeof attribute!=="string") throw new Error("Invalid attribute; must be a string.");
+			if (!handler) throw new Error("Missing handler.");
+			if (!(handler instanceof Function)) throw new Error("Invalid handler; must be a Function.");
+
+			this.attributes[attribute] = this.attributes[attribute] || [];
+			this.attributes[attribute].push(handler);
+		}
+
+		removeAttributeObserver(attribute,handler) {
+			if (!attribute) throw new Error("Missing attribute.");
+			if (typeof attribute!=="string") throw new Error("Invalid attribute; must be a string.");
+			if (!handler) throw new Error("Missing handler.");
+			if (!(handler instanceof Function)) throw new Error("Invalid handler; must be a Function.");
+
+			if (!this.attributes[attribute]) return;
+			this.attributes[attribute] = this.attributes[attribute].filter((h)=>{
+				return h!==handler;
+			});
+			if (this.attributes[attribute].length<1) delete this.attributes[attribute];
+		}
+
+		removeAllAttributeObservers(attribute) {
+			if (attribute && typeof attribute!=="string") throw new Error("Invalid attribute; must be a string.");
+			if (!attribute) this.attributes = {};
+			else delete this.attributes[attribute];
+		}
+
+		addContentObserver(handler) {
+			if (!handler) throw new Error("Missing handler.");
+			if (!(handler instanceof Function)) throw new Error("Invalid handler; must be a Function.");
+
+			this.content.push(handler);
+		}
+
+		removeContentObserver(handler) {
+			if (!handler) throw new Error("Missing handler.");
+			if (!(handler instanceof Function)) throw new Error("Invalid handler; must be a Function.");
+
+			this.content = this.content.filter((h)=>{
+				return h!==handler;
+			});
+		}
+
+		removeAllContentObservers() {
+			this.content = [];
+		}
+
+		start() {
+			this.observer.observe(this.element,{
+				attributes: true,
+				characterData: true,
+				childList: true
+			});
+		}
+
+		stop() {
+			this.observer.disconnect();
+		}
+
+		handleMutation(records) {
+			records.forEach((record)=>{
+				if (record.type==="attributes") this.handleAttributeMutation(record);
+				else this.handleContentMutation(record);
+			});
+		}
+
+		handleAttributeMutation(record) {
+			let name = record.attributeName;
+			if (!this.attributes[name] || this.attributes[name].length<1) return;
+
+			let value = this.element.getAttribute(name);
+			this.attributes[name].forEach((handler)=>{
+				handler(value,name,this.element);
+			});
+		}
+
+		handleContentMutation(/*record*/) {
+			if (this.content.length<1) return;
+			let value = this.element.textContent;
+
+			this.content.forEach((handler)=>{
+				handler(value,this.element);
+			});
+
 		}
 	}
 
