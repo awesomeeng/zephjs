@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global requires,name,html,css,bindAttributes */
+/* global requires,name,html,css,bindAttributes,bindOtherAttributes */
 
 "use strict";
 
@@ -36,12 +36,5 @@ bindAttributes("tabindex","mistral-text-field");
 bindAttributes("type","mistral-text-field");
 bindAttributes("value","mistral-text-field");
 
-onEventAt("mistral-text-field","change",(event,selected,element)=>{
-	element.value = selected.value;
-	element.dispatchEvent(new CustomEvent("change",{
-		bubbles: false,
-		detail: {
-			value: selected.value
-		}
-	}));
-});
+// inverted binding from inner mistral-text-field to this host element
+bindOtherAttributes("mistral-text-field","value",".","value");

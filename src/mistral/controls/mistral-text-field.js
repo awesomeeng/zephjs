@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global name,html,css,onEventAt,onAttribute,bindAttributes,bindAttributeToContent */
+/* global name,html,css,onEventAt,onAttribute,bindAttributes,bindAttributeToContent,bindAttributeToProperty */
 
 "use strict";
 
@@ -15,6 +15,7 @@ bindAttributeToContent("required",".required",(value)=>{
 	return value || "required";
 });
 bindAttributeToContent("error",".error");
+bindAttributeToProperty("value","input","value");
 
 // inherited from INPUT[type=text]
 bindAttributes("maxlength","input");
@@ -39,26 +40,10 @@ bindAttributes("value","input");
 
 onEventAt("input","keydown",(event,selected,element)=>{
 	element.value = selected.value;
-	element.dispatchEvent(new CustomEvent("change",{
-		bubbles: false,
-		detail: {
-			value: selected.value
-		}
-	}));
+	element.setAttribute("value",selected.value);
 });
 
 onEventAt("input","keyup",(event,selected,element)=>{
 	element.value = selected.value;
-	element.dispatchEvent(new CustomEvent("change",{
-		bubbles: false,
-		detail: {
-			value: selected.value
-		}
-	}));
-});
-
-onAttribute("value",(old,gnu,element,content)=>{
-	element.value = gnu;
-	let input = content.querySelector("input");
-	if (input) input.value = gnu;
+	element.setAttribute("value",selected.value);
 });
