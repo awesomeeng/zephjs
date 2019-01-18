@@ -10,7 +10,7 @@ css("./mistral-toggle-box.css");
 
 bindAttributeToContent("title","div.title");
 
-onEventAt("div.titlebar","click",(event,selected,element)=>{
+onEventAt("div.icon,div.title","click",(event,selected,element)=>{
 	event.stopPropagation();
 	event.stopImmediatePropagation();
 	event.preventDefault();

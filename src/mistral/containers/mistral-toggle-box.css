@@ -1,24 +1,25 @@
-.titlebar {
+:host {
 	display: grid;
-	grid-template-columns: min-content auto;
-	cursor: pointer;
-	border: 2px solid #3399FF;
-	border-radius: 3px;
-	clip-path: polygon(0 0, 100% 0%, 100% 25%, calc(100% - 4px) 25%, calc(100% - 4px) 75%, 100% 75%, 100% 100%, 0% 100%, 0% 75%, 4px 75%, 4px 25%, 0% 25%);
+	grid-template-areas:
+		"icons title"
+		"empty body";
+		grid-template-columns: min-content auto;
 	padding: 5px;
+}
+
+.icon {
+	grid-area: icons;
+	margin-right: 1pt;
+	cursor: pointer;
 	user-select: none;
 }
 
-.titlebar > .icon {
-	margin-right: 6pt;
-}
-
-.titlebar > .icon.icon-closed {
+.icon > .icon-closed {
 	display: block;
 	width: auto;
 }
 
-.titlebar > .icon.icon-closed .closed-default {
+.icon > .icon-closed .closed-default {
 	width: 0px;
 	height: 0px;
 	border-top: 6pt solid transparent;
@@ -27,12 +28,12 @@
 	margin-left: 6pt;
 }
 
-.titlebar > .icon.icon-opened {
+.icon > .icon-opened {
 	display: block;
 	width: auto;
 }
 
-.titlebar > .icon.icon-opened .opened-default {
+.icon > .icon-opened .opened-default {
 	width: 0px;
 	height: 0px;
 	border-left: 6pt solid transparent;
@@ -41,13 +42,19 @@
 	margin-top: 4pt;
 }
 
-.titlebar > .title {
+.title {
+	grid-area: title;
 	font-size: 12pt;
 	font-weight: bold;
+	cursor: pointer;
+	user-select: none;
+	border-bottom: 1px solid #AAAAAA;
 }
 
 .body {
+	grid-area: body;
 	display: none;
+	border-bottom: 1px solid #AAAAAA;
 }
 
 :host([opened]) .body {
