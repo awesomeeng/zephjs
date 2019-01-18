@@ -224,6 +224,8 @@
 						context.bindings.forEach((binding)=>{
 							if (!binding) return;
 
+							if (binding.target.element===".") binding.target.element = element;
+
 							let srcele = binding.source.element;
 							if (srcele===".") srcele = [element];
 							else if (typeof srcele==="string") srcele = [...shadow.querySelectorAll(srcele)];
