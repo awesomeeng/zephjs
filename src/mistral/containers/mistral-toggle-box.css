@@ -9,7 +9,7 @@
 
 .icon {
 	grid-area: icons;
-	margin-right: 1pt;
+	margin-right: 3pt;
 	cursor: pointer;
 	user-select: none;
 }
