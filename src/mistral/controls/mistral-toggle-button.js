@@ -22,16 +22,9 @@ onEvent("click",(event,element)=>{
 		return;
 	}
 
-	let old = element.hasAttribute("selected");
-	let gnu = !old;
-
-	if (gnu) element.setAttribute("selected","");
+	if (!element.hasAttribute("selected")) element.setAttribute("selected","");
 	else element.removeAttribute("selected");
 
-	element.dispatchEvent(new CustomEvent("change",{
-		bubbles: false,
-		detail: {
-			value: gnu
-		}
-	}));
+	element.value = !!element.hasAttribute("selected");
+	element.setAttribute("value",element.value);
 });

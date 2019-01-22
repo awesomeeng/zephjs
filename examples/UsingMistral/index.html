@@ -176,7 +176,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="entry selected" >
+		<div class="entry" >
 			<div class="label">
 				Tab Box
 			</div>
@@ -273,7 +273,7 @@
 			</div>
 			<div class="body">
 				<div class="label">
-					Mistral Styled Buttons
+					Buttons
 				</div>
 				<div class="element">
 					&lt;mistral-button&gt; &gt; &lt;mistral-button&gt;
@@ -305,6 +305,47 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="icon"&gt;&lt;/div&gt;
 						&nbsp;&nbsp;&nbsp;&nbsp;Example Icon Button
 					&lt;/mistral-button&gt;
+				</div>
+			</div>
+		</div>
+		<div class="entry selected">
+			<div class="label">
+				Toggle Buttons
+			</div>
+			<div class="body">
+				<div class="label">
+					Toggle Buttons
+				</div>
+				<div class="element">
+					&lt;mistral-toggle-button&gt; &gt; &lt;mistral-toggle-button&gt;
+				</div>
+				<div class="description">
+					A stylized wrapper around the <code>button</code> element with support for disabling and inline icons.
+				</div>
+				<div class="example">
+					<mistral-toggle-button>Example Button</mistral-toggle-button>
+				</div>
+				<div class="code">
+					&lt;mistral-toggle-button&gt;Example Button&lt;/mistral-toggle-button&gt;
+				</div>
+				<div class="example">
+					<mistral-toggle-button disabled>Example Disabled Button</button>
+				</div>
+				<div class="code">
+					&lt;mistral-toggle-button disabled&gt;Example Disabled Button&lt;/mistral-toggle-button&gt;
+				</div>
+				<div class="example">
+					<mistral-toggle-button>
+						<div slot="icon" style="border: 1px solid transparent; border-radius: 50px; width: 12px; height: 12px; background: green; display: block;margin-right: 5px;margin-top: 2px;"></div>
+						Example Icon Button
+					</mistral-toggle-button>
+				</div>
+				<div class="code">
+					&lt;!-- assumes some style associated with class "icon". --&gt;
+					&lt;mistral-toggle-button&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="icon"&gt;&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;Example Icon Button
+					&lt;/mistral-toggle-button&gt;
 				</div>
 			</div>
 		</div>

@@ -1,11 +1,39 @@
+:host {
+	display: inline-block;
+}
+
 button {
-	border: 3px solid #3399FF;
+	display: flex;
+	border: 2px outset #66CCFF;
 	border-radius: 3px;
-	background: transparent;
-	font-size: 18pt;
-	clip-path: polygon(0 0, 100% 0%, 100% 25%, calc(100% - 4px) 25%, calc(100% - 4px) 75%, 100% 75%, 100% 100%, 0% 100%, 0% 75%, 4px 75%, 4px 25%, 0% 25%);
-	transition: background 0.25s, border-color 0.25s, clip-path: 1s;
+	background: #DDEEFF;
+	transition: background-color 0.25s, border-color 0.25s;
 	cursor: pointer;
+	height: 100%;
+}
+
+button > .icon {
+	flex: 0 0 auto;
+}
+
+button > .icon > ::slotted(*) {
+	margin-right: 5px;
+}
+
+button > .label {
+	flex: 1 0 auto;
+	align-items: center;
+}
+
+button:hover:not([disabled]) {
+	border-color: #66CCFF;
+	background: rgba(60,120,255,0.2);
+	transition: background-color 0.25s, border-color 0.25s;
+}
+
+button:active:not([disabled]) {
+	background: rgba(60,120,255,0.4);
+	transition: background-color 0.25s, border-color 0.25s;
 }
 
 :host([selected]) button {
@@ -15,16 +43,4 @@ button {
 button[disabled] {
 	border-color: #AAAAAA;
 	cursor: not-allowed;
-}
-
-button:hover:not([disabled]) {
-	border-color: #66CCFF;
-	background: rgba(60,120,255,0.2);
-	transition: background 0.25s, border-color 0.25s, clip-path: 1s;
-}
-
-button:active:not([disabled]) {
-	background: rgba(60,120,255,0.4);
-	clip-path: polygon(0 0, 100% 0%, 100% 40%, calc(100% - 4px) 40%, calc(100% - 4px) 60%, 100% 60%, 100% 100%, 0% 100%, 0% 60%, 4px 60%, 4px 40%, 0% 40%);
-	transition: background 0.25s, border-color 0.25s, clip-path: 1s;
 }
