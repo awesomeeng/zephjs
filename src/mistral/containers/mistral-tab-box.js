@@ -35,7 +35,7 @@ onCreate((element,content)=>{
 		tab[$HEADER] = head;
 		if (tab.hasAttribute("selected")) head.setAttribute("selected","");
 		head.classList.add("tab-header");
-		head.textContent = tab.getAttribute("label") || "Untitled2";
+		head.textContent = tab.getAttribute("label") || tab.label || "Untitled";
 		header.appendChild(head);
 	});
 });
