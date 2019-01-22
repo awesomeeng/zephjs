@@ -12,3 +12,5 @@ load("./mistral/controls/mistral-button.js");
 load("./mistral/controls/mistral-toggle-button.js");
 load("./mistral/controls/mistral-text-field.js");
 load("./mistral/controls/mistral-password-field.js");
+load("./mistral/controls/mistral-number-field.js");
+load("./mistral/controls/mistral-select.js");

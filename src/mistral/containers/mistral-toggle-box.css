@@ -71,15 +71,19 @@
 	width: 0px;
 }
 
-:host([disabled]) .titlebar {
+:host([disabled]) {
 	border-color: #AAAAAA;
 	cursor: not-allowed;
 }
 
-:host([disabled]) .titlebar > .icon.icon-closed .closed-default {
+:host([disabled]) * {
+	cursor: not-allowed;
+}
+
+:host([disabled]) > .icon > .icon.icon-closed .closed-default {
 	border-left-color: #AAAAAA;
 }
 
-:host([disabled]) .titlebar > .icon.icon-opened .opened-default {
+:host([disabled]) > .icon > .icon.icon-opened .opened-default {
 	border-top-color: #AAAAAA;
 }

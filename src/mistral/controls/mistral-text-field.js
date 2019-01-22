@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global name,html,css,onEventAt,onAttribute,bindAttributes,bindAttributeToContent,bindAttributeToProperty */
+/* global name,html,css,onEventAt,bindAttributes,bindAttributeToContent,bindAttributeToProperty */
 
 "use strict";
 

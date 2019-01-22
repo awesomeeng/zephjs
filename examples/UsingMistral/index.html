@@ -11,13 +11,21 @@
 			document.addEventListener("zeph:loaded",(event)=>{
 				console.log("zeph:loaded",event.detail.toString());
 			});
-			document.addEventListener("zeph:ready",()=>{
-				console.log("zeph:ready");
-			});
 			document.addEventListener("zeph:initialized",()=>{
 				console.log("zeph:initialized");
 				Zeph.load("../../src/Mistral.js");
 			});
+			document.addEventListener("zeph:ready",()=>{
+				console.log("zeph:ready");
+				let labels = document.querySelectorAll(".entry > .label");
+				labels.forEach((label)=>{
+					label.addEventListener("click",(event)=>{
+						let entry = label.parentNode;
+						entry.classList.toggle("selected");
+					});
+				});
+			});
+
 		</script>
 		<style>
 			* {
@@ -28,314 +36,294 @@
 				font-family: sans-serif;
 			}
 
-			h1 {
-				font-size: 36px;
-				font-weight: bold;
-				text-decoration: underline;
-			}
-
-			h2 {
+			.section {
 				font-size: 24px;
 				font-weight: bold;
-				text-decoration: underline;
-			}
-
-			mistral-toggle-box {
-				margin-bottom: 10px;
-				margin-top: 10px;
-				padding-left: 10px;
+				width: 200px;
+				margin-top: 15px;
 			}
 
 			.entry {
 				display: grid;
 				grid-template:
-					"a c c d d"
-					"b c c d d"
-					"e c c d d";
-				grid-column-gap: 25px;
-				background: transparent;
-				border: 1px dotted #AAA;
-				margin: 5px 0px;
-				padding: 5px 10px;
-				transition: background 0.25s;
-			}
-
-			.entry:hover {
-				background: #EEEEEE;
-				transition: background 0.25s;
+					"a b"
+					"d b"
+					"d b";
+				grid-template-columns: 200px auto;
+				margin: 5px 10px;
+				overflow: hidden;
 			}
 
 			.entry > .label {
 				grid-area: a;
 				font-size: 18px;
-				font-weight: bold;
-				width: 200px;
-				min-width: 200px;
-				max-width: 200px;
+				cursor: pointer;
+				padding: 3px 10px;
+				color: #3399FF;
+				background: transparent;
+				transition: background-color 0.5s, color: 0.5s;
 			}
 
-			.entry > .name {
+			.entry > .label:hover {
+				background: #3399FF;
+				color: black;
+				transition: background-color 0.5s, color: 0.5s;
+			}
+
+			.entry > .body {
 				grid-area: b;
-				font-size: 13px;
-				width: 200px;
-				min-width: 200px;
-				max-width: 200px;
-				white-space: nowrap;
+				overflow: auto;
+				border: none;
+				padding: 0px 20px;
+				height: 0px;
 			}
 
-			.entry > .enabled {
-				grid-area: c;
-				display: block;
+			.entry.selected > .body {
+				border: 1px solid #3399FF;
+				padding: 10px 20px;
+				height: auto;
 			}
 
-			.entry > .enabled > * {
-				margin-top: 3px;
-				margin-bottom: 3px;
+			.entry > .body > .label {
+				font-size: 16px;
+				font-weight: bold;
 			}
 
-			.entry > .disabled {
-				grid-area: d;
-				display: block;
+			.entry > .body > .element {
+				font-size: 12px;
+				font-style: italic;
+				font-family: monospace;
 			}
 
-			.entry > .disabled > * {
-				margin-top: 3px;
-				margin-bottom: 3px;
+			.entry > .body > .description {
+				font-size: 14px;
+				margin: 10px 0px;
+			}
+
+			.entry > .body > .code {
+				border: 1px solid #AAAAAA;
+				background: #EEEEEE;
+				font-family: monospace;
+				white-space: pre-line;
+				font-size: 12px;
+				margin: 5px 0px;
+				padding: 5px 10px 3.5ex 10px;
+			}
+
+			.entry > .body > .example {
+				margin: 5px 0px;
+				display: grid;
+				grid-template-columns: 100%;
+				grid-template-rows: min-content;
 			}
 		</style>
 	</head>
 	<body>
-		<mistral-toggle-box title="Containers">
-			<div class="entry">
-				<div class="label">Toggle Box</div>
-				<div class="name">mistral-toggle-box</div>
-				<div class="enabled">
-					<mistral-toggle-box title="Some colorful boxes">
-						<div style="width: 50px; height: 50px; background: red; float: left; margin: 5px;"></div>
-						<div style="width: 50px; height: 50px; background: green; float: left; margin: 5px;"></div>
-						<div style="width: 50px; height: 50px; background: blue; float: left; margin: 5px;"></div>
-					</mistral-toggle-box>
-				</div>
-				<div class="disabled">
-					<mistral-toggle-box title="Some colorful boxes" disabled>
-						<div style="width: 50px; height: 50px; background: red; float: left; margin: 5px;"></div>
-						<div style="width: 50px; height: 50px; background: green; float: left; margin: 5px;"></div>
-						<div style="width: 50px; height: 50px; background: blue; float: left; margin: 5px;"></div>
-					</mistral-toggle-box>
-				</div>
-				<script>
-				</script>
+		<div class="section">
+			Introduction
+		</div>
+		<div class="entry">
+			<div class="label">
+				Buttons
 			</div>
-			<div class="entry">
-				<div class="label">Tab Box</div>
-				<div class="name">mistral-tab-box</div>
-				<div class="enabled">
-					<mistral-tab-box>
-						<mistral-tab title="Red">
-							<div style="width: 50px; height: 50px; background: red; margin: 5px;"></div>
-						</mistral-tab>
-						<mistral-tab title="Green">
-							<div style="width: 50px; height: 50px; background: green; margin: 5px;"></div>
-						</mistral-tab>
-						<mistral-tab title="Blue">
-							<div style="width: 50px; height: 50px; background: blue; margin: 5px;"></div>
-						</mistral-tab>
-					</mistral-tab-box>
-					<mistral-tab-box layout="bottom">
-						<mistral-tab title="Red">
-							<div style="width: 50px; height: 50px; background: red; margin: 5px;"></div>
-						</mistral-tab>
-						<mistral-tab title="Green">
-							<div style="width: 50px; height: 50px; background: green; margin: 5px;"></div>
-						</mistral-tab>
-						<mistral-tab title="Blue">
-							<div style="width: 50px; height: 50px; background: blue; margin: 5px;"></div>
-						</mistral-tab>
-					</mistral-tab-box>
-					<mistral-tab-box layout="left">
-						<mistral-tab title="Red">
-							<div style="width: 50px; height: 50px; background: red; margin: 5px;"></div>
-						</mistral-tab>
-						<mistral-tab title="Green">
-							<div style="width: 50px; height: 50px; background: green; margin: 5px;"></div>
-						</mistral-tab>
-						<mistral-tab title="Blue">
-							<div style="width: 50px; height: 50px; background: blue; margin: 5px;"></div>
-						</mistral-tab>
-					</mistral-tab-box>
-					<mistral-tab-box layout="right">
-						<mistral-tab title="Red">
-							<div style="width: 50px; height: 50px; background: red; margin: 5px;"></div>
-						</mistral-tab>
-						<mistral-tab title="Green">
-							<div style="width: 50px; height: 50px; background: green; margin: 5px;"></div>
-						</mistral-tab>
-						<mistral-tab title="Blue">
-							<div style="width: 50px; height: 50px; background: blue; margin: 5px;"></div>
-						</mistral-tab>
-					</mistral-tab-box>
+			<div class="body">
+				<div class="label">
+					Mistral Styled Buttons
 				</div>
-				<div class="disabled">
-					<mistral-tab-box disabled>
-						<mistral-tab title="Red">
-							<div style="width: 50px; height: 50px; background: red; margin: 5px;"></div>
-						</mistral-tab>
-						<mistral-tab title="Green">
-							<div style="width: 50px; height: 50px; background: green; margin: 5px;"></div>
-						</mistral-tab>
-						<mistral-tab title="Blue">
-							<div style="width: 50px; height: 50px; background: blue; margin: 5px;"></div>
-						</mistral-tab>
-					</mistral-tab-box>
+				<div class="element">
+					&lt;mistral-button&gt; &gt; &lt;mistral-button&gt;
 				</div>
-				<script>
-				</script>
+				<div class="description">
+					A stylized wrapper around the <code>button</code> element with support for disabling and inline icons.
+				</div>
+				<div class="example">
+					<mistral-button>Example Button</mistral-button>
+				</div>
+				<div class="code">
+					&lt;mistral-button&gt;Example Button&lt;/mistral-button&gt;
+				</div>
+				<div class="example">
+					<mistral-button disabled>Example Disabled Button</button>
+				</div>
+				<div class="code">
+					&lt;mistral-button disabled&gt;Example Disabled Button&lt;/mistral-button&gt;
+				</div>
+				<div class="example">
+					<mistral-button>
+						<div slot="icon" style="border: 1px solid transparent; border-radius: 50px; width: 12px; height: 12px; background: green; display: block;margin-right: 5px;margin-top: 2px;"></div>
+						Example Icon Button
+					</mistral-button>
+				</div>
+				<div class="code">
+					&lt;!-- assumes some style associated with class "icon". --&gt;
+					&lt;mistral-button&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="icon"&gt;&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;Example Icon Button
+					&lt;/mistral-button&gt;
+				</div>
 			</div>
-
-		</mistral-toggle-box>
-
-		<mistral-toggle-box title="Controls" opened>
-			<mistral-toggle-box title="Forms" opened>
-				<div class="entry">
-					<div class="label">Form</div>
-					<div class="name">mistral-form</div>
-					<div class="enabled">
-						<mistral-form name="login_form">
-							<h4>Example Login Form</h4>
-							<div><div>
-							<mistral-form name="fields">
-								<mistral-text-field label="Username" name="username"></mistral-text-field>
-								<mistral-password-field label="Basic Password Field" name="password" style="margin-top: 15px;"></mistral-password-field>
-							</mistral-form>
-							</div></div>
-							<div style="clear:both; margin-top: 15px;">
-								<mistral-button name="cancel" style="float:left; width: 150px;">Cancel</mistral-button>
-								<mistral-button name="login" style="float:right; width: 150px;">Login</mistral-button>
-							</div>
-						</mistral-form>
-					</div>
-					<div class="disabled">
-					</div>
-					<script>
-						document.addEventListener("zeph:ready",()=>{
-							let login = document.querySelector("mistral-form[name=login_form] mistral-button[name=login]");
-							if (login) {
-								login.addEventListener("click",(event)=>{
-									let form = document.querySelector("mistral-form[name=login_form]");
-									console.log(form.value);
-								})
-							}
-
-							let cancel = document.querySelector("mistral-form[name=login_form] mistral-button[name=cancel]");
-							if (cancel) {
-								cancel.addEventListener("click",(event)=>{
-									let form = document.querySelector("mistral-form[name=login_form]");
-									form.value = {
-										fields: {
-											password: ""
-										}
-									};
-								})
-							}
-						});
-					</script>
+		</div>
+		<div class="entry" >
+			<div class="label">
+				Text Field
+			</div>
+			<div class="body">
+				<div class="label">
+					Text Field
 				</div>
-			</mistral-toggle-box>
-
-			<mistral-toggle-box title="Buttons">
-				<div class="entry">
-					<div class="label">Button</div>
-					<div class="name">mistral-button</div>
-					<div class="enabled">
-						<mistral-button>Click me!</mistral-button>
-					</div>
-					<div class="disabled">
-						<mistral-button disabled >Click me!</mistral-button>
-					</div>
-					<script>
-						document.addEventListener("zeph:ready",()=>{
-							document.querySelectorAll("mistral-button").forEach((button)=>{
-								button.addEventListener("click",(event)=>{
-									console.log(event);
-								})
-							});
-						});
-					</script>
+				<div class="element">
+					&lt;mistral-text-field&gt;
 				</div>
-
-				<div class="entry">
-					<div class="label">Toggle Button</div>
-					<div class="name">mistral-toggle-button</div>
-					<div class="enabled">
-						<mistral-toggle-button>Click me!</mistral-toggle-button>
-						<mistral-toggle-button selected>Click me!</mistral-toggle-button>
-					</div>
-					<div class="disabled">
-						<mistral-toggle-button disabled>Click me!</mistral-toggle-button>
-						<mistral-toggle-button disabled>Click me!</mistral-toggle-button>
-					</div>
-					<script>
-						document.addEventListener("zeph:ready",()=>{
-							document.querySelectorAll("mistral-toggle-button").forEach((button)=>{
-								button.addEventListener("change",(event)=>{
-									console.log(event);
-								})
-							});
-						});
-					</script>
+				<div class="description">
+					A wrappers around text field <code>input[type=text]</code> elements with support for labels,
+					placeholders, required flag, disabled flag, and errors. Supports all attributes that
+					<code>input[type=text]</code> supports for the associated type.
 				</div>
-			</mistral-toggle-box>
-
-			<mistral-toggle-box title="Text Fields">
-				<div class="entry">
-					<div class="label">Text Field</div>
-					<div class="name">mistral-text-field</div>
-					<div class="enabled">
-						<mistral-text-field label="Basic Text Field" ></mistral-text-field>
-						<mistral-text-field label="With Placeholder" placeholder="placeholder text"></mistral-text-field>
-						<mistral-text-field label="With Required" required></mistral-text-field>
-						<mistral-text-field label="With Error" error="This has an error!"></mistral-text-field>
-					</div>
-					<div class="disabled">
-						<mistral-text-field label="Disabled" value="12345" disabled ></mistral-text-field>
-					</div>
-					<script>
-						document.addEventListener("zeph:ready",()=>{
-							document.querySelectorAll("mistral-text-field").forEach((button)=>{
-								button.addEventListener("change",(event)=>{
-									console.log(event);
-								})
-							});
-						});
-					</script>
+				<div class="example">
+					<mistral-text-field label="Example text field" name="example"></mistral-text-field>
 				</div>
-				<div class="entry">
-					<div class="label">Password Field</div>
-					<div class="name">mistral-password-field</div>
-					<div class="enabled">
-						<mistral-password-field label="Basic Password Field" ></mistral-password-field>
-						<mistral-password-field label="With Placeholder" placeholder="placeholder text"></mistral-password-field>
-						<mistral-password-field label="With Required" required></mistral-password-field>
-						<mistral-password-field label="With Error" error="This has an error!"></mistral-password-field>
-					</div>
-					<div class="disabled">
-						<mistral-password-field label="Disabled" value="12345" disabled ></mistral-password-field>
-					</div>
-					<script>
-						document.addEventListener("zeph:ready",()=>{
-							document.querySelectorAll("mistral-password-field").forEach((button)=>{
-								button.addEventListener("change",(event)=>{
-									console.log(event);
-								})
-							});
-						});
-					</script>
+				<div class="code">
+					&lt;mistral-text-field name="example"&gt;&lt;/mistral-text-field&gt;
 				</div>
-			</mistral-toggle-box>
+				<div class="example">
+					<mistral-text-field label="Disabled text field" name="example" disabled></mistral-text-field>
+				</div>
+				<div class="code">
+					&lt;mistral-text-field name="example" disabled&gt;&lt;/mistral-text-field&gt;
+				</div>
+				<div class="example">
+					<mistral-text-field label="Placeholder text field" name="example" placeholder="some placeholder text"></mistral-text-field>
+				</div>
+				<div class="code">
+					&lt;mistral-text-field name="example" placeholder="some placeholder text"&gt;&lt;/mistral-text-field&gt;
+				</div>
+				<div class="example">
+					<mistral-text-field label="Required text field" name="example" required></mistral-text-field>
+				</div>
+				<div class="code">
+					&lt;mistral-text-field name="example" required&gt;&lt;/mistral-text-field&gt;
+				</div>
+				<div class="example">
+					<mistral-text-field label="Errored text field" name="example" error="some error text"></mistral-text-field>
+				</div>
+				<div class="code">
+					&lt;mistral-text-field name="example" type="text" error="some error text"&gt;&lt;/mistral-text-field&gt;
+				</div>
+			</div>
+		</div>
+		<div class="entry" >
+			<div class="label">
+				Password Field
+			</div>
+			<div class="body">
+				<div class="label">
+					Password Field
+				</div>
+				<div class="element">
+					&lt;mistral-password-field&gt;
+				</div>
+				<div class="description">
+					A wrappers around password field <code>input[type=password]</code> elements with support for labels,
+					placeholders, required flag, disabled flag, and errors. Supports all attributes that
+					<code>input[type=password]</code> supports for the associated type.
+				</div>
+				<div class="example">
+					<mistral-password-field label="Example password field" name="example"></mistral-password-field>
+				</div>
+				<div class="code">
+					&lt;mistral-password-field name="example"&gt;&lt;/mistral-password-field&gt;
+				</div>
+				<div class="example">
+					<mistral-password-field label="Disabled password field" name="example" disabled></mistral-password-field>
+				</div>
+				<div class="code">
+					&lt;mistral-password-field name="example" disabled&gt;&lt;/mistral-password-field&gt;
+				</div>
+				<div class="example">
+					<mistral-password-field label="Placeholder password field" name="example" placeholder="some placeholder text"></mistral-password-field>
+				</div>
+				<div class="code">
+					&lt;mistral-password-field name="example" placeholder="some placeholder password"&gt;&lt;/mistral-password-field&gt;
+				</div>
+				<div class="example">
+					<mistral-password-field label="Required password field" name="example" required></mistral-password-field>
+				</div>
+				<div class="code">
+					&lt;mistral-password-field name="example" required&gt;&lt;/mistral-password-field&gt;
+				</div>
+				<div class="example">
+					<mistral-password-field label="Errored password field" name="example" error="some error text"></mistral-password-field>
+				</div>
+				<div class="code">
+					&lt;mistral-password-field name="example" type="password" error="some error text"&gt;&lt;/mistral-password-field&gt;
+				</div>
+			</div>
+		</div>
+		<div class="entry selected" >
+			<div class="label">
+				Number Field
+			</div>
+			<div class="body">
+				<div class="label">
+					Number Field
+				</div>
+				<div class="element">
+					&lt;mistral-number-field&gt;
+				</div>
+				<div class="description">
+					A wrappers around number field <code>input[type=number]</code> elements with support for labels,
+					placeholders, required flag, disabled flag, and errors. Supports all attributes that
+					<code>input[type=number]</code> supports for the associated type.
+				</div>
+				<div class="example">
+					<mistral-number-field label="Example number field" name="example"></mistral-number-field>
+				</div>
+				<div class="code">
+					&lt;mistral-number-field name="example"&gt;&lt;/mistral-number-field&gt;
+				</div>
+				<div class="example">
+					<mistral-number-field label="Disabled number field" name="example" disabled></mistral-number-field>
+				</div>
+				<div class="code">
+					&lt;mistral-number-field name="example" disabled&gt;&lt;/mistral-number-field&gt;
+				</div>
+				<div class="example">
+					<mistral-number-field label="Placeholder number field" name="example" placeholder="some placeholder text"></mistral-number-field>
+				</div>
+				<div class="code">
+					&lt;mistral-number-field name="example" placeholder="some placeholder number"&gt;&lt;/mistral-number-field&gt;
+				</div>
+				<div class="example">
+					<mistral-number-field label="Required number field" name="example" required></mistral-number-field>
+				</div>
+				<div class="code">
+					&lt;mistral-number-field name="example" required&gt;&lt;/mistral-number-field&gt;
+				</div>
+				<div class="example">
+					<mistral-number-field label="Errored number field" name="example" error="some error text"></mistral-number-field>
+				</div>
+				<div class="code">
+					&lt;mistral-number-field name="example" type="number" error="some error text"&gt;&lt;/mistral-number-field&gt;
+				</div>
+				<div class="example">
+					<mistral-number-field label="Min/max/step number field" name="example" min=10 max=90 step=5 value=50></mistral-number-field>
+				</div>
+				<div class="code">
+					&lt;mistral-number-field name="example" type="number" error="some error text"&gt;&lt;/mistral-number-field&gt;
+				</div>
+			</div>
+		</div>
 
-		</mistral-toggle-box>
 
-
+		<div class="section">
+			Containers
+		</div>
+		<div class="section">
+			Forms & Controls
+		</div>
+		<div class="section">
+			Other Elements
+		</div>
 
 	</body>
 </html>

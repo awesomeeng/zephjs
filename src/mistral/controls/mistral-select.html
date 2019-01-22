@@ -1,0 +1,18 @@
+<div class="select">
+	<mistral-button>
+		<div class="icon" slot="icon">
+			<div class="icon-opened">
+				<slot name="opened"><div class="opened-default"></div></slot>
+			</div>
+			<div class="icon-closed">
+				<slot name="closed"><div class="closed-default"></div></slot>
+			</div>
+		</div>
+		<div class="label" slot="label">label</div>
+	</mistral-button>
+	<div class="bar">
+	</div>
+	<div class="body">
+		<slot></slot>
+	</div>
+</div>

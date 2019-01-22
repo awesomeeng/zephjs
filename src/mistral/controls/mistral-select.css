@@ -1,0 +1,72 @@
+.select > mistral-button > .icon {
+	margin-right: 1pt;
+	cursor: pointer;
+	user-select: none;
+}
+
+.select > mistral-button > .icon > .icon-closed {
+	display: none;
+	width: 0px;
+}
+
+.select > mistral-button > .icon > .icon-opened {
+	display: none;
+	width: 0px;
+}
+
+.select > mistral-button > .icon > .icon-closed .closed-default {
+	width: 0px;
+	height: 0px;
+	border-top: 6pt solid transparent;
+	border-bottom: 6pt solid transparent;
+	border-left: 6pt solid #3399FF;
+	margin-left: 4pt;
+	margin-right: 4pt;
+	margin-top: 4pt;
+}
+
+.select > mistral-button > .icon > .icon-opened .opened-default {
+	width: 0px;
+	height: 0px;
+	border-left: 6pt solid transparent;
+	border-right: 6pt solid transparent;
+	border-top: 6pt solid white;
+	margin-left: 1pt;
+	margin-right: 1pt;
+	margin-top: 7pt;
+}
+
+.select > mistral-button > .label {
+	font-size: 18pt;
+}
+
+.select > .body {
+	width: inherit;
+	position: absolute;
+	z-index: 10000;
+	background: white;
+	height: 0px;
+	overflow: auto;
+}
+
+:host(:not([opened])) .select > mistral-button > .icon > .icon-closed {
+	display: block;
+	width: auto;
+}
+
+:host([opened]) .select > mistral-button > .icon > .icon-opened {
+	display: block;
+	width: auto;
+}
+
+:host([opened]) .select > .body {
+	height: auto;
+	border: 3px solid #3399FF;
+	border-radius: 0px 0px 3px 3px;
+}
+
+:host([opened]) .select > mistral-button {
+	border: 3px solid #3399FF;
+	background: #3399FF;
+	color: white;
+}
