@@ -14,8 +14,52 @@
 	const COMPONENTS = {};
 	const PENDING = {};
 
+	/* eslint-disable no-unused-vars */
+	const notUndefined = function notUndefined(arg,name) {
+		if (arg===undefined) throw new Error("Undefined "+name+".");
+	};
+
+	const notNull = function notNull(arg,name) {
+		if (arg===null) throw new Error("Null "+name+".");
+	};
+
+	const notUON = function notUON(arg,name) {
+		notUndefined(arg,name);
+		notNull(arg,name);
+	};
+
+	const notEmpty = function notEmpty(arg,name) {
+		if (typeof arg==="string" && arg==="") throw new Error("Empty "+name+".");
+	};
+
+	const notType = function notType(arg,type,name) {
+		if (typeof arg!==type) throw new Error("Invalid "+name+"; must be a "+type+".");
+	};
+
+	const notString = function notString(arg,name) {
+		notType(arg,"string",name);
+	};
+
+	const notNumber = function notNumber(arg,name) {
+		notType(arg,"number",name);
+	};
+
+	const notBoolean = function notBoolean(arg,name) {
+		notType(arg,"string",name);
+	};
+
+	const notFunction = function notFunction(arg,type,name) {
+		if (!(arg instanceof Function)) throw new Error("Invalid "+name+"; must be a Function.");
+	};
+
+	const notArray = function notArray(arg,type,name) {
+		if (!(arg instanceof Array)) throw new Error("Invalid "+name+"; must be an Array.");
+	};
+	/* eslint-enable no-unused-vars */
+
 	const resolveURL = function resolve(path,baseurl=document.URL) {
-		if (!path) throw new Error("Missing path.");
+		notUON(path,"path");
+		notEmpty(path,"path");
 		if (!(path instanceof URL) && typeof path!=="string") throw new Error("Invalid path; must be a string or URL.");
 
 		if (typeof path==="string") {
@@ -26,7 +70,8 @@
 	};
 
 	const fetchText = function fetchText(url) {
-		if (!url) throw new Error("Missing url.");
+		notUON(url,"url");
+		notEmpty(url,"url");
 
 		return new Promise(async (resolve,reject)=>{
 			try {
@@ -60,6 +105,8 @@
 
 	class Component {
 		static generateComponent(url,asName) {
+			notUON(url,"url");
+			notEmpty(url,"url");
 			if (!url) throw new Error("Missing url.");
 			if (!(url instanceof URL)) throw new Error("Invalid url; must be a URL.");
 			if (asName && typeof asName!=="string") throw new Error("Invalid asName; must be a string.");
@@ -445,7 +492,7 @@
 		}
 
 		define(context,origin,prefixOrSuffix,code,asName) {
-			if (!code) throw new Error("Missing code.");
+			notUON(code,"code");
 			if (!(code instanceof Function)) throw new Error("Invalid code; must be a Function.");
 			if (asName && typeof asName!=="string") throw new Error("Invalid asName; must be a string.");
 			if (asName && asName.indexOf("-")<0) throw new Error("Invalid asName; must contain at least one dash character.");
@@ -460,6 +507,8 @@
 		}
 
 		requires(context,baseurl,url,asName) {
+			notUON(url,"url");
+			notEmpty(url,"url");
 			if (!url) throw new Error("Missing url.");
 			if (!(url instanceof URL) && typeof url!=="string") throw new Error("Invalid url; must be a string or URL.");
 			if (typeof url==="string") url = resolveURL(url,baseurl);
@@ -480,14 +529,15 @@
 		}
 
 		name(context,name) {
-			if (!name) throw new Error("Missing name.");
-			if (typeof name!=="string") throw new Error("Invalid name; must be a string.");
+			notUON(name,"name");
+			notEmpty(name,"name");
+			notString(name,"name");
 
 			context.name = name;
 		}
 
 		from(context,element) {
-			if (!element) throw new Error("Missing from element.");
+			notUON(element,"element");
 			if (typeof element!=="string" && element!==HTMLElement && !HTMLElement.isPrototypeOf(element)) throw new Error("Invalid from element; must be a string.");
 
 			let clazz = element===HTMLElement && element || HTMLElement.isPrototypeOf(element) && element || window[element];
@@ -498,38 +548,44 @@
 		}
 
 		html(context,html) {
-			if (!html) throw new Error("Missing html.");
-			if (typeof html!=="string") throw new Error("Invalid html; must be a string.");
+			notUON(html,"html");
+			notString(html,"html");
 
 			context.html = html;
 		}
 
 		css(context,css) {
-			if (!css) throw new Error("Missing css.");
-			if (typeof css!=="string") throw new Error("Invalid css; must be a string.");
+			notUON(css,"css");
+			notString(css,"css");
 
 			context.css = css;
 		}
 
 		binding(context,sourceElement,sourceType,sourceName,targetElement,targetType,targetName,transformFunction) {
-			if (!sourceElement) throw new Error("Missing sourceElement.");
+			notUON(sourceElement,"sourceElement");
 			if (typeof sourceElement!=="string" && !(sourceElement instanceof HTMLElement)) throw new Error("Invalid sourceElement; must be a string or an instance of HTMLElement.");
-			if (!sourceType) throw new Error("Missing sourceType.");
-			if (typeof sourceType!=="string") throw new Error("Invalid sourceType; must be a string.");
+
+			notUON(sourceType,"sourceType");
+			notString(sourceType,"sourceType");
 			sourceType = sourceType.toLowerCase();
 			if (sourceType!=="attribute" && sourceType!=="content") throw new Error("Invalid sourceType; must be 'attribute' or 'content'.");
-			if (!sourceName) throw new Error("Missing sourceName.");
-			if (typeof sourceName!=="string") throw new Error("Invalid sourceName; must be a string.");
-			if (!targetElement) throw new Error("Missing targetElement.");
+
+			notUON(sourceName,"sourceName");
+			notString(sourceName,"sourceName");
+
+			notUON(targetElement,"targetElement");
 			if (typeof targetElement!=="string" && !(targetElement instanceof HTMLElement)) throw new Error("Invalid targetElement; must be a string or an instance of HTMLElement.");
-			if (!targetType) throw new Error("Missing targetType.");
-			if (typeof targetType!=="string") throw new Error("Invalid targetType; must be a string.");
+
+			notUON(targetType,"targetType");
+			notString(targetType,"targetType");
 			targetType = targetType.toLowerCase();
 			if (targetType!=="attribute" && targetType!=="content" && targetType!=="property") throw new Error("Invalid targetType; must be 'attribute' or 'content' or 'property'.");
-			if (!targetName) throw new Error("Missing targetName.");
-			if (typeof targetName!=="string") throw new Error("Invalid targetName; must be a string.");
-			if (!transformFunction) throw new Error("Missing transformFunction.");
-			if (!(transformFunction instanceof Function)) throw new Error("Invalid targetName; must be a string.");
+
+			notUON(targetName,"targetName");
+			notString(targetName,"targetName");
+
+			notUON(transformFunction,"transformFunction");
+			notFunction(transformFunction,"transformFunction");
 
 			context.bindings = context.bindings || [];
 			context.bindings.push({
@@ -612,43 +668,38 @@
 		}
 
 		onCreate(context,listener) {
-			if (!listener) throw new Error("Missing listener function.");
-			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
-
+			notUON(listener,"listener");
+			notFunction(listener,"listener");
 			context.create = context.create || [];
 			context.create.push(listener);
 		}
 
 		onAdd(context,listener) {
-			if (!listener) throw new Error("Missing listener function.");
-			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
-
+			notUON(listener,"listener");
+			notFunction(listener,"listener");
 			context.add = context.add || [];
 			context.add.push(listener);
 		}
 
 		onRemove(context,listener) {
-			if (!listener) throw new Error("Missing listener function.");
-			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
-
+			notUON(listener,"listener");
+			notFunction(listener,"listener");
 			context.remove = context.remove || [];
 			context.remove.push(listener);
 		}
 
 		onAdopt(context,listener) {
-			if (!listener) throw new Error("Missing listener function.");
-			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
-
+			notUON(listener,"listener");
+			notFunction(listener,"listener");
 			context.adopt = context.adopt || [];
 			context.adopt.push(listener);
 		}
 
 		onAttribute(context,attribute,listener) {
-			if (!attribute) throw new Error("Missing attribute name.");
-			if (typeof attribute!=="string") throw new Error("Invalid attribute name; must be a string.");
-			if (!listener) throw new Error("Missing listener function.");
-			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
-
+			notUON(attribute,"attribute");
+			notString(attribute,"attribute");
+			notUON(listener,"listener");
+			notFunction(listener,"listener");
 			context.observed = context.observed || [];
 			context.observed.push(attribute);
 			context.attributes = context.attributes || {};
@@ -657,21 +708,19 @@
 		}
 
 		onEvent(context,eventName,listener) {
-			if (!eventName) throw new Error("Missing eventName name.");
-			if (typeof eventName!=="string") throw new Error("Invalid eventName; must be a string.");
-			if (!listener) throw new Error("Missing listener function.");
-			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
-
+			notUON(eventName,"eventName");
+			notString(eventName,"eventName");
+			notUON(listener,"listener");
+			notFunction(listener,"listener");
 			context.events = context.events || [];
 			context.events.push({eventName,listener});
 		}
 
 		onEventAt(context,selector,eventName,listener) {
-			if (!eventName) throw new Error("Missing eventName name.");
-			if (typeof eventName!=="string") throw new Error("Invalid eventName; must be a string.");
-			if (!listener) throw new Error("Missing listener function.");
-			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
-
+			notUON(eventName,"eventName");
+			notString(eventName,"eventName");
+			notUON(listener,"listener");
+			notFunction(listener,"listener");
 			context.eventsAt = context.eventsAt || [];
 			context.eventsAt.push({selector,eventName,listener});
 		}
@@ -759,20 +808,20 @@
 		}
 
 		addAttributeObserver(attribute,handler) {
-			if (!attribute) throw new Error("Missing attribute.");
-			if (typeof attribute!=="string") throw new Error("Invalid attribute; must be a string.");
-			if (!handler) throw new Error("Missing handler.");
-			if (!(handler instanceof Function)) throw new Error("Invalid handler; must be a Function.");
+			notUON(attribute,"attribute");
+			notString(attribute,"attribute");
+			notUON(handler,"handler");
+			notFunction(handler,"handler");
 
 			this.attributes[attribute] = this.attributes[attribute] || [];
 			this.attributes[attribute].push(handler);
 		}
 
 		removeAttributeObserver(attribute,handler) {
-			if (!attribute) throw new Error("Missing attribute.");
-			if (typeof attribute!=="string") throw new Error("Invalid attribute; must be a string.");
-			if (!handler) throw new Error("Missing handler.");
-			if (!(handler instanceof Function)) throw new Error("Invalid handler; must be a Function.");
+			notUON(attribute,"attribute");
+			notString(attribute,"attribute");
+			notUON(handler,"handler");
+			notFunction(handler,"handler");
 
 			if (!this.attributes[attribute]) return;
 			this.attributes[attribute] = this.attributes[attribute].filter((h)=>{
@@ -788,15 +837,15 @@
 		}
 
 		addContentObserver(handler) {
-			if (!handler) throw new Error("Missing handler.");
-			if (!(handler instanceof Function)) throw new Error("Invalid handler; must be a Function.");
+			notUON(handler,"handler");
+			notFunction(handler,"handler");
 
 			this.content.push(handler);
 		}
 
 		removeContentObserver(handler) {
-			if (!handler) throw new Error("Missing handler.");
-			if (!(handler instanceof Function)) throw new Error("Invalid handler; must be a Function.");
+			notUON(handler,"handler");
+			notFunction(handler,"handler");
 
 			this.content = this.content.filter((h)=>{
 				return h!==handler;
@@ -853,13 +902,14 @@
 		}
 
 		getComponent(name) {
-			if (!name) throw new Error("Missing name.");
-			if (typeof name!=="string") throw new Error("Invalid name; must be a string.");
+			notUON(name,"name");
+			notString(name,"name");
 
 			return COMPONENTS[name];
 		}
 
 		load(url,asName) {
+			notUON(url,"url");
 			if (!url) throw new Error("Missing url.");
 			if (!(url instanceof URL) && typeof url!=="string") throw new Error("Invalid url; must be a string or URL.");
 			if (typeof url==="string") url = resolveURL(url);
@@ -884,8 +934,8 @@
 		}
 
 		removeComponent(name) {
-			if (!name) throw new Error("Missing name.");
-			if (typeof name!=="string") throw new Error("Invalid name; must be a string.");
+			notUON(name,"name");
+			notString(name,"name");
 
 			let component = COMPONENTS[name];
 			if (!component) return;
@@ -909,5 +959,4 @@
 			bubbles: false
 		}));
 	},0);
-
 })();
