@@ -80,6 +80,7 @@
 	outline: none;
 	padding: 2px;
 	overflow: hidden;
+	width: calc(100% - 5px);
 }
 
 .field > .wrapper > input[type='number'] {
