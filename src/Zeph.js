@@ -141,9 +141,15 @@
 					if (!context.name && !context.pending) throw new Error("Invalid url; unable to load anything: "+origin);
 
 					if (context.name) {
-						let markup = await ComponentMarkup.generateComponentMarkup(origin,context.html || "");
-						let style = await ComponentStyle.generateComponentStyle(origin,context.css || "");
-						let clazz = ComponentClass.generateComponentClass(context,code,markup,style);
+						let markups = await Promise.all((context.html||[]).map((html)=>{
+							return ComponentMarkup.generateComponentMarkup(origin,html || "");
+
+						}));
+						let styles = await Promise.all((context.css||[]).map((css)=>{
+							return ComponentStyle.generateComponentStyle(origin,css || "");
+
+						}));
+						let clazz = ComponentClass.generateComponentClass(context,code,markups,styles);
 
 						context.name = context.name || name;
 						if (asName) {
@@ -156,7 +162,7 @@
 
 						customElements.define(context.name,clazz);
 
-						let component = new Component(origin,context.name,code,markup,style);
+						let component = new Component(origin,context.name,code,markups,styles);
 						COMPONENTS[context.name] = component;
 					}
 
@@ -224,7 +230,7 @@
 	}
 
 	class ComponentClass {
-		static generateComponentClass(context,code,markup,style) {
+		static generateComponentClass(context,code,markups,styles) {
 			let fire = (listeners,...args)=>{
 				listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
 				listeners.forEach((listener)=>{
@@ -256,11 +262,17 @@
 						mode:"open"
 					});
 
-					shadow.innerHTML = markup.text;
+					let html = shadow.innerHTML;
+					(markups||[]).forEach((markup)=>{
+						html += markup.text;
+					});
+					shadow.innerHTML = html;
 
-					let styleElement = document.createElement("style");
-					styleElement.textContent = style.text;
-					shadow.appendChild(styleElement);
+					(styles||[]).forEach((style)=>{
+						let styleElement = document.createElement("style");
+						styleElement.textContent = style.text;
+						shadow.appendChild(styleElement);
+					});
 
 					// fire our create event. We need to do this here and immediately
 					// so the onCreate handlers can do whatever setup they need to do
@@ -551,14 +563,16 @@
 			notUON(html,"html");
 			notString(html,"html");
 
-			context.html = html;
+			context.html = context.html || [];
+			context.html.push(html);
 		}
 
 		css(context,css) {
 			notUON(css,"css");
 			notString(css,"css");
 
-			context.css = css;
+			context.css = context.css || [];
+			context.css.push(css);
 		}
 
 		binding(context,sourceElement,sourceType,sourceName,targetElement,targetType,targetName,transformFunction) {
