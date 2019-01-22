@@ -82,6 +82,16 @@
 	overflow: hidden;
 }
 
+.field > .wrapper > input[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.field > .wrapper > input::-webkit-outer-spin-button,
+.field > .wrapper > input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
 .field > .wrapper > .decrement {
 	position: relative;
 	display: grid;
@@ -122,12 +132,10 @@
 
 :host([error]) .field > .wrapper {
 	border-color: #FF6666;
-	background: rgba(255,60,60,0.2);
 }
 
 
 :host([error]) .field > .wrapper > input {
-	border-color: #FF6666;
 	background: rgba(255,60,60,0.2);
 }
 
@@ -141,15 +149,27 @@
 	transition: background-color 0.25s, border-color 0.25s, clip-path 1s;
 }
 
-:host(:not([disabled]) .field > .wrapper:active),
-:host(:not([disabled]) .field > .wrapper:focus),
-:host(:not([disabled]) .field > .wrapper:focus-within) {
+:host(:not([disabled])) .field > .wrapper:active,
+:host(:not([disabled])) .field > .wrapper:focus,
+:host(:not([disabled])) .field > .wrapper:focus-within {
 	background: rgba(60,120,255,0.4);
 	clip-path: polygon(0 0, 100% 0%, 100% 40%, calc(100% - 4px) 40%, calc(100% - 4px) 60%, 100% 60%, 100% 100%, 0% 100%, 0% 60%, 4px 60%, 4px 40%, 0% 40%);
 	transition: background-color 0.25s, border-color 0.25s, clip-path 1s;
 }
 
-:host([disabled] .field > .wrapper) {
+:host([disabled]) .field > .wrapper {
 	border-color: #AAAAAA;
 	cursor: not-allowed;
+}
+
+:host([no-spinners]) .field > .wrapper {
+	grid-template-columns: auto;
+}
+
+:host([no-spinners]) .field > .wrapper > .decrement {
+	display: none;
+}
+
+:host([no-spinners]) .field > .wrapper > .increment {
+	display: none;
 }
