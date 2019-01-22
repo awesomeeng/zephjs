@@ -249,6 +249,7 @@
 								}
 								else if (binding.target.type==="content") {
 									handler = (value)=>{
+										value = binding.transform(value);
 										if (value===undefined) return;
 										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
 										targets.forEach((target)=>{
@@ -258,6 +259,7 @@
 								}
 								else if (binding.target.type==="property") {
 									handler = (value)=>{
+										value = binding.transform(value);
 										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
 										targets.forEach((target)=>{
 											if (value===undefined) {
@@ -280,8 +282,10 @@
 								// then we register the observer.
 								let observer = srcele[$OBSERVER];
 								if (binding.source.type==="attribute") {
-									let value = srcele.getAttribute(binding.source.name);
-									handler(value,binding.source.name,srcele);
+									if (srcele.hasAttribute(binding.source.name)) {
+										let value =  srcele.getAttribute(binding.source.name);
+										handler(value,binding.source.name,srcele);
+									}
 
 									observer.addAttributeObserver(binding.source.name,handler);
 								}
@@ -668,7 +672,7 @@
 			if (!listener) throw new Error("Missing listener function.");
 			if (!(listener instanceof Function)) throw new Error("Invalid listener functionl must be a function.");
 
-			context.eventsAt = context.events || [];
+			context.eventsAt = context.eventsAt || [];
 			context.eventsAt.push({selector,eventName,listener});
 		}
 	}
