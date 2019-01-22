@@ -269,6 +269,53 @@
 		</div>
 		<div class="entry">
 			<div class="label">
+				Form
+			</div>
+			<div class="body">
+				<div class="label">
+					Form
+				</div>
+				<div class="element">
+					&lt;mistral-form&gt;
+				</div>
+				<div class="description">
+					A mistral form is a conveience element for handling form controls efficiently.  Getting the value of a <code>mistral-form</code> will return
+					a JavaScript object with all of the descendant form controls as properties of that JavaScript object.  This simplifies form data collection
+					and lets you worry more about what is in your forms.
+					<br/><br/>
+					Note the form controls must have a <code>name</code> attribute in order for they to be collected. If they do not not have a <code>name</code>
+					attribute, they will be skipped.
+					<br/><br/>
+					A nested <code>mistral-form</code> with a name attribute will create a nested object within the return JavaScript object.
+				</div>
+				<div class="example">
+					<div style="width: 300px; padding: 10px; border: 1px solid gray;">
+						<mistral-form>
+							<mistral-text-field name="username" label="Username" required></mistral-text-field>
+							<mistral-password-field name="password" label="Password" required></mistral-password-field>
+							<div style="display: grid; grid-template-columns: auto auto; grid-column-gap: 50px; justify-content: center;">
+								<mistral-button>Cancel</mistral-button>
+								<mistral-button>Login</mistral-button>
+							</div>
+						</mistral-form>
+					</div>
+				</div>
+				<div class="code">
+					&lt;div style="width: 300px; padding: 10px; border: 1px solid gray;"&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;mistral-form&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;mistral-text-field name="username" label="Username" required&gt;&lt;/mistral-text-field&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;mistral-password-field name="password" label="Password" required&gt;&lt;/mistral-password-field&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="display: grid; grid-template-columns: auto auto; grid-column-gap: 50px; justify-content: center;"&gt;
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;mistral-button&gt;Cancel&lt;/mistral-button&gt;
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;mistral-button&gt;Login&lt;/mistral-button&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;/mistral-form&gt;
+					&lt;/div&gt;
+				</div>
+			</div>
+		</div>
+		<div class="entry">
+			<div class="label">
 				Buttons
 			</div>
 			<div class="body">
@@ -276,7 +323,7 @@
 					Buttons
 				</div>
 				<div class="element">
-					&lt;mistral-button&gt; &gt; &lt;mistral-button&gt;
+					&lt;mistral-button&gt;
 				</div>
 				<div class="description">
 					A stylized wrapper around the <code>button</code> element with support for disabling and inline icons.
@@ -308,7 +355,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="entry selected">
+		<div class="entry">
 			<div class="label">
 				Toggle Buttons
 			</div>
@@ -317,7 +364,7 @@
 					Toggle Buttons
 				</div>
 				<div class="element">
-					&lt;mistral-toggle-button&gt; &gt; &lt;mistral-toggle-button&gt;
+					&lt;mistral-toggle-button&gt;
 				</div>
 				<div class="description">
 					A stylized wrapper around the <code>button</code> element with support for disabling and inline icons.
