@@ -1,14 +1,9 @@
 <div class="select">
-	<mistral-button>
-		<div class="icon" slot="icon">
-			<div class="icon-opened">
-				<slot name="opened"><div class="opened-default"></div></slot>
-			</div>
-			<div class="icon-closed">
-				<slot name="closed"><div class="closed-default"></div></slot>
-			</div>
-		</div>
+	<mistral-button icon-placement="right">
 		<div class="label" slot="label">label</div>
+		<div class="icon" slot="icon">
+			<slot name="icon"><div class="icon-default"></div></slot>
+		</div>
 	</mistral-button>
 	<div class="bar">
 	</div>

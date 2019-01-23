@@ -3,17 +3,21 @@
 }
 
 button {
-	display: flex;
+	display: grid;
+	grid-template-areas: "a b";
+	grid-template-columns: min-content auto;
+	grid-template-rows: auto;
 	border: 2px outset #66CCFF;
 	border-radius: 3px;
 	background: #DDEEFF;
 	transition: background-color 0.25s, border-color 0.25s;
 	cursor: pointer;
 	height: 100%;
+	padding: 2px 5px;
 }
 
 button > .icon {
-	flex: 0 0 auto;
+	grid-area: a;
 }
 
 button > .icon > ::slotted(*) {
@@ -21,7 +25,7 @@ button > .icon > ::slotted(*) {
 }
 
 button > .label {
-	flex: 1 0 auto;
+	grid-area: b;
 	align-items: center;
 }
 
@@ -32,11 +36,21 @@ button[disabled] {
 
 button:hover:not([disabled]) {
 	border-color: #66CCFF;
-	background: rgba(60,120,255,0.2);
+	background: #66CCFF;
 	transition: background-color 0.25s, border-color 0.25s;
 }
 
 button:active:not([disabled]) {
-	background: rgba(60,120,255,0.4);
-	transition: background-color 0.25s, border-color 0.25s;
+	background: #DDEEFF;
+	transition: background-color 0.25s, border-color 0.25;
+}
+
+:host([icon-placement=right]) button {
+	grid-template-areas: "b a";
+	grid-template-columns: auto min-content;
+}
+
+:host([pressed]) button {
+	background: #DDEEFF;
+	transition: background-color 0.25s, border-color 0.25;
 }

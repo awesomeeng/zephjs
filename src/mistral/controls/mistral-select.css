@@ -4,68 +4,41 @@
 	user-select: none;
 }
 
-.select > mistral-button > .icon > .icon-closed {
-	display: none;
-	width: 0px;
-}
-
-.select > mistral-button > .icon > .icon-opened {
-	display: none;
-	width: 0px;
-}
-
-.select > mistral-button > .icon > .icon-closed .closed-default {
+.select > mistral-button > .icon .icon-default {
 	width: 0px;
 	height: 0px;
-	border-top: 6pt solid transparent;
-	border-bottom: 6pt solid transparent;
-	border-left: 6pt solid #3399FF;
-	margin-left: 4pt;
-	margin-right: 4pt;
-	margin-top: 4pt;
-}
-
-.select > mistral-button > .icon > .icon-opened .opened-default {
-	width: 0px;
-	height: 0px;
-	border-left: 6pt solid transparent;
-	border-right: 6pt solid transparent;
-	border-top: 6pt solid white;
-	margin-left: 1pt;
-	margin-right: 1pt;
-	margin-top: 7pt;
-}
-
-.select > mistral-button > .label {
+	border-left: 8px solid transparent;
+	border-right: 8px solid transparent;
+	border-top: 8px solid #3399FF;
+	margin-left: 10px;
+	margin-right: 0px;
+	margin-top: 5px;
 }
 
 .select > .body {
+	height: 0px;
 	width: inherit;
 	position: absolute;
+	margin-top: 0px;
+	padding-top: 2px;
+	border-radius: 0px 0px 3px 3px;
 	z-index: 10000;
-	background: white;
-	height: 0px;
+	background: #DDEEFF;
 	overflow: auto;
 }
 
-:host(:not([opened])) .select > mistral-button > .icon > .icon-closed {
-	display: block;
-	width: auto;
+.select > .body > ::slotted(*) {
+	margin: 0px;
+	padding: 5px 5px;
+	cursor: pointer;
 }
 
-:host([opened]) .select > mistral-button > .icon > .icon-opened {
-	display: block;
-	width: auto;
-}
-
-:host([opened]) .select > .body {
+:host([opened]:not([disabled])) .select > .body {
 	height: auto;
-	border: 3px solid #3399FF;
-	border-radius: 0px 0px 3px 3px;
+	margin-top: -1px;
+	border: 2px outset #66CCFF;
 }
 
-:host([opened]) .select > mistral-button {
-	border: 3px solid #3399FF;
-	background: #3399FF;
-	color: white;
+:host([opened]:not([disabled])) .select > .body > ::slotted(*:hover:not([disabled])) {
+	background: #66CCFF;
 }
