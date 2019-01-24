@@ -640,7 +640,7 @@
 					A wrapper around <code>select</code>.
 				</div>
 				<div class="example">
-					<mistral-select label="Select from the following..." name="example" opened>
+					<mistral-select label="Select from the following..." name="example">
 						<div style="display: flex;" value="red">
 							<div style="width: 16px; height: 16px; background: red; border: 1px solid gray; margin-right: 5px;"></div>
 							<div style="">Red</div>
@@ -657,6 +657,38 @@
 				</div>
 				<div class="code">
 					&lt;mistral-select label="Select from the following..." name="example"&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="display: flex;" value="red"&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="width: 16px; height: 16px; background: red; border: 1px solid gray; margin-right: 5px;"&gt;&lt;/div&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style=""&gt;Red&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="display: flex;" value="green"&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="width: 16px; height: 16px; background: green; border: 1px solid gray; margin-right: 5px;"&gt;&lt;/div&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style=""&gt;Green&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="display: flex;" value="blue"&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="width: 16px; height: 16px; background: blue; border: 1px solid gray; margin-right: 5px;"&gt;&lt;/div&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style=""&gt;Blue&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+					&lt;/mistral-select&gt;
+				</div>
+				<div class="example">
+					<mistral-select label="Select from the following..." name="example" disabled>
+						<div style="display: flex;" value="red">
+							<div style="width: 16px; height: 16px; background: red; border: 1px solid gray; margin-right: 5px;"></div>
+							<div style="">Red</div>
+						</div>
+						<div style="display: flex;" value="green">
+							<div style="width: 16px; height: 16px; background: green; border: 1px solid gray; margin-right: 5px;"></div>
+							<div style="">Green</div>
+						</div>
+						<div style="display: flex;" value="blue">
+							<div style="width: 16px; height: 16px; background: blue; border: 1px solid gray; margin-right: 5px;"></div>
+							<div style="">Blue</div>
+						</div>
+					</mistral-select>
+				</div>
+				<div class="code">
+					&lt;mistral-select label="Select from the following..." name="example" disabled&gt;
 						&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="display: flex;" value="red"&gt;
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="width: 16px; height: 16px; background: red; border: 1px solid gray; margin-right: 5px;"&gt;&lt;/div&gt;
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style=""&gt;Red&lt;/div&gt;
