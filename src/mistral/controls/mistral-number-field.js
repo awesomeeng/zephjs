@@ -16,6 +16,7 @@ bindAttributeToContent("required",".required",(value)=>{
 });
 bindAttributeToContent("error",".error");
 bindAttributeToProperty("value","input","value");
+bindAttributes("disabled","mistral-button");
 
 // inherited from INPUT[type=text]
 bindAttributes("min","input");

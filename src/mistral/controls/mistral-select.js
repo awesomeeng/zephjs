@@ -1,6 +1,6 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global requires,name,html,css,bindAttributeToContent,bindAttributeToProperty,onEvent,onCreate */
+/* global requires,name,html,css,bindAttributes,bindAttributeToContent,bindAttributeToProperty,onEvent,onCreate */
 
 "use strict";
 
@@ -10,6 +10,7 @@ name("mistral-select");
 html("./mistral-select.html");
 css("./mistral-select.css");
 
+bindAttributes("disabled","mistral-button");
 bindAttributeToContent("label","mistral-button > .label");
 bindAttributeToProperty("value",".","value");
 

@@ -28,12 +28,68 @@
 
 		</script>
 		<style>
+		/* http://meyerweb.com/eric/tools/css/reset/
+		   v2.0 | 20110126
+		   License: none (public domain)
+		*/
+
+		html, body, div, span, applet, object, iframe,
+		h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+		a, abbr, acronym, address, big, cite, code,
+		del, dfn, em, img, ins, kbd, q, s, samp,
+		small, strike, strong, sub, sup, tt, var,
+		b, u, i, center,
+		dl, dt, dd, ol, ul, li,
+		fieldset, form, label, legend,
+		table, caption, tbody, tfoot, thead, tr, th, td,
+		article, aside, canvas, details, embed,
+		figure, figcaption, footer, header, hgroup,
+		menu, nav, output, ruby, section, summary,
+		time, mark, audio, video {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			font-size: 100%;
+			font: inherit;
+			vertical-align: baseline;
+		}
+		/* HTML5 display-role reset for older browsers */
+		article, aside, details, figcaption, figure,
+		footer, header, hgroup, menu, nav, section {
+			display: block;
+		}
+		body {
+			line-height: 1;
+		}
+		ol, ul {
+			list-style: none;
+		}
+		blockquote, q {
+			quotes: none;
+		}
+		blockquote:before, blockquote:after,
+		q:before, q:after {
+			content: '';
+			content: none;
+		}
+		table {
+			border-collapse: collapse;
+			border-spacing: 0;
+		}
+
+		</style>
+		<style>
 			* {
 				box-sizing: border-box;
 			}
 
 			body {
 				font-family: sans-serif;
+				padding: 10px;
+			}
+
+			code {
+				font-family: monospace;
 			}
 
 			.section {
@@ -342,13 +398,30 @@
 				</div>
 				<div class="example">
 					<mistral-button>
-						<div slot="icon" style="border: 1px solid transparent; border-radius: 50px; width: 12px; height: 12px; background: green; display: block;margin-right: 5px;margin-top: 2px;"></div>
+						<div slot="icon">
+							<div style="border: 1px solid transparent; border-radius: 50px; width: 12px; height: 12px; background: green; display: block;margin-top: 2px;"></div>
+						</div>
 						Example Icon Button
 					</mistral-button>
 				</div>
 				<div class="code">
 					&lt;!-- assumes some style associated with class "icon". --&gt;
 					&lt;mistral-button&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="icon"&gt;&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;Example Icon Button
+					&lt;/mistral-button&gt;
+				</div>
+				<div class="example">
+					<mistral-button icon-placement="right">
+						<div slot="icon">
+							<div style="border: 1px solid transparent; border-radius: 50px; width: 12px; height: 12px; background: green; display: block;margin-top: 2px;"></div>
+						</div>
+						Example Icon Button
+					</mistral-button>
+				</div>
+				<div class="code">
+					&lt;!-- assumes some style associated with class "icon". --&gt;
+					&lt;mistral-button icon-placement="right"&gt;
 						&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="icon"&gt;&lt;/div&gt;
 						&nbsp;&nbsp;&nbsp;&nbsp;Example Icon Button
 					&lt;/mistral-button&gt;
@@ -561,13 +634,13 @@
 					Select
 				</div>
 				<div class="element">
-					&lt;mistral-number-field&gt;
+					&lt;mistral-select&gt;
 				</div>
 				<div class="description">
 					A wrapper around <code>select</code>.
 				</div>
 				<div class="example">
-					<mistral-select label="Select from the following..." name="example">
+					<mistral-select label="Select from the following..." name="example" opened>
 						<div style="display: flex;" value="red">
 							<div style="width: 16px; height: 16px; background: red; border: 1px solid gray; margin-right: 5px;"></div>
 							<div style="">Red</div>
@@ -583,6 +656,20 @@
 					</mistral-select>
 				</div>
 				<div class="code">
+					&lt;mistral-select label="Select from the following..." name="example"&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="display: flex;" value="red"&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="width: 16px; height: 16px; background: red; border: 1px solid gray; margin-right: 5px;"&gt;&lt;/div&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style=""&gt;Red&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="display: flex;" value="green"&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="width: 16px; height: 16px; background: green; border: 1px solid gray; margin-right: 5px;"&gt;&lt;/div&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style=""&gt;Green&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="display: flex;" value="blue"&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="width: 16px; height: 16px; background: blue; border: 1px solid gray; margin-right: 5px;"&gt;&lt;/div&gt;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div style=""&gt;Blue&lt;/div&gt;
+						&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+					&lt;/mistral-select&gt;
 				</div>
 			</div>
 		</div>

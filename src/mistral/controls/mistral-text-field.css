@@ -5,13 +5,16 @@
 .field {
 	position: relative;
 	padding-top: 2ex;
+	overflow: hidden;
+	width: 100%;
+	display: grid;
+	grid-template-areas:
+		"a a b"
+		"c c c";
 }
 
 .field > label {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	right: 0px;
+	grid-area: a;
 	display: block;
 	font-size: smaller;
 	margin-bottom: 2px;
@@ -19,10 +22,7 @@
 }
 
 .field > .required {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	right: 0px;
+	grid-area: b;
 	display: block;
 	font-size: smaller;
 	margin-top: 2px;
@@ -54,60 +54,57 @@
 }
 
 .field > .wrapper {
-	display: block;
+	grid-area: c;
+	display: grid;
+	grid-template-columns: auto;
 	border: 2px solid #66CCFF;
 	border-radius: 3px;
 	background: transparent;
 	clip-path: polygon(0 0, 100% 0%, 100% 25%, calc(100% - 4px) 25%, calc(100% - 4px) 75%, 100% 75%, 100% 100%, 0% 100%, 0% 75%, 4px 75%, 4px 25%, 0% 25%);
-	transition: background-color 0.25s, border-color 0.25s, clip-path 1s;
+	transition: background-color 0.25s, border-color 0.25s, clip-path 0.5s;
 	cursor: pointer;
 	padding: 2px 2px;
-}
-
-.field > .wrapper:focus,
-.field > .wrapper:focus-within {
-	border-color: #3399FF;
-	transition: background-color 0.25s, border-color 0.25s, clip-path 1s;
+	overflow: hidden;
 }
 
 .field > .wrapper > input {
 	background: #DDEEFF;
-	width: 100%;
 	border: none;
 	outline: none;
 	padding: 2px;
+	overflow: hidden;
+	width: calc(100% - 5px);
 }
 
 :host([error]) .field > .wrapper {
-	border-color: #FF6666;
-	background: rgba(255,60,60,0.2);
+	border-color: #FF3333;
 }
 
 
 :host([error]) .field > .wrapper > input {
-	border-color: #FF6666;
-	background: rgba(255,60,60,0.2);
+	background: #FFCCCC;
 }
 
-.field > .wrapper:focus > input,
-.field > .wrapper:focus-within > input {
-	background: #CCDDFF !important;
-	width: 100%;
-	border: none;
-	outline: none;
-	padding: 2px;
-	transition: background-color 0.25s, border-color 0.25s, clip-path 1s;
-}
-
-:host(:not([disabled]) .field > .wrapper:active),
-:host(:not([disabled]) .field > .wrapper:focus),
-:host(:not([disabled]) .field > .wrapper:focus-within) {
-	background: rgba(60,120,255,0.4);
+:host(:not([disabled])) .field > .wrapper:hover {
+	border-color: #3399FF;
 	clip-path: polygon(0 0, 100% 0%, 100% 40%, calc(100% - 4px) 40%, calc(100% - 4px) 60%, 100% 60%, 100% 100%, 0% 100%, 0% 60%, 4px 60%, 4px 40%, 0% 40%);
-	transition: background-color 0.25s, border-color 0.25s, clip-path 1s;
+	transition: background-color 0.25s, border-color 0.25s, clip-path 0.5s;
 }
 
-:host([disabled] .field > .wrapper) {
+:host(:not([disabled])) .field > .wrapper:active,
+:host(:not([disabled])) .field > .wrapper:focus,
+:host(:not([disabled])) .field > .wrapper:focus-within {
+	border-color: #3399FF;
+	clip-path: polygon(0 0, 100% 0%, 100% 40%, calc(100% - 4px) 40%, calc(100% - 4px) 60%, 100% 60%, 100% 100%, 0% 100%, 0% 60%, 4px 60%, 4px 40%, 0% 40%);
+	transition: background-color 0.25s, border-color 0.25s, clip-path 0.5s;
+}
+
+:host([disabled]) .field > .wrapper {
 	border-color: #AAAAAA;
+	cursor: not-allowed;
+	transition: background-color 0.25s, border-color 0.25s, clip-path 0.5s;
+}
+
+:host([disabled]) .field > .wrapper > input {
 	cursor: not-allowed;
 }
