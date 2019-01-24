@@ -5,6 +5,8 @@
 (()=>{
 	const $NAME = Symbol("name");
 	const $ORIGIN = Symbol("origin");
+	const $ELEMENT = Symbol("element");
+	const $SHADOW = Symbol("shadow");
 	const $CODE = Symbol("code");
 	const $MARKUP = Symbol("markup");
 	const $STYLE = Symbol("style");
@@ -103,6 +105,22 @@
 		return false;
 	};
 
+	const fire = function fire(listeners,...args) {
+		listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
+		listeners.forEach((listener)=>{
+			setTimeout(()=>{
+				return listener.apply(listener,args);
+			},0);
+		});
+	};
+
+	const fireImmediately = function fireImmediately(listeners,...args) {
+		listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
+		listeners.forEach((listener)=>{
+			return listener.apply(listener,args);
+		});
+	};
+
 	class Component {
 		static generateComponent(url,asName) {
 			notUON(url,"url");
@@ -136,7 +154,6 @@
 
 					let context = {};
 
-
 					let code = await ComponentCode.generateComponentCode(origin,js,context,asName);
 					if (!context.name && !context.pending) throw new Error("Invalid url; unable to load anything: "+origin);
 
@@ -160,10 +177,18 @@
 						if (!context.name) throw new Error("Component was not named.");
 						if (context.name && context.name.indexOf("-")<0) throw new Error("Invalid name; must contain at least one dash character.");
 
-						customElements.define(context.name,clazz);
+						try {
+							customElements.define(context.name,clazz);
+						}
+						catch (ex) {
+							ex.message = "Error when defining component "+context.name+": "+ex.message;
+							return reject(ex);
+						}
 
 						let component = new Component(origin,context.name,code,markups,styles);
 						COMPONENTS[context.name] = component;
+
+						fireImmediately(context.init,component,context);
 					}
 
 					delete PENDING[origin];
@@ -231,22 +256,6 @@
 
 	class ComponentClass {
 		static generateComponentClass(context,code,markups,styles) {
-			let fire = (listeners,...args)=>{
-				listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
-				listeners.forEach((listener)=>{
-					setTimeout(()=>{
-						return listener.apply(listener,args);
-					},0);
-				});
-			};
-
-			let fireImmediately = (listeners,...args)=>{
-				listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
-				listeners.forEach((listener)=>{
-					return listener.apply(listener,args);
-				});
-			};
-
 			const TO_BE_REPLACED = (class {});
 			const componentElementClass = (class ComponentElement extends TO_BE_REPLACED {
 				static get observedAttributes() {
@@ -257,10 +266,12 @@
 					super();
 
 					let element = this;
+					this[$ELEMENT] = element;
 
 					let shadow  = this.attachShadow({
 						mode:"open"
 					});
+					this[$SHADOW] = shadow;
 
 					let html = shadow.innerHTML;
 					(markups||[]).forEach((markup)=>{
@@ -277,7 +288,7 @@
 					// fire our create event. We need to do this here and immediately
 					// so the onCreate handlers can do whatever setup they need to do
 					// before we go off and register bindings and events.
-					fireImmediately(context.create||[],this,this.shadowRoot);
+					fireImmediately(context.create,this,this.shadowRoot);
 
 					if (context.bindings) {
 						context.bindings.forEach((binding)=>{
@@ -380,20 +391,28 @@
 					}
 				}
 
+				get element() {
+					return this[$ELEMENT];
+				}
+
+				get content() {
+					return this[$SHADOW];
+				}
+
 				connectedCallback() {
-					fire(context.add||[],this,this.shadowRoot);
+					fire(context.add,this,this.shadowRoot);
 				}
 
 				disconnectedCallback() {
-					fire(context.remove||[],this,this.shadowRoot);
+					fire(context.remove,this,this.shadowRoot);
 				}
 
 				adoptedCallback() {
-					fire(context.adopt||[],this,this.shadowRoot);
+					fire(context.adopt,this,this.shadowRoot);
 				}
 
 				attributeChangedCallback(attribute,oldValue,newValue) {
-					fire(context.attributes[attribute]||[],oldValue,newValue,this,this.shadowRoot);
+					fire(context.attributes[attribute],oldValue,newValue,this,this.shadowRoot);
 				}
 			});
 			let c = "("+componentElementClass.toString().replace(/TO_BE_REPLACED/,context.from||"HTMLElement")+")";
@@ -444,6 +463,8 @@
 		}
 
 		constructor(origin,code,context,asName) {
+			if (code===undefined || code===null) throw new Error("No code for component definition.");
+
 			this[$ORIGIN] = origin;
 			this[$TEXT] = code.toString();
 
@@ -455,12 +476,6 @@
 			let from = this.from.bind(this,context);
 			let html = this.html.bind(this,context);
 			let css = this.css.bind(this,context);
-			let onCreate = this.onCreate.bind(this,context);
-			let onAdd = this.onAdd.bind(this,context);
-			let onRemove = this.onRemove.bind(this,context);
-			let onAttribute = this.onAttribute.bind(this,context);
-			let onEvent = this.onEvent.bind(this,context);
-			let onEventAt = this.onEventAt.bind(this,context);
 			let binding = this.binding.bind(this,context);
 			let bindAttributes = this.bindAttributes.bind(this,context);
 			let bindAttributeToAttribute = this.bindAttributeToAttribute.bind(this,context);
@@ -478,6 +493,13 @@
 			let bindOtherContents = this.bindOtherContents.bind(this,context);
 			let bindOtherContentToContent = this.bindOtherContentToContent.bind(this,context);
 			let bindOtherContentToProperty = this.bindOtherContentToProperty.bind(this,context);
+			let onInit = this.onInit.bind(this,context);
+			let onCreate = this.onCreate.bind(this,context);
+			let onAdd = this.onAdd.bind(this,context);
+			let onRemove = this.onRemove.bind(this,context);
+			let onAttribute = this.onAttribute.bind(this,context);
+			let onEvent = this.onEvent.bind(this,context);
+			let onEventAt = this.onEventAt.bind(this,context);
 			/* eslint-enable no-unused-vars */
 
 			let func;
@@ -679,6 +701,13 @@
 
 		bindOtherContentToProperty(context,sourceElement,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
 			return this.binding(context,sourceElement,"content",".",targetElement,"property",targetName,transformFunction);
+		}
+
+		onInit(context,listener) {
+			notUON(listener,"listener");
+			notFunction(listener,"listener");
+			context.init = context.init || [];
+			context.init.push(listener);
 		}
 
 		onCreate(context,listener) {
@@ -906,7 +935,6 @@
 			this.content.forEach((handler)=>{
 				handler(value,this.element);
 			});
-
 		}
 	}
 

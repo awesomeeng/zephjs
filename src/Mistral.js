@@ -4,6 +4,8 @@
 
 "use strict";
 
+load("./mistral/mistral-reset.js");
+
 load("./mistral/containers/mistral-toggle-box.js");
 load("./mistral/containers/mistral-tab-box.js");
 
