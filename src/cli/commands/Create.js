@@ -15,15 +15,15 @@ class Create extends AwesomeCLI.AbstractCommand {
 	}
 
 	get title() {
-		return "zeph > component > create";
+		return "zeph > create";
 	}
 
 	get description() {
-		return "Create a new component with default JS, HTML, and CSS files."
+		return "Create a new component with default JS, HTML, and CSS files.";
 	}
 
 	get usage() {
-		return "zeph component create <name> [filename]";
+		return "zeph create <name> [filename]";
 	}
 
 	execute(args/*,options*/) {
@@ -32,6 +32,11 @@ class Create extends AwesomeCLI.AbstractCommand {
 		}
 		else {
 			let name = args[0];
+			if (name.indexOf("-")<0) {
+				console.error("Component names must have a dash character '-' in them.");
+				process.exit(1);
+			}
+
 			let js = args[1] || Path.resolve(process.cwd(),"./"+name+".js");
 			let rootname = Path.basename(js,".js");
 			let rootdir = Path.dirname(js);
@@ -42,13 +47,13 @@ class Create extends AwesomeCLI.AbstractCommand {
 
 			FS.writeFileSync(js,`
 /*
-	Generated ZephJS component: ${name}
+	Generated ZephS component: ${name}
 
 	ZephJS is copyright 2019, The Awesome Engineering Company
 	and is released under the MIT licesne.
  */
 
-/* global name,html,css */
+/* global name, from, html, css, define, requires, load, onInit, onCreate, onAdd, onRemove, onAttribute, onEvent, onEventAt, binding, bindAttributes, bindAttributeToAttribute, bindAttributeToContent, bindAttributeToProperty, bindContentToAttribute, bindContents, bindContentToContent, bindContentToProperty, bindOtherAttributes, bindOtherAttributeToAttribute, bindOtherAttributeToContent, bindOtherAttributeToProperty, bindOtherContentToAttribute, bindOtherContents, bindOtherContentToContent, bindOtherContentToProperty */
 
 "use strict";
 
