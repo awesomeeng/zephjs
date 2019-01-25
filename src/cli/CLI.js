@@ -16,6 +16,7 @@ class CLI extends AwesomeCLI.CommandCLI {
 		this.addCommand("create",AwesomeUtils.Module.resolve(module,"./commands/Create.js"));
 		this.addCommand("new",AwesomeUtils.Module.resolve(module,"./commands/Create.js"));
 		this.addCommand("bundle",AwesomeUtils.Module.resolve(module,"./commands/Bundle.js"));
+		this.addCommand("serve",AwesomeUtils.Module.resolve(module,"./commands/Serve.js"));
 	}
 
 	get title() {
