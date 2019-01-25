@@ -1,5 +1,5 @@
 # AwesomeComponenets Release Notes
 
-#### **Version 1.0.0**
+#### **Version 0.0.1**
 
- - Initial release.
+ - Alpha release and ongoing development work.

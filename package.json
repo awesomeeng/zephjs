@@ -1,6 +1,6 @@
 {
-  "name": "@awesomeeng/awesome-components",
-  "version": "1.2.1",
+  "name": "@awesomeeng/ZephJS",
+  "version": "0.0.1",
   "author": "the awesome engineering company",
   "license": "MIT",
   "contributors": [
@@ -10,10 +10,15 @@
   "engines": {
     "node": ">=10.5.0"
   },
+  "bin": {
+    "zeph": "./bin/zeph"
+  },
   "dependencies": {
-    "acorn": "^6.0.5"
+	  "@awesomeeng/awesome-utils": "^1.4.4",
+	  "@awesomeeng/awesome-cli": "^1.0.1"
   },
   "devDependencies": {
+	"acorn": "^6.0.5",
     "jsdoc-to-markdown": "*",
     "mocha": "*"
   },
@@ -24,32 +29,35 @@
     "test": "mocha test",
     "tests": "mocha test"
   },
-  "description": "Web framework for building independant components and integrating them together for web pages and web applications.",
+  "description": "Ultra light and easy to use Web Component framework for building and distributing independant components and integrating them together for web pages and web applications.",
   "directories": {
     "doc": "docs",
     "test": "test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/awesomeeng/awesome-components.git"
+    "url": "git+https://github.com/awesomeeng/ZephJS.git"
   },
   "keywords": [
-    "sl",
-    "serverless",
-    "faas",
-    "function",
-    "functions",
-    "function as a service",
-    "functions as a service",
-    "lambda",
-    "aws lambda",
-    "awesome",
-    "awesomeeng",
-    "awesome",
-    "engineering"
+	  "mistral",
+      "zeph-mistral",
+      "zephjs-mistral",
+      "zeph",
+      "zephjs",
+      "web",
+      "component",
+      "components",
+      "webcomponent",
+      "webcomponents",
+      "web component",
+      "web components",
+      "awesome",
+      "awesomeeng",
+      "awesome",
+      "engineering"
   ],
   "bugs": {
-    "url": "https://github.com/awesomeeng/awesome-components/issues"
+    "url": "https://github.com/awesomeeng/ZephJS/issues"
   },
-  "homepage": "https://github.com/awesomeeng/awesome-components#readme"
+  "homepage": "https://github.com/awesomeeng/ZephJS#readme"
 }
