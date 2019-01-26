@@ -16,6 +16,9 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 	constructor() {
 		super();
 
+		this.addOption("target","string",null,"Directs where to write the resulting bundle. Defaults to stdout.");
+		this.addOption("no-zeph","boolean",false,"If set, the ZephJS library will not be included in the bundle.");
+
 		this.refs = {};
 	}
 
@@ -31,162 +34,163 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 		return "zeph bundle <target-file> <filename> [<filename>...]";
 	}
 
-	execute(args/*,options*/) {
+	execute(args,options) {
 		this.refs = {};
+
+		let quiet = options.quiet || !options.target;
 
 		if (args.length===0) {
 			this.help();
 		}
 		else {
-			let target = args.shift();
-			target = Path.resolve(process.cwd(),target);
-			if (!target.endsWith(".js")) target += ".js";
+			let target = options.target || null;
+			if (target) {
+				target = Path.resolve(process.cwd(),target);
+				if (!target.endsWith(".js")) target += ".js";
+			}
 
+			// read our source arguments
 			args.forEach((name)=>{
-				this.readSource(name);
+				this.readSource(name,process.cwd(),quiet);
 			});
 
-			this.writeTarget(target);
+			// process each ref's html and css tags and inline them if needed.
+			Object.values(this.refs).forEach((ref)=>{
+				this.processTokens(ref,quiet);
+			});
+
+			// Compute ordering based on required references
+			let order = this.computeOrder();
+
+			this.writeTarget(order,target,options,quiet);
 		}
 	}
 
-	readSource(name,source) {
-		source = source && Path.resolve(process.cwd(),source) || Path.resolve(process.cwd(),name);
-		if (this.refs[source]) return;
-
+	readSource(source,rootDir,quiet) {
+		source = source && Path.resolve(rootDir,source) || Path.resolve(rootDir,name);
 		if (!AwesomeUtils.FS.existsSync(source)) {
 			if (!source.endsWith(".js") && AwesomeUtils.FS.existsSync(source+".js")) {
 				source += ".js";
 			}
 			else {
 				console.error("Unable to find source reference "+source);
-				process.exit(1);
+				process.exit();
 			}
 		}
+		if (this.refs[source]) return;
 
-		console.log("Including "+name);
+		if (!quiet) console.log("Including  "+source);
 
-		let required = [];
-		let preloads = [];
+		let root = Path.dirname(source);
 
-		let data = FS.readFileSync(source);
-		if (data instanceof Buffer) data = data.toString("utf-8");
+		let code = FS.readFileSync(source);
+		if (code instanceof Buffer) code = code.toString("utf-8");
 
-		let tokens = [...Acorn.tokenizer(data,{
+		let tokens = [...Acorn.tokenizer(code,{
 			ecmaVersion: 10
 		})];
 
-		let pos = 0;
-		while(pos<tokens.length) {
-			let token = tokens[pos];
-			pos += 1;
-
-			if (token && token.type && token.type.label && token.value) {
-				if (token.type.label==="name" && (token.value==="load" || token.value==="requires")) {
-					let content = tokens[pos+1];
-					pos += 2;
-
-					if (content.type.label!=="string") {
-						console.error("ERROR: "+token.value+"() can only contain a string argument; skipping.");
-						continue;
-					}
-
-					let name = content.value;
-					if (name.startsWith("ftp:") || name.startsWith("http:") || name.startsWith("https:")) {
-						required.push({
-							name,
-							source: name
-						});
-					}
-					else if (name.startsWith("/") || name.startsWith("./") || name.startsWith("../")) {
-						let src = Path.resolve(Path.dirname(source),name);
-						required.push({
-							name,
-							source: src
-						});
-					}
-					else if (AwesomeUtils.FS.existsSync(Path.resolve(Path.dirname(source),name))) {
-						let src = Path.resolve(Path.dirname(source),name);
-						required.push({
-							name,
-							source: src
-						});
-					}
-					else if (AwesomeUtils.FS.existsSync(Path.resolve(Path.dirname(source),name+".js"))) {
-						name += ".js";
-						let src = Path.resolve(Path.dirname(source),name);
-						required.push({
-							name,
-							source: src
-						});
-					}
-					else {
-						continue;
-					}
+		let required = [];
+		tokens.forEach((token,i)=>{
+			if (!token || !token.type || !token.type.label || !token.value) return;
+			if (token.type.label==="name" && (token.value==="load" || token.value==="requires")) {
+				let content = tokens[i+2];
+				let following = tokens[i+3];
+				if (!content || !content.type || !content.type.label || !content.value) {
+					console.error("ERROR: "+source+": load or requires statement was not syntactically valid.");
+					process.exit();
 				}
-				if (token.type.label==="name" && (token.value==="html" || token.value==="css")) {
-					let content = tokens[pos+1];
-					pos += 2;
-
-					if (content.type.label!=="string") {
-						continue;
-					}
-
-					let name = content.value;
-					if (name.startsWith("ftp:") || name.startsWith("http:") || name.startsWith("https:")) {
-						preloads.push({
-							name,
-							source: name
-						});
-					}
-					else if (name.startsWith("/") || name.startsWith("./") || name.startsWith("../")) {
-						let src = Path.resolve(Path.dirname(source),name);
-						preloads.push({
-							name,
-							source: src
-						});
-					}
-					else if (AwesomeUtils.FS.existsSync(Path.resolve(Path.dirname(source),name))) {
-						let src = Path.resolve(Path.dirname(source),name);
-						preloads.push({
-							name,
-							source: src
-						});
-					}
-					else if (AwesomeUtils.FS.existsSync(Path.resolve(Path.dirname(source),name+".js"))) {
-						let src = Path.resolve(Path.dirname(source),name+".js");
-						preloads.push({
-							name,
-							source: src
-						});
-					}
-					else {
-						console.error("ERROR: "+token.value+"() can only be a string of a url or a absolute or relative filename; skipping.");
-						continue;
-					}
+				if (content.type.label!=="string" || !following || !following.type || !following.type.label || following.type.label!==")") {
+					console.error("ERROR: "+source+": load or requires statement may only be a string literal.");
+					process.exit();
 				}
+				let req = this.readSource(content.value,root,quiet);
+				if (req) required.push(req);
 			}
-		}
-
-		(preloads||[]).forEach((preload)=>{
-			console.log("  with "+preload.name);
 		});
 
-		this.makeReference(name,source,required,preloads);
-	}
-
-	makeReference(name,source,required,preloads) {
-		let root = Path.dirname(source);
-		this.refs[name] = {
-			name,
+		let ref = {
 			root,
 			source,
+			tokens,
 			required,
-			preloads
+			code
 		};
-		required.forEach((req)=>{
-			let src = Path.resolve(root,req.source);
-			this.readSource(req.name,src);
+		this.refs[source] = ref;
+
+		return ref;
+	}
+
+	processTokens(ref,quiet) {
+		let offset = 0;
+
+		ref.tokens.forEach((token,i)=>{
+			if (!token || !token.type || !token.type.label || !token.value) return;
+			if (token.type.label==="name" && (token.value==="load" || token.value==="requires")) {
+				let pos = i;
+				let next;
+				while (pos<ref.tokens.length) {
+					next = ref.tokens[pos];
+					if (next && next.type && next.type.label && next.type.label===";") break;
+					pos += 1;
+				}
+				if (!next) {
+					console.error("ERROR: "+ref.source+": "+token.value+"() statement was not syntactically valid.");
+					process.exit();
+				}
+
+				let start = token.start+offset;
+				let end = next.end+offset;
+
+				let code = ref.code;
+				code = code.slice(0,start)+" /*"+code.slice(start,end)+"*/"+code.slice(end);
+				ref.code = code;
+			}
+			else if (token.type.label==="name" && (token.value==="html" || token.value==="css")) {
+				let content = ref.tokens[i+2];
+				let following = ref.tokens[i+3];
+				if (!content || !content.type || !content.type.label || !content.value) {
+					console.error("ERROR: "+ref.source+": "+token.value+"() statement was not syntactically valid.");
+					process.exit();
+				}
+				if (content.type.label!=="string" || !following || !following.type || !following.type.label || following.type.label!==")") {
+					console.error("ERROR: "+ref.source+": "+token.value+"() statement may only be a string literal.");
+					process.exit();
+				}
+
+				let filename = content.value;
+				let data = null;
+				if (filename.startsWith("http:") || filename.startsWith("https:") || filename.startsWith("ftp:")) {
+					if (!quiet) console.log("Inlining   "+filename);
+					data = loader(filename);
+				}
+				else {
+					filename = Path.resolve(ref.root,filename);
+					if (!AwesomeUtils.FS.existsSync(filename)) {
+						filename += ".js";
+						if (!AwesomeUtils.FS.existsSync(filename)) {
+							// data is not a filename and probably inline content.
+							return;
+						}
+					}
+					if (!quiet) console.log("Inlining   "+filename);
+					data = loader(filename);
+				}
+
+				if (!data) {
+					console.error("ERROR: "+ref.source+": Could not find inline reference to "+filename+".");
+					process.exit();
+				}
+
+				let start = content.start+offset;
+				let end = content.end+offset;
+
+				let code = ref.code;
+				code = code.slice(0,start)+"`"+data.replace(/`/g,"\\`")+"`"+code.slice(end);
+				ref.code = code;
+
+				offset += (data.length-content.value.length);
+			}
 		});
 	}
 
@@ -196,32 +200,21 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 		}))));
 
 		let ref = this.refs[source];
-		if (!ref && !source.endsWith(".js") && this.refs[source+".js"]) {
-			source += ".js";
-			ref = this.refs[source];
-		}
 		if (!ref) {
 			console.error("ERROR: Invalid reference "+source+".");
-			process.exit(1);
+			process.exit();
 		}
 
 		return AwesomeUtils.Array.unique(AwesomeUtils.Array.compact(AwesomeUtils.Array.flatten((ref.required||[]).map((ref)=>{
-			return this.computeOrder(ref.name);
+			return this.computeOrder(ref.source);
 		}).concat(ref))));
 	}
 
-	writeTarget(target) {
+	writeTarget(refs,target,options,quiet) {
 		if (AwesomeUtils.FS.existsSync(target)) FS.unlinkSync(target);
 
-		let order = this.computeOrder();
-		let preloads = AwesomeUtils.Array.unique(AwesomeUtils.Array.compact(AwesomeUtils.Array.flatten(Object.keys(this.refs).map((source)=>{
-			let ref = this.refs[source];
-			return ref.preloads||[];
-		}))));
-
-		console.log();
-
 		// generate the header
+		if (!quiet) console.log("Outputting Header");
 		let header = `
 /*
 
@@ -238,22 +231,20 @@ For more details about ZephJS, please visit https://zephjs.com
 `;
 
 		// Load the ZephJS library
-		let zeph = FS.readFileSync(AwesomeUtils.Module.resolve(module,"../../Zeph.js"));
-
-		// generate the preloads
-		let loadFirst = "";
-		preloads.forEach((preload)=>{
-			let preloaded = loader(preload.source);
-			preloaded = preloaded.replace(/`/,"\\`");
-			loadFirst += `Zeph.preload("${preload.name}",\`${preloaded}\`);\n`;
-		});
+		let zeph = "";
+		if (!options["no-zeph"]) {
+			if (!quiet) console.log("Outputting Zeph.js");
+			zeph = FS.readFileSync(AwesomeUtils.Module.resolve(module,"../../Zeph.js"));
+		}
+		else {
+			if (!quiet) console.log("Skipping   Zeph.js");
+		}
 
 		// generate the components
-		let comps = "";
-		order.forEach((ref)=>{
-			let code = loader(ref.source);
-			code = code.replace(/`/,"\\`");
-			comps += `Zeph.define(\`${code}\`);\n`;
+		let components = "";
+		refs.forEach((ref)=>{
+			if (!quiet) console.log("Outputting "+ref.source);
+			components += `Zeph.define(\`${ref.code}\`);\n`;
 		});
 
 		// Now write it all out
@@ -266,30 +257,32 @@ let Zeph = window.Zeph;
 window.Zeph = existing;
 
 document.addEventListener("zeph:initialized",()=>{
-	${loadFirst}
-	${comps}
+	${components}
 });
 `;
 
 		// Write it all out to target.
-		FS.appendFileSync(target,data,{
-			encoding: "utf-8",
-			flags: "as"
-		});
+		if (target) {
+			if (!quiet) console.log("\nWritten    "+target+".");
+			FS.appendFileSync(target,data,{
+				encoding: "utf-8",
+				flags: "as"
+			});
 
-		console.log();
-		console.log("Bundle written to "+target+".");
+		}
+		else {
+			process.stdout.write(data);
+			process.stdout.write("\n");
+		}
 	}
 }
 
 const loader = function loader(url,rootDir) {
 	if (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("ftp:")) {
 		// load via request
-		console.log("Downloading "+url);
 	}
 	else {
 		url = Path.resolve(rootDir,url);
-		console.log("Reading "+url);
 		return FS.readFileSync(url,{
 			encoding: "utf-8"
 		});
