@@ -42,19 +42,29 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 			target = Path.resolve(process.cwd(),target);
 			if (!target.endsWith(".js")) target += ".js";
 
-			args.forEach((source)=>{
-				this.readSource(source);
+			args.forEach((name)=>{
+				this.readSource(name);
 			});
 
 			this.writeTarget(target);
 		}
 	}
 
-	readSource(source) {
-		source = Path.resolve(process.cwd(),source);
+	readSource(name,source) {
+		source = source && Path.resolve(process.cwd(),source) || Path.resolve(process.cwd(),name);
 		if (this.refs[source]) return;
 
-		console.log("Including "+source);
+		if (!AwesomeUtils.FS.existsSync(source)) {
+			if (!source.endsWith(".js") && AwesomeUtils.FS.existsSync(source+".js")) {
+				source += ".js";
+			}
+			else {
+				console.error("Unable to find source reference "+source);
+				process.exit(1);
+			}
+		}
+
+		console.log("Including "+name);
 
 		let required = [];
 		let preloads = [];
@@ -81,21 +91,34 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 						continue;
 					}
 
-					let filename = content.value;
-					if (filename.startsWith("ftp:") || filename.startsWith("http:") || filename.startsWith("https:")) {
-						required.push(filename);
+					let name = content.value;
+					if (name.startsWith("ftp:") || name.startsWith("http:") || name.startsWith("https:")) {
+						required.push({
+							name,
+							source: name
+						});
 					}
-					else if (filename.startsWith("/") || filename.startsWith("./") || filename.startsWith("../")) {
-						filename = Path.resolve(Path.dirname(source),filename);
-						required.push(filename);
+					else if (name.startsWith("/") || name.startsWith("./") || name.startsWith("../")) {
+						let src = Path.resolve(Path.dirname(source),name);
+						required.push({
+							name,
+							source: src
+						});
 					}
-					else if (AwesomeUtils.FS.existsSync(Path.resolve(Path.dirname(source),filename))) {
-						filename = Path.resolve(Path.dirname(source),filename);
-						required.push(filename);
+					else if (AwesomeUtils.FS.existsSync(Path.resolve(Path.dirname(source),name))) {
+						let src = Path.resolve(Path.dirname(source),name);
+						required.push({
+							name,
+							source: src
+						});
 					}
-					else if (AwesomeUtils.FS.existsSync(Path.resolve(Path.dirname(source),filename+".js"))) {
-						filename = Path.resolve(Path.dirname(source),filename);
-						required.push(filename+".js");
+					else if (AwesomeUtils.FS.existsSync(Path.resolve(Path.dirname(source),name+".js"))) {
+						name += ".js";
+						let src = Path.resolve(Path.dirname(source),name);
+						required.push({
+							name,
+							source: src
+						});
 					}
 					else {
 						continue;
@@ -109,21 +132,33 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 						continue;
 					}
 
-					let filename = content.value;
-					if (filename.startsWith("ftp:") || filename.startsWith("http:") || filename.startsWith("https:")) {
-						preloads.push(filename);
+					let name = content.value;
+					if (name.startsWith("ftp:") || name.startsWith("http:") || name.startsWith("https:")) {
+						preloads.push({
+							name,
+							source: name
+						});
 					}
-					else if (filename.startsWith("/") || filename.startsWith("./") || filename.startsWith("../")) {
-						filename = Path.resolve(Path.dirname(source),filename);
-						preloads.push(filename);
+					else if (name.startsWith("/") || name.startsWith("./") || name.startsWith("../")) {
+						let src = Path.resolve(Path.dirname(source),name);
+						preloads.push({
+							name,
+							source: src
+						});
 					}
-					else if (AwesomeUtils.FS.existsSync(Path.resolve(Path.dirname(source),filename))) {
-						filename = Path.resolve(Path.dirname(source),filename);
-						preloads.push(filename);
+					else if (AwesomeUtils.FS.existsSync(Path.resolve(Path.dirname(source),name))) {
+						let src = Path.resolve(Path.dirname(source),name);
+						preloads.push({
+							name,
+							source: src
+						});
 					}
-					else if (AwesomeUtils.FS.existsSync(Path.resolve(Path.dirname(source),filename+".js"))) {
-						filename = Path.resolve(Path.dirname(source),filename);
-						preloads.push(filename);
+					else if (AwesomeUtils.FS.existsSync(Path.resolve(Path.dirname(source),name+".js"))) {
+						let src = Path.resolve(Path.dirname(source),name+".js");
+						preloads.push({
+							name,
+							source: src
+						});
 					}
 					else {
 						console.error("ERROR: "+token.value+"() can only be a string of a url or a absolute or relative filename; skipping.");
@@ -133,24 +168,25 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 			}
 		}
 
-		(preloads||[]).forEach((source)=>{
-			console.log("  with "+source);
+		(preloads||[]).forEach((preload)=>{
+			console.log("  with "+preload.name);
 		});
 
-		this.makeReference(source,required,preloads);
+		this.makeReference(name,source,required,preloads);
 	}
 
-	makeReference(source,required,preloads) {
+	makeReference(name,source,required,preloads) {
 		let root = Path.dirname(source);
-		this.refs[source] = {
+		this.refs[name] = {
+			name,
 			root,
 			source,
 			required,
 			preloads
 		};
 		required.forEach((req)=>{
-			req = Path.resolve(root,req);
-			this.readSource(req);
+			let src = Path.resolve(root,req.source);
+			this.readSource(req.name,src);
 		});
 	}
 
@@ -160,10 +196,17 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 		}))));
 
 		let ref = this.refs[source];
-		if (!ref) throw new Error("Invalid reference "+source+"."+Object.keys(this.refs));
+		if (!ref && !source.endsWith(".js") && this.refs[source+".js"]) {
+			source += ".js";
+			ref = this.refs[source];
+		}
+		if (!ref) {
+			console.error("ERROR: Invalid reference "+source+".");
+			process.exit(1);
+		}
 
-		return AwesomeUtils.Array.unique(AwesomeUtils.Array.compact(AwesomeUtils.Array.flatten((ref.required||[]).map((source)=>{
-			return this.computeOrder(source);
+		return AwesomeUtils.Array.unique(AwesomeUtils.Array.compact(AwesomeUtils.Array.flatten((ref.required||[]).map((ref)=>{
+			return this.computeOrder(ref.name);
 		}).concat(ref))));
 	}
 
@@ -178,16 +221,8 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 
 		console.log();
 
-		this.writeHeader(target);
-		this.writeZeph(target);
-		this.writeCode(target,preloads,order);
-
-		console.log();
-		console.log("Bundle written to "+target+".");
-	}
-
-	writeHeader(target) {
-		let data = `
+		// generate the header
+		let header = `
 /*
 
 The following is a ZephJS Component Bundle and includes the ZephJS Library.
@@ -201,44 +236,49 @@ For more details about ZephJS, please visit https://zephjs.com
 */
 
 `;
-		FS.appendFileSync(target,data,{
-			encoding: "utf-8",
-			flags: "as"
-		});
-	}
 
-	writeZeph(target) {
-		let data = FS.readFileSync(AwesomeUtils.Module.resolve(module,"../../Zeph.js"));
-		FS.appendFileSync(target,data,{
-			encoding: "utf-8",
-			flags: "as"
-		});
-	}
+		// Load the ZephJS library
+		let zeph = FS.readFileSync(AwesomeUtils.Module.resolve(module,"../../Zeph.js"));
 
-	writeCode(target,preloads,order) {
-		let data = "";
-
-		preloads.forEach((source)=>{
-			let preloaded = loader(source);
+		// generate the preloads
+		let loadFirst = "";
+		preloads.forEach((preload)=>{
+			let preloaded = loader(preload.source);
 			preloaded = preloaded.replace(/`/,"\\`");
-			data += `Zeph.preload("${source}",\`${preloaded}\`);\n`;
+			loadFirst += `Zeph.preload("${preload.name}",\`${preloaded}\`);\n`;
 		});
 
+		// generate the components
+		let comps = "";
 		order.forEach((ref)=>{
 			let code = loader(ref.source);
 			code = code.replace(/`/,"\\`");
-			data += `Zeph.define(\`${code}\`);\n`;
+			comps += `Zeph.define(\`${code}\`);\n`;
 		});
 
-		data = `
-document.addEventListener("zeph:initialized",()=>{
-${data}
-});`;
+		// Now write it all out
+		let data = `
+${header}
 
+let existing = window.Zeph;
+${zeph}
+let Zeph = window.Zeph;
+window.Zeph = existing;
+
+document.addEventListener("zeph:initialized",()=>{
+	${loadFirst}
+	${comps}
+});
+`;
+
+		// Write it all out to target.
 		FS.appendFileSync(target,data,{
 			encoding: "utf-8",
 			flags: "as"
 		});
+
+		console.log();
+		console.log("Bundle written to "+target+".");
 	}
 }
 

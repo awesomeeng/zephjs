@@ -14,13 +14,13 @@
     "zeph": "./bin/zeph"
   },
   "dependencies": {
-	  "@awesomeeng/awesome-utils": "^1.4.4",
-	  "@awesomeeng/awesome-server": "^1.2.1",
-	  "@awesomeeng/awesome-log": "^3.0.0",
-	  "@awesomeeng/awesome-cli": "^1.0.1"
+    "@awesomeeng/awesome-utils": "^1.4.4",
+    "@awesomeeng/awesome-server": "^1.2.1",
+    "@awesomeeng/awesome-log": "^3.0.0",
+    "@awesomeeng/awesome-cli": "^1.0.1"
   },
   "devDependencies": {
-	"acorn": "^6.0.5",
+    "acorn": "^6.0.5",
     "jsdoc-to-markdown": "*",
     "mocha": "*"
   },
@@ -41,22 +41,22 @@
     "url": "git+https://github.com/awesomeeng/ZephJS.git"
   },
   "keywords": [
-	  "mistral",
-      "zeph-mistral",
-      "zephjs-mistral",
-      "zeph",
-      "zephjs",
-      "web",
-      "component",
-      "components",
-      "webcomponent",
-      "webcomponents",
-      "web component",
-      "web components",
-      "awesome",
-      "awesomeeng",
-      "awesome",
-      "engineering"
+    "mistral",
+    "zeph-mistral",
+    "zephjs-mistral",
+    "zeph",
+    "zephjs",
+    "web",
+    "component",
+    "components",
+    "webcomponent",
+    "webcomponents",
+    "web component",
+    "web components",
+    "awesome",
+    "awesomeeng",
+    "awesome",
+    "engineering"
   ],
   "bugs": {
     "url": "https://github.com/awesomeeng/ZephJS/issues"
