@@ -152,10 +152,9 @@
 						}));
 					},0);
 
+					let component;
 					let context = {};
-
 					let code = await ComponentCode.generateComponentCode(origin,js,context,asName);
-					if (!context.name && !context.pending) throw new Error("Invalid url; unable to load anything: "+origin);
 
 					if (context.name) {
 						let markups = await Promise.all((context.html||[]).map((html)=>{
@@ -185,7 +184,7 @@
 							return reject(ex);
 						}
 
-						let component = new Component(origin,context.name,code,markups,styles);
+						component = new Component(origin,context.name,code,markups,styles);
 						COMPONENTS[context.name] = component;
 
 						fireImmediately(context.init,component,context);
@@ -208,7 +207,7 @@
 						},5);
 					}
 
-					resolve();
+					resolve(component);
 				}
 				catch (ex) {
 					return reject(ex);
@@ -952,7 +951,6 @@
 
 		load(url,asName) {
 			notUON(url,"url");
-			if (!url) throw new Error("Missing url.");
 			if (!(url instanceof URL) && typeof url!=="string") throw new Error("Invalid url; must be a string or URL.");
 			if (typeof url==="string") url = resolveURL(url);
 			if (asName && typeof asName!=="string") throw new Error("Invalid asName; must be a string.");
@@ -971,6 +969,23 @@
 					// error.stack = error.stack.join("\n");
 					// reject(error);
 					reject(ex);
+				}
+			});
+		}
+
+		define(code,asName,origin) {
+			notUON(code,"code");
+			if (typeof code!=="string" && !(code instanceof Function)) throw new Error("Invalid code; must be a string or a Function.");
+			if (asName && typeof asName!=="string") throw new Error("Invalid asName; must be a string.");
+			if (asName && asName.indexOf("-")<0) throw new Error("Invalid asName; must contain at least one dash character.");
+
+			return new Promise(async (resolve,reject)=>{
+				try {
+					await Component.defineComponent(origin||"inline",code,asName);
+					resolve();
+				}
+				catch (ex) {
+					return reject(ex);
 				}
 			});
 		}

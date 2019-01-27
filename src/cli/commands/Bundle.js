@@ -143,8 +143,11 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 				let end = next.end+offset;
 
 				let code = ref.code;
-				code = code.slice(0,start)+" /*"+code.slice(start,end)+"*/"+code.slice(end);
+				code = code.slice(0,start)+"/*"+code.slice(start,end)+"*/"+code.slice(end);
 				ref.code = code;
+
+				offset += 4;
+
 			}
 			else if (token.type.label==="name" && (token.value==="html" || token.value==="css")) {
 				let content = ref.tokens[i+2];
@@ -244,7 +247,9 @@ For more details about ZephJS, please visit https://zephjs.com
 		let components = "";
 		refs.forEach((ref)=>{
 			if (!quiet) console.log("Outputting "+ref.source);
-			components += `Zeph.define(\`${ref.code}\`);\n`;
+			let code = ref.code.replace(/`/g,"\\`");
+			let origin = Path.basename(ref.source);
+			components += `Zeph.define(\`${code}\`,null,"${origin}");\n`;
 		});
 
 		// Now write it all out
@@ -253,10 +258,11 @@ ${header}
 
 let existing = window.Zeph;
 ${zeph}
-let Zeph = window.Zeph;
-window.Zeph = existing;
 
 document.addEventListener("zeph:initialized",()=>{
+	let Zeph = window.Zeph;
+	window.Zeph = existing;
+
 	${components}
 });
 `;
