@@ -54,15 +54,23 @@ class Create extends AwesomeCLI.AbstractCommand {
 		}
 		else {
 			args.forEach((arg)=>{
-				let path = Path.resolve(cwd,arg);
-				if (!AwesomeUtils.FS.existsSync(path)) {
-					Log.warn("Path "+arg+" did not resolve to a valid file or directory; skipping.");
-					return;
+				let path,route;
+				if (arg==="." || arg==="/" || arg==="./") {
+					path = cwd;
+					route = "/";
 				}
 				else {
-					let route = ("/"+path.slice(cwd.length+1)).replace(/\/\.\//,"/");
+					path = Path.resolve(cwd,arg);
+					route = ("/"+path.slice(cwd.length+1)).replace(/\/\.\//,"/");
+				}
+
+				if (path && route && AwesomeUtils.FS.existsSync(path)) {
 					server.serve(route,path);
 					Log.info("Serving "+route+" from "+path);
+				}
+				else {
+					Log.warn("Path "+arg+" did not resolve to a valid file or directory; skipping.");
+					return;
 				}
 			});
 		}
