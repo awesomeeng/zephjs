@@ -65,11 +65,16 @@
 		notEmpty(path,"path");
 		if (!(path instanceof URL) && typeof path!=="string") throw new Error("Invalid path; must be a string or URL.");
 
-		if (typeof path==="string") {
-			if (path.startsWith("data:")) return new URL(path);
-		}
+		try {
+			if (typeof path==="string") {
+				if (path.startsWith("data:")) return new URL(path);
+			}
 
-		return new URL(path,baseurl);
+			return new URL(path,baseurl);
+		}
+		catch (ex) {
+			return null;
+		}
 	};
 
 	const fetchText = function fetchText(url) {
@@ -96,14 +101,22 @@
 		if (s==="/") return true;
 		if (s===".") return true;
 		if (s==="..") return true;
-		if (s.startsWith("/")) return true;
+		if (s.startsWith("/") && !s.startsWith("/*") && !s.startsWith("//")) return true;
 		if (s.startsWith("./")) return true;
 		if (s.startsWith("../")) return true;
 		if (s.startsWith("http://")) return true;
 		if (s.startsWith("https://")) return true;
 		if (s.startsWith("ftp://")) return true;
+		if (s.indexOf(" ")<0) return true;
 
-		return false;
+		try {
+			new URL(s);
+		}
+		catch (ex) {
+			return false;
+		}
+
+		return true;
 	};
 
 	const fire = function fire(listeners,...args) {
@@ -168,16 +181,41 @@
 					let func;
 					if (typeof code==="string") {
 						let wrapped = "()=>{"+code+"}";
-						func = eval(wrapped);
+						try {
+							func = eval(wrapped);
+						}
+						catch (ex) {
+							let stack = ex.stack;
+							let line = parseInt(stack.replace(/\r\n|\n/g,"").replace(/.*at eval.*<anonymous>:(\d+).*/,"$1"));
+							line += 6;
+							throw new Error("Syntax Error in compontent() code for "+origin+", line "+line+": "+ex.message);
+						}
 					}
 					else if (code instanceof Function) {
-						func = eval(code.toString());
+						try {
+							func = eval(code.toString());
+						}
+						catch (ex) {
+							let stack = ex.stack;
+							let line = parseInt(stack.replace(/\r\n|\n/g,"").replace(/.*at eval.*<anonymous>:(\d+).*/,"$1"));
+							line += 6;
+							throw new Error("Syntax Error in compontent() code for "+origin+", line "+line+": "+ex.message);
+						}
 					}
 					else {
 						throw new Error("Code must be a string or a Function.");
 					}
 
-					func();
+					try {
+						func();
+					}
+					catch (ex) {
+						let stack = ex.stack;
+						let line = parseInt(stack.replace(/\r\n|\n/g,"").replace(/.*at eval.*<anonymous>:(\d+).*/,"$1"));
+						line += 6;
+						console.log(2,origin,code,asName);
+						throw new Error("Execution Error in compontent() code for "+origin+", line "+line+": "+ex.message);
+					}
 
 					await Promise.all(context.components||[]);
 					await Promise.all(context.services||[]);
@@ -233,7 +271,10 @@
 			notUON(url,"url");
 			if (!(url instanceof URL) && typeof url!=="string") throw new Error("load() url must be a URL or a string.");
 
-			url = resolveURL(url,origin);
+			if (isURLOrPath(url)) {
+				let resolved = resolveURL(url,origin);
+				if (resolved) url = resolved;
+			}
 
 			let load = window.Zeph.load(url,asName);
 			context.loads.push(load);
@@ -379,21 +420,37 @@
 
 							srcele.forEach((srcele)=>{
 								let handler;
-								if (binding.target.type==="attribute") {
+								if (binding.target.name.startsWith("@")) {
 									handler = (value)=>{
+										let name = binding.target.name.slice(1);
 										value = binding.transform(value);
 										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
 										targets.forEach((target)=>{
 											if (value===undefined) {
-												target.removeAttribute(binding.target.name);
+												target.removeAttribute(name);
 											}
-											else if (target.getAttribute(binding.target.name)!==value) {
-												target.setAttribute(binding.target.name,value);
+											else if (target.getAttribute(name)!==value) {
+												target.setAttribute(name,value);
 											}
 										});
 									};
 								}
-								else if (binding.target.type==="content") {
+								else if (binding.target.name.startsWith("#")) {
+									handler = (value)=>{
+										let name = binding.target.name.slice(1);
+										value = binding.transform(value);
+										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+										targets.forEach((target)=>{
+											if (value===undefined) {
+												delete target[name];
+											}
+											else if (target[name]!==value) {
+												target[name] = value;
+											}
+										});
+									};
+								}
+								else if (binding.target.name==="$") {
 									handler = (value)=>{
 										value = binding.transform(value);
 										if (value===undefined) return;
@@ -403,21 +460,12 @@
 										});
 									};
 								}
-								else if (binding.target.type==="property") {
-									handler = (value)=>{
-										value = binding.transform(value);
-										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
-										targets.forEach((target)=>{
-											if (value===undefined) {
-												delete target[binding.target.name];
-											}
-											else if (target[binding.target.name]!==value) {
-												target[binding.target.name] = value;
-											}
-										});
-									};
+								else {
+									/* eslint-disable no-console */
+									console.warn("Unable to handle binding to '"+binding.target.name+"'; Must start with '@' or '$' or '#'.");
+									/* eslint-enable no-console */
+									return;
 								}
-								if (!handler) return;
 
 								if (!srcele[$OBSERVER]) {
 									srcele[$OBSERVER] = new ElementObserver(srcele);
@@ -427,15 +475,16 @@
 								// first we run the handler for the initial alignment,
 								// then we register the observer.
 								let observer = srcele[$OBSERVER];
-								if (binding.source.type==="attribute") {
-									if (srcele.hasAttribute(binding.source.name)) {
-										let value =  srcele.getAttribute(binding.source.name);
-										handler(value,binding.source.name,srcele);
+								if (binding.source.name.startsWith("@")) {
+									let name = binding.source.name.slice(1);
+									if (srcele.hasAttribute(name)) {
+										let value =  srcele.getAttribute(name);
+										handler(value,name,srcele);
 									}
 
-									observer.addAttributeObserver(binding.source.name,handler);
+									observer.addAttributeObserver(name,handler);
 								}
-								else if (binding.source.type==="content") {
+								else if (binding.source.name==="$") {
 									let value = srcele.textContent;
 									handler(value,null,srcele);
 
@@ -504,24 +553,22 @@
 	}
 
 	class ComponentCode {
-		static generateComponentCode(origin,js,context={}) {
+		static generateComponentCode(origin,code,context={}) {
 			return new Promise(async (resolve,reject)=>{
 				try {
-					let url;
-
-					if (js.toString().startsWith("data:")) {
-						js = js.toString().replace(/^data:.*?,/,"");
+					if (code.toString().startsWith("data:")) {
+						code = code.toString().replace(/^data:.*?,/,"");
 					}
 
-					if (isURLOrPath(js)) {
-						url = resolveURL(js);
-						if (url.pathname.endsWith(".js")) {
+					if (isURLOrPath(code)) {
+						let url = resolveURL(code);
+						if (url && url.pathname.endsWith(".code")) {
 							origin = url;
-							js = await fetchText(url);
+							code = await fetchText(url);
 						}
 					}
 
-					let code = new ComponentCode(origin||document.URL,js,context);
+					let codeClass = new ComponentCode(origin||document.URL,code,context);
 
 					if (context.pending) {
 						let promised = context.pending.filter((def)=>{
@@ -530,7 +577,7 @@
 						await Promise.all(promised);
 					}
 
-					resolve(code);
+					resolve(codeClass);
 				}
 				catch (ex) {
 					return reject(ex);
@@ -550,22 +597,10 @@
 			let html = this.html.bind(this,context);
 			let css = this.css.bind(this,context);
 			let binding = this.binding.bind(this,context);
-			let bindAttributes = this.bindAttributes.bind(this,context);
-			let bindAttributeToAttribute = this.bindAttributeToAttribute.bind(this,context);
-			let bindAttributeToContent = this.bindAttributeToContent.bind(this,context);
-			let bindAttributeToProperty = this.bindAttributeToProperty.bind(this,context);
-			let bindContentToAttribute = this.bindContentToAttribute.bind(this,context);
-			let bindContents = this.bindContents.bind(this,context);
-			let bindContentToContent = this.bindContentToContent.bind(this,context);
-			let bindContentToProperty = this.bindContentToProperty.bind(this,context);
-			let bindOtherAttributes = this.bindOtherAttributes.bind(this,context);
-			let bindOtherAttributeToAttribute = this.bindOtherAttributeToAttribute.bind(this,context);
-			let bindOtherAttributeToContent = this.bindOtherAttributeToContent.bind(this,context);
-			let bindOtherAttributeToProperty = this.bindOtherAttributeToProperty.bind(this,context);
-			let bindOtherContentToAttribute = this.bindOtherContentToAttribute.bind(this,context);
-			let bindOtherContents = this.bindOtherContents.bind(this,context);
-			let bindOtherContentToContent = this.bindOtherContentToContent.bind(this,context);
-			let bindOtherContentToProperty = this.bindOtherContentToProperty.bind(this,context);
+			let bindAttribute = this.bindAttribute.bind(this,context);
+			let bindContent = this.bindContent.bind(this,context);
+			let bindAttributeAt = this.bindAttributeAt.bind(this,context);
+			let bindContentAt = this.bindContentAt.bind(this,context);
 			let onInit = this.onInit.bind(this,context);
 			let onCreate = this.onCreate.bind(this,context);
 			let onAdd = this.onAdd.bind(this,context);
@@ -578,16 +613,40 @@
 			let func;
 			if (typeof code==="string") {
 				let wrapped = "()=>{"+code+"}";
-				func = eval(wrapped);
+				try {
+					func = eval(wrapped);
+				}
+				catch (ex) {
+					let stack = ex.stack;
+					let line = parseInt(stack.replace(/\r\n|\n/g,"").replace(/.*at eval.*<anonymous>:(\d+).*/,"$1"));
+					line += 6;
+					throw new Error("Syntax Error in compontent() code for "+origin+", line "+line+": "+ex.message);
+				}
 			}
 			else if (code instanceof Function) {
-				func = eval(code.toString());
+				try {
+					func = eval(code.toString());
+				}
+				catch (ex) {
+					let stack = ex.stack;
+					let line = parseInt(stack.replace(/\r\n|\n/g,"").replace(/.*at eval.*<anonymous>:(\d+).*/,"$1"));
+					line += 6;
+					throw new Error("Syntax Error in compontent() code for "+origin+", line "+line+": "+ex.message);
+				}
 			}
 			else {
 				throw new Error("Code must be a string or a Function.");
 			}
 
-			func();
+			try {
+				func();
+			}
+			catch (ex) {
+				let stack = ex.stack;
+				let line = parseInt(stack.replace(/\r\n|\n/g,"").replace(/.*at eval.*<anonymous>:(\d+).*/,"$1"));
+				line += 6;
+				throw new Error("Execution Error in compontent() code for "+origin+", line "+line+": "+ex.message);
+			}
 		}
 
 		get text() {
@@ -603,11 +662,13 @@
 			notEmpty(url,"url");
 			if (!url) throw new Error("Missing url.");
 			if (!(url instanceof URL) && typeof url!=="string") throw new Error("Invalid url; must be a string or URL.");
-			if (typeof url==="string") url = resolveURL(url,baseurl);
 			if (asName && typeof asName!=="string") throw new Error("Invalid asName; must be a string.");
 			if (asName && asName.indexOf("-")<0) throw new Error("Invalid asName; must contain at least one dash character.");
 
-			url = resolveURL(url,baseurl);
+			if (isURLOrPath(url)) {
+				let resolved = resolveURL(url,baseurl);
+				if (resolved) url = resolved;
+			}
 
 			let pending = window.Zeph.load(url,asName);
 			if (pending) {
@@ -636,28 +697,21 @@
 			context.css.push(css);
 		}
 
-		binding(context,sourceElement,sourceType,sourceName,targetElement,targetType,targetName,transformFunction) {
+		binding(context,sourceElement,sourceName,targetElement,targetName,transformFunction) {
 			notUON(sourceElement,"sourceElement");
 			if (typeof sourceElement!=="string" && !(sourceElement instanceof HTMLElement)) throw new Error("Invalid sourceElement; must be a string or an instance of HTMLElement.");
 
-			notUON(sourceType,"sourceType");
-			notString(sourceType,"sourceType");
-			sourceType = sourceType.toLowerCase();
-			if (sourceType!=="attribute" && sourceType!=="content") throw new Error("Invalid sourceType; must be 'attribute' or 'content'.");
-
 			notUON(sourceName,"sourceName");
 			notString(sourceName,"sourceName");
+			if (!sourceName.startsWith("$") && !sourceName.startsWith("@") && !sourceName.startsWith("#")) throw new Error("Invalid sourceName; must start with a '$' or a '@' or a '#'.");
 
 			notUON(targetElement,"targetElement");
 			if (typeof targetElement!=="string" && !(targetElement instanceof HTMLElement)) throw new Error("Invalid targetElement; must be a string or an instance of HTMLElement.");
 
-			notUON(targetType,"targetType");
-			notString(targetType,"targetType");
-			targetType = targetType.toLowerCase();
-			if (targetType!=="attribute" && targetType!=="content" && targetType!=="property") throw new Error("Invalid targetType; must be 'attribute' or 'content' or 'property'.");
 
 			notUON(targetName,"targetName");
 			notString(targetName,"targetName");
+			if (!targetName.startsWith("$") && !targetName.startsWith("@") && !targetName.startsWith("#")) throw new Error("Invalid targetName; must start with a '$' or a '@' or a '#'.");
 
 			notUON(transformFunction,"transformFunction");
 			notFunction(transformFunction,"transformFunction");
@@ -666,80 +720,30 @@
 			context.bindings.push({
 				source: {
 					element: sourceElement,
-					type: sourceType,
 					name: sourceName
 				},
 				target: {
 					element: targetElement,
-					type: targetType,
 					name: targetName
 				},
 				transform: transformFunction
 			});
 		}
 
-		bindAttributes(context,sourceName,targetElement,targetName=sourceName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,".","attribute",sourceName,targetElement,"attribute",targetName,transformFunction);
+		bindAttribute(context,sourceName,targetElement,targetName="@"+sourceName,transformFunction=(x)=>{ return x; }) {
+			return this.binding(context,".","@"+sourceName,targetElement,targetName,transformFunction);
 		}
 
-		bindAttributeToAttribute(context,sourceName,targetElement,targetName=sourceName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,".","attribute",sourceName,targetElement,"attribute",targetName,transformFunction);
+		bindContent(context,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
+			return this.binding(context,".","$",targetElement,targetName,transformFunction);
 		}
 
-		bindAttributeToContent(context,sourceName,targetElement,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,".","attribute",sourceName,targetElement,"content",".",transformFunction);
+		bindAttributeAt(context,sourceElement,sourceName,targetElement,targetName="@"+sourceName,transformFunction=(x)=>{ return x; }) {
+			return this.binding(context,sourceElement,"@"+sourceName,targetElement,targetName,transformFunction);
 		}
 
-		bindAttributeToProperty(context,sourceName,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,".","attribute",sourceName,targetElement,"property",targetName,transformFunction);
-		}
-
-		bindContentToAttribute(context,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,".","content",targetElement,"attribute",targetName,transformFunction);
-		}
-
-		bindContents(context,targetElement,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,".","content",".",targetElement,"content",".",transformFunction);
-		}
-
-		bindContentToContent(context,targetElement,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,".","content",".",targetElement,"content",".",transformFunction);
-		}
-
-		bindContentToProperty(context,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,".","content",".",targetElement,"property",targetName,transformFunction);
-		}
-
-		bindOtherAttributes(context,sourceElement,sourceName,targetElement,targetName=sourceName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,sourceElement,"attribute",sourceName,targetElement,"attribute",targetName,transformFunction);
-		}
-
-		bindOtherAttributeToAttribute(context,sourceElement,sourceName,targetElement,targetName=sourceName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,sourceElement,"attribute",sourceName,targetElement,"attribute",targetName,transformFunction);
-		}
-
-		bindOtherAttributeToContent(context,sourceElement,sourceName,targetElement,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,sourceElement,"attribute",sourceName,targetElement,"content",".",transformFunction);
-		}
-
-		bindOtherAttributeToProperty(context,sourceElement,sourceName,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,sourceElement,"attribute",sourceName,targetElement,"property",targetName,transformFunction);
-		}
-
-		bindOtherContentToAttribute(context,sourceElement,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,sourceElement,"content",targetElement,"attribute",targetName,transformFunction);
-		}
-
-		bindOtherContents(context,sourceElement,targetElement,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,sourceElement,"content",".",targetElement,"content",".",transformFunction);
-		}
-
-		bindOtherContentToContent(context,sourceElement,targetElement,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,sourceElement,"content",".",targetElement,"content",".",transformFunction);
-		}
-
-		bindOtherContentToProperty(context,sourceElement,targetElement,targetName,transformFunction=(x)=>{ return x; }) {
-			return this.binding(context,sourceElement,"content",".",targetElement,"property",targetName,transformFunction);
+		bindContentAt(context,sourceElement,targetElement,transformFunction=(x)=>{ return x; }) {
+			return this.binding(context,sourceElement,"$",targetElement,"$",transformFunction);
 		}
 
 		onInit(context,listener) {
@@ -814,7 +818,7 @@
 				try {
 					if (isURLOrPath(html)) {
 						let url = resolveURL(html,origin);
-						if (url.pathname.endsWith(".html")) {
+						if (url && url.pathname.endsWith(".html")) {
 							origin = url;
 							html = await fetchText(url);
 						}
@@ -849,7 +853,7 @@
 				try {
 					if (isURLOrPath(css)) {
 						let url = resolveURL(css,origin);
-						if (url.pathname.endsWith(".css")) {
+						if (url && url.pathname.endsWith(".css")) {
 							origin = url;
 							css = await fetchText(url);
 						}
@@ -992,7 +996,7 @@
 		load(url,asName) {
 			notUON(url,"url");
 			if (!(url instanceof URL) && typeof url!=="string") throw new Error("Invalid url; must be a string or URL.");
-			if (typeof url==="string") url = resolveURL(url);
+
 			if (asName && typeof asName!=="string") throw new Error("Invalid asName; must be a string.");
 			if (asName && asName.indexOf("-")<0) throw new Error("Invalid asName; must contain at least one dash character.");
 
@@ -1007,8 +1011,14 @@
 					}
 					else if (isURLOrPath(url)) {
 						let ext = url.toString().match(/\.[^/]+/) ? url.toString().replace(/^.*\.([^/]*)$/,"$1") : "";
-						if (!ext) url = new URL(url.toString()+".js");
-						url = resolveURL(url);
+						if (!ext) {
+							let resolved = resolveURL(url.toString()+".js");
+							if (resolved) url = resolved;
+						}
+
+						let resolved = resolveURL(url);
+						if (resolved) url = resolved;
+
 						try {
 							code = await fetchText(url);
 							origin = url.toString();
