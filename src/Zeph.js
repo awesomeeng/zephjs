@@ -16,6 +16,7 @@
 
 	const COMPONENTS = {};
 	const PENDING = {};
+	const SERVICES = {};
 
 	/* eslint-disable no-unused-vars */
 	const notUndefined = function notUndefined(arg,name) {
@@ -213,7 +214,6 @@
 						let stack = ex.stack;
 						let line = parseInt(stack.replace(/\r\n|\n/g,"").replace(/.*at eval.*<anonymous>:(\d+).*/,"$1"));
 						line += 6;
-						console.log(2,origin,code,asName);
 						throw new Error("Execution Error in compontent() code for "+origin+", line "+line+": "+ex.message);
 					}
 
@@ -263,8 +263,18 @@
 			context.components.push(component);
 		}
 
-		service(context,origin) {
+		service(context,origin,name,service) {
+			notUON(name,"name");
+			notString(name,"name");
+			notEmpty(name,"name");
 
+			notUON(service,"service");
+			if (typeof service!=="object") throw new Error("Service must be an object.");
+			if (service instanceof Function) throw new Error("Service must not be a function.");
+			if (service instanceof Array) throw new Error("Service must not be an Array.");
+
+			let srvc = window.Zeph.registerService(name,service);
+			context.services.push(srvc);
 		}
 
 		load(context,origin,url,asName) {
@@ -981,9 +991,22 @@
 		}
 	}
 
+	class AbstractService {
+		constructor() {
+		}
+	}
+
 	class ZephClass {
+		get AbstractService() {
+			return AbstractService;
+		}
+
 		get components() {
 			return Object.keys(COMPONENTS);
+		}
+
+		get services() {
+			return SERVICES;
 		}
 
 		getComponent(name) {
@@ -1083,6 +1106,35 @@
 			components.forEach((name)=>{
 				this.removeComponent(name);
 			});
+		}
+
+		registerService(name,service) {
+			notUON(name,"name");
+			notString(name,"name");
+			notEmpty(name,"name");
+
+			notUON(service,"service");
+			if (typeof service!=="object") throw new Error("Service must be an object.");
+			if (service instanceof Function) throw new Error("Service must not be a function.");
+			if (service instanceof Array) throw new Error("Service must not be an Array.");
+
+			SERVICES[name] = service;
+		}
+
+		unregisterService(name) {
+			notUON(name,"name");
+			notString(name,"name");
+			notEmpty(name,"name");
+
+			delete SERVICES[name];
+		}
+
+		getService(name) {
+			notUON(name,"name");
+			notString(name,"name");
+			notEmpty(name,"name");
+
+			return SERVICES[name] || null;
 		}
 	}
 

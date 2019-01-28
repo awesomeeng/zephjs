@@ -1,0 +1,40 @@
+.quote {
+	font-family: serif;
+	font-weight: bold;
+	font-size: 32px;
+	z-index: 1;
+	position: relative;
+	padding: 10px 64px;
+}
+
+.quote:before {
+	content: "\2018\2018";
+	font-size: 64px;
+	color: #AAAAAA;
+	z-index: 2;
+	position: absolute;
+	top: -10px;
+	left: 25px;
+	letter-spacing: -2px;
+}
+
+.quote:after {
+	content: "\2019\2019";
+	font-size: 64px;
+	color: #AAAAAA;
+	position: absolute;
+	letter-spacing: -2px;
+	margin-top: 5px;
+	margin-left: 5px;
+}
+
+.person {
+	list-style-type: "-";
+	font-style: italic;
+	margin-left: 85px;
+}
+
+.person:before {
+	content: "\2014";
+	padding-right: 5px;
+}
