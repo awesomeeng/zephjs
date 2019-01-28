@@ -4,11 +4,18 @@ ZephJS (commonly called just "Zeph" and pronounced "Zef") is an ultra-light fram
 
 ## Justification
 
-The promise of Web Components was that we would be able to just load a component onto our web page and use it. But to date, that promise has not been fulfilled.
+The promise of Web Components was that we would be able to easily load a component onto our web page and use it. But to date that promise has not been fulfilled. The current Web Components standards lack an implemented method for easily loading components or component libraries, and writing a web component in JavaScript is far from an easy or straight-forward task.  Couple this with the current generation of web frameworks that add even more complexity to what was promised to be a very simple activity. Writing a web component should not require you to learn a new language (or superset lagnuage) or learn a new programming paradigm. It should be simple, obvious, and require no more effort than writing JavaScript/HTML/CSS does.
 
-At the same time, the rise of the complex Web Application Framework (aka Angular, React, Vue) is telling everyone that the only way to build web applications is thier way. But not every web page needs a big complex solution.
+ZephJS aims to bring the promised ease of web components back to our community. It does so by living up the following principals:
 
-ZephJS aims to solve both those problems by being incredibly light, super easy to use, and dead simple to include.
+ - Make it easy for a component or component library to be used by others!
+ - No new languages!
+ - No new programming paradigms.
+ - Use the standards and technologies that have made the web great from the beginning.
+ - Apply modern browser standards (Web Components, Shadow DOM, ElementOberserver, etc).
+ - Keep it incredibly small and light. ZephJS is currently less than 32k.
+
+Please dont misunderstand us: React, Vue, Angular, Svelte (more people should use Svelte) all have their place. Very large web applications will always have a need for frameworks such as these. Server-side rendering is also a valuable consideration. But a lot of sites dont need this kind of weight; they just want to drop in a handful of components and go.  And that's the space for whicch ZephJS was built.
 
 ## Usage
 
