@@ -4,6 +4,7 @@
 
 (()=>{
 	const $NAME = Symbol("name");
+	const $ASNAME = Symbol("asName");
 	const $ORIGIN = Symbol("origin");
 	const $ELEMENT = Symbol("element");
 	const $SHADOW = Symbol("shadow");
@@ -121,82 +122,73 @@
 		});
 	};
 
-	class Component {
-		static generateComponent(url,asName) {
-			notUON(url,"url");
-			notEmpty(url,"url");
-			if (!url) throw new Error("Missing url.");
-			if (!(url instanceof URL)) throw new Error("Invalid url; must be a URL.");
+	class ZephContainer {
+		constructor(origin,code,asName) {
+			notUON(origin,"origin");
+			notString(origin,"origin");
+			notEmpty(origin,"origin");
+
+			notUON(code,"code");
+			if (typeof code!=="string" && !(code instanceof Function)) throw new Error("Invalid code; must be a string or a function.");
+
 			if (asName && typeof asName!=="string") throw new Error("Invalid asName; must be a string.");
-			if (asName && asName.indexOf("-")<0) throw new Error("Invalid asName; must contain at least one dash character.");
 
-			let name = url.pathname.split("/").slice(-1)[0];
-			if (name.indexOf(".")<0) url.pathname = url.pathname + ".js";
-			name = name.replace(/\..+$/,"");
-
-			let origin = url;
-			if (origin.toString().startsWith("data:")) origin = "data:";
-			if (PENDING[origin]) return Promise.resolve();
-
-			return Component.defineComponent(origin,url,asName);
+			this[$ORIGIN] = origin;
+			this[$CODE] = code;
+			this[$ASNAME] = asName || null;
 		}
 
-		static defineComponent(origin,js,asName) {
+		run() {
 			return new Promise(async (resolve,reject)=>{
 				try {
+					let origin = this[$ORIGIN];
+					let asName = this[$ASNAME];
+
+					if (PENDING[origin]) return resolve();
 					PENDING[origin] = true;
-					setTimeout(()=>{
-						document.dispatchEvent(new CustomEvent("zeph:loading",{
-							bubbles: false,
-							detail: origin
-						}));
-					},0);
 
-					let component;
-					let context = {};
-					let code = await ComponentCode.generateComponentCode(origin,js,context,asName);
+					document.dispatchEvent(new CustomEvent("zeph:loading",{
+						bubbles: false,
+						detail: origin
+					}));
 
-					if (context.name) {
-						let markups = await Promise.all((context.html||[]).map((html)=>{
-							return ComponentMarkup.generateComponentMarkup(origin,html || "");
+					let code = this[$CODE];
+					let context = {
+						components: [],
+						services: [],
+						loads: []
+					};
 
-						}));
-						let styles = await Promise.all((context.css||[]).map((css)=>{
-							return ComponentStyle.generateComponentStyle(origin,css || "");
+					/* eslint-disable no-unused-vars */
+					let component = this.component.bind(this,context,origin,asName);
+					let service = this.service.bind(this,context,origin);
+					let load = this.load.bind(this,context,origin);
+					/* eslint-enable no-unused-vars */
 
-						}));
-						let clazz = ComponentClass.generateComponentClass(context,code,markups,styles);
-
-						context.name = context.name || name;
-						if (asName) {
-							if (asName.startsWith("*")) context.name = context.name+asName.slice(1);
-							else if (asName.endsWith("*")) context.name = asName.slice(0,-1)+context.name;
-							else context.name = asName;
-						}
-						if (!context.name) throw new Error("Component was not named.");
-						if (context.name && context.name.indexOf("-")<0) throw new Error("Invalid name; must contain at least one dash character.");
-
-						try {
-							customElements.define(context.name,clazz);
-						}
-						catch (ex) {
-							ex.message = "Error when defining component "+context.name+": "+ex.message;
-							return reject(ex);
-						}
-
-						component = new Component(origin,context.name,code,markups,styles);
-						COMPONENTS[context.name] = component;
-
-						fireImmediately(context.init,component,context);
+					let func;
+					if (typeof code==="string") {
+						let wrapped = "()=>{"+code+"}";
+						func = eval(wrapped);
+					}
+					else if (code instanceof Function) {
+						func = eval(code.toString());
+					}
+					else {
+						throw new Error("Code must be a string or a Function.");
 					}
 
+					func();
+
+					await Promise.all(context.components||[]);
+					await Promise.all(context.services||[]);
+					await Promise.all(context.loads||[]);
+
+					document.dispatchEvent(new CustomEvent("zeph:loaded",{
+						bubbles: false,
+						detail: origin
+					}));
+
 					delete PENDING[origin];
-					setTimeout(()=>{
-						document.dispatchEvent(new CustomEvent("zeph:loaded",{
-							bubbles: false,
-							detail: origin
-						}));
-					},0);
 					if (Object.keys(PENDING).length<1) {
 						setTimeout(()=>{
 							if (Object.keys(PENDING).length>0) return;
@@ -206,6 +198,91 @@
 							}));
 						},5);
 					}
+
+					resolve();
+				}
+				catch (ex) {
+					return reject(ex);
+				}
+			});
+		}
+
+		component(context,origin,asName,name,code) {
+			notUON(origin,"origin");
+			notString(origin,"origin");
+			notEmpty(origin,"origin");
+
+			notUON(name,"name");
+			notString(name,"name");
+			notEmpty(name,"name");
+
+			notUON(code,"code");
+			notFunction(code,"code");
+
+			let component = Component.createComponent(origin,name,code,asName);
+			if (!component) throw new Error("No component created for "+name+" component.");
+
+			context.components.push(component);
+		}
+
+		service(context,origin) {
+
+		}
+
+		load(context,origin,url,asName) {
+			notUON(url,"url");
+			if (!(url instanceof URL) && typeof url!=="string") throw new Error("load() url must be a URL or a string.");
+
+			url = resolveURL(url,origin);
+
+			let load = window.Zeph.load(url,asName);
+			context.loads.push(load);
+		}
+	}
+
+	class Component {
+		static createComponent(origin,name,code,asName) {
+			return new Promise(async (resolve,reject)=>{
+				try {
+					let component;
+					let context = {};
+					code = await ComponentCode.generateComponentCode(origin,code,context,asName);
+
+					let markups = await Promise.all((context.html||[]).map((html)=>{
+						return ComponentMarkup.generateComponentMarkup(origin,html || "");
+
+					}));
+					let styles = await Promise.all((context.css||[]).map((css)=>{
+						return ComponentStyle.generateComponentStyle(origin,css || "");
+
+					}));
+					let clazz = ComponentClass.generateComponentClass(context,code,markups,styles);
+
+					context.name = context.name || name;
+					if (asName) {
+						if (asName.startsWith("*")) context.name = context.name+asName.slice(1);
+						else if (asName.endsWith("*")) context.name = asName.slice(0,-1)+context.name;
+						else context.name = asName;
+					}
+					if (!context.name) throw new Error("Component was not named.");
+					if (context.name && context.name.indexOf("-")<0) throw new Error("Invalid name; must contain at least one dash character.");
+
+					try {
+						customElements.define(context.name,clazz);
+					}
+					catch (ex) {
+						return reject(new Error("Error when defining component "+context.name+" at "+origin+": "+ex.message));
+					}
+
+					component = new Component(origin,context.name,code,markups,styles);
+					COMPONENTS[context.name] = component;
+
+					fireImmediately(context.init,component,context);
+
+					document.dispatchEvent(new CustomEvent("zeph:component",{
+						bubbles: false,
+						detail: component
+					}));
 
 					resolve(component);
 				}
@@ -427,13 +504,13 @@
 	}
 
 	class ComponentCode {
-		static generateComponentCode(origin,js,context={},asName=undefined) {
+		static generateComponentCode(origin,js,context={}) {
 			return new Promise(async (resolve,reject)=>{
 				try {
 					let url;
 
 					if (js.toString().startsWith("data:")) {
-						js = js.toString().replace(/^data:.*,/,"");
+						js = js.toString().replace(/^data:.*?,/,"");
 					}
 
 					if (isURLOrPath(js)) {
@@ -444,7 +521,7 @@
 						}
 					}
 
-					let code = new ComponentCode(origin||document.URL,js,context,asName);
+					let code = new ComponentCode(origin||document.URL,js,context);
 
 					if (context.pending) {
 						let promised = context.pending.filter((def)=>{
@@ -461,18 +538,15 @@
 			});
 		}
 
-		constructor(origin,code,context,asName) {
+		constructor(origin,code,context) {
 			if (code===undefined || code===null) throw new Error("No code for component definition.");
 
 			this[$ORIGIN] = origin;
 			this[$TEXT] = code.toString();
 
 			/* eslint-disable no-unused-vars */
-			let define = this.define.bind(this,context,origin,asName);
 			let requires = this.requires.bind(this,context,origin);
 			let load = this.load.bind(this,context,origin);
-			let name = this.name.bind(this,context);
-			let from = this.from.bind(this,context);
 			let html = this.html.bind(this,context);
 			let css = this.css.bind(this,context);
 			let binding = this.binding.bind(this,context);
@@ -524,21 +598,6 @@
 			return this[$ORIGIN];
 		}
 
-		define(context,origin,prefixOrSuffix,code,asName) {
-			notUON(code,"code");
-			if (!(code instanceof Function)) throw new Error("Invalid code; must be a Function.");
-			if (asName && typeof asName!=="string") throw new Error("Invalid asName; must be a string.");
-			if (asName && asName.indexOf("-")<0) throw new Error("Invalid asName; must contain at least one dash character.");
-
-			if (!asName && prefixOrSuffix && (prefixOrSuffix.endsWith("*") || prefixOrSuffix.startsWith("*"))) asName = prefixOrSuffix;
-
-			let pending = Component.defineComponent(origin,code,asName);
-			if (pending) {
-				context.pending = context.pending || [];
-				context.pending.push(pending);
-			}
-		}
-
 		requires(context,baseurl,url,asName) {
 			notUON(url,"url");
 			notEmpty(url,"url");
@@ -559,25 +618,6 @@
 
 		load(context,baseurl,url,asName) {
 			this.requires(context,baseurl,url,asName);
-		}
-
-		name(context,name) {
-			notUON(name,"name");
-			notEmpty(name,"name");
-			notString(name,"name");
-
-			context.name = name;
-		}
-
-		from(context,element) {
-			notUON(element,"element");
-			if (typeof element!=="string" && element!==HTMLElement && !HTMLElement.isPrototypeOf(element)) throw new Error("Invalid from element; must be a string.");
-
-			let clazz = element===HTMLElement && element || HTMLElement.isPrototypeOf(element) && element || window[element];
-			if (!clazz) throw new Error("Invalid from element; must be the name of or class of an existing subclass of HTMLElement.");
-			if (clazz!==HTMLElement && !HTMLElement.isPrototypeOf(clazz)) throw new Error("Invlaid from name; must extend from HTMLElement.");
-
-			context.from = clazz.name;
 		}
 
 		html(context,html) {
@@ -958,7 +998,33 @@
 
 			return new Promise(async (resolve,reject)=>{
 				try {
-					await Component.generateComponent(url,asName);
+					let code = "";
+					let origin = document.URL.toString();
+
+					if (url.toString().startsWith("data:")) {
+						code = url.toString().replace(/^data:.*?,/,"");
+						origin = document.URL.toString()+":[inline]";
+					}
+					else if (isURLOrPath(url)) {
+						let ext = url.toString().match(/\.[^/]+/) ? url.toString().replace(/^.*\.([^/]*)$/,"$1") : "";
+						if (!ext) url = new URL(url.toString()+".js");
+						url = resolveURL(url);
+						try {
+							code = await fetchText(url);
+							origin = url.toString();
+						}
+						catch (ex) {
+							return reject("Unable to resolve "+url.toString()+".");
+						}
+					}
+					else {
+						code = url;
+						origin = document.URL.toString()+":[inline]";
+					}
+
+					let container = new ZephContainer(origin,code,asName);
+					await container.run();
+
 					resolve();
 				}
 				catch (ex) {
@@ -981,7 +1047,9 @@
 
 			return new Promise(async (resolve,reject)=>{
 				try {
-					await Component.defineComponent(origin||"inline",code,asName);
+					let container = new ZephContainer(origin,code,asName);
+					await container.run();
+
 					resolve();
 				}
 				catch (ex) {

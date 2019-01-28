@@ -8,6 +8,18 @@
 			document.addEventListener("zeph:initialized",()=>{
 				Zeph.load("awesome-hello-badge");
 			});
+			document.addEventListener("zeph:loading",(event)=>{
+				console.log("zeph:loading",event.detail.toString());
+			});
+			document.addEventListener("zeph:loaded",(event)=>{
+				console.log("zeph:loaded",event.detail.toString());
+			});
+			document.addEventListener("zeph:component",(event)=>{
+				console.log("zeph:component",event.detail.name);
+			});
+			document.addEventListener("zeph:ready",()=>{
+				console.log("zeph:ready");
+			});
 		</script>
 	</head>
 	<body>

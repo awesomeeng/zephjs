@@ -1,11 +1,10 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global define,name,html,css */
+/* global component,html,css */
 
 "use strict";
 
-define(()=>{
-	name("component-one");
+component("component-one",()=>{
 	html(`
 		<div class="one">
 			I am component one!
@@ -18,8 +17,7 @@ define(()=>{
 	`);
 });
 
-define(()=>{
-	name("component-two");
+component("component-two",()=>{
 	html(`
 		<div class="two">
 			I am component two!
@@ -32,8 +30,7 @@ define(()=>{
 	`);
 });
 
-define(()=>{
-	name("component-three");
+component("component-three",()=>{
 	html(`
 		<div class="three">
 			I am component three!

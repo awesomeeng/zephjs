@@ -152,16 +152,24 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 			else if (token.type.label==="name" && (token.value==="html" || token.value==="css")) {
 				let content = ref.tokens[i+2];
 				let following = ref.tokens[i+3];
-				if (!content || !content.type || !content.type.label || !content.value) {
+				if (!content || !content.type || !content.type.label) {
 					console.error("ERROR: "+ref.source+": "+token.value+"() statement was not syntactically valid.");
 					process.exit();
 				}
-				if (content.type.label!=="string" || !following || !following.type || !following.type.label || following.type.label!==")") {
+
+				let filename;
+				if (content.type.label==="`" && following && following.type && following.type.label && following.type.label==="template") {
+					filename = following.value;
+				}
+				else if (content.type.label==="string" && following && following.type && following.type.label && following.type.label===")") {
+					filename = content.value;
+				}
+				else {
+					console.log(content,following);
 					console.error("ERROR: "+ref.source+": "+token.value+"() statement may only be a string literal.");
 					process.exit();
 				}
 
-				let filename = content.value;
 				let data = null;
 				if (filename.startsWith("http:") || filename.startsWith("https:") || filename.startsWith("ftp:")) {
 					if (!quiet) console.log("Inlining   "+filename);

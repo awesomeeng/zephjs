@@ -21,6 +21,7 @@ describe("Zeph",function(){
 	it("methods",function(){
 		assert(window.Zeph);
 		assert(window.Zeph.load);
+		assert(window.Zeph.define);
 		assert(window.Zeph.components);
 		assert(window.Zeph.getComponent);
 		assert(window.Zeph.removeComponent);
@@ -29,8 +30,9 @@ describe("Zeph",function(){
 
 	it("load",async function(){
 		await window.Zeph.load(`data:,
-			name("test-component");
+			component("test-component",()=>{});
 		`);
+
 		assert(window.Zeph.components.indexOf("test-component")>-1);
 		assert(window.Zeph.getComponent("test-component"));
 
@@ -45,7 +47,7 @@ describe("Zeph",function(){
 
 	it("undefine",async function(){
 		await window.Zeph.load(`data:,
-			name("test-component");
+			component("test-component",()=>{});
 		`);
 		assert(window.Zeph.components.indexOf("test-component")>-1);
 
@@ -55,42 +57,36 @@ describe("Zeph",function(){
 
 	it("collections",async function(){
 		await window.Zeph.load(`data:,
-			define(()=>{
-				name("component-one");
-			});
-
-			define(()=>{
-				name("component-two");
-			});
-
-			define(()=>{
-				name("component-three");
-			});
+			component("component-one",()=>{});
+			component("component-two",()=>{});
+			component("component-three",()=>{});
 		`);
 		assert.deepStrictEqual(window.Zeph.components,["component-one","component-two","component-three"]);
 	});
 
 	it("markup",async function(){
 		await window.Zeph.load(`data:,
-			name("test-component");
-			html("this is html.");
+			component("test-component",()=>{
+				html("this is html.");
+			});
 		`);
 		let component = window.Zeph.getComponent("test-component");
-		assert.equal(component.markup.text,"this is html.");
+		assert.equal(component.markup[0].text,"this is html.");
 	});
 
 	it("style",async function(){
 		await window.Zeph.load(`data:,
-			name("test-component");
-			css("this is css.");
+			component("test-component",()=>{
+				css("this is css.");
+			});
 		`);
 		let component = window.Zeph.getComponent("test-component");
-		assert.equal(component.style.text,"this is css.");
+		assert.equal(component.style[0].text,"this is css.");
 	});
 
 	it("as",async function(){
 		await window.Zeph.load(`data:,
-			name("test-component");
+			component("test-component",()=>{});
 		`,"my-test-comp");
 		assert(window.Zeph.getComponent("my-test-comp"));
 		assert(!window.Zeph.getComponent("test-component"));
@@ -98,7 +94,7 @@ describe("Zeph",function(){
 
 	it("as prefix",async function(){
 		await window.Zeph.load(`data:,
-			name("test-component");
+			component("test-component",()=>{});
 		`,"wonderful-*");
 		assert(window.Zeph.getComponent("wonderful-test-component"));
 		assert(!window.Zeph.getComponent("test-component"));
@@ -106,7 +102,7 @@ describe("Zeph",function(){
 
 	it("as suffix",async function(){
 		await window.Zeph.load(`data:,
-			name("test-component");
+			component("test-component",()=>{});
 		`,"*-wonderful");
 		assert(window.Zeph.getComponent("test-component-wonderful"));
 		assert(!window.Zeph.getComponent("test-component"));
@@ -114,34 +110,18 @@ describe("Zeph",function(){
 
 	it("as collection prefix",async function(){
 		await window.Zeph.load(`data:,
-			define(()=>{
-				name("component-one");
-			});
-
-			define(()=>{
-				name("component-two");
-			});
-
-			define(()=>{
-				name("component-three");
-			});
+			component("component-one",()=>{});
+			component("component-two",()=>{});
+			component("component-three",()=>{});
 		`,"testing-*");
 		assert.deepStrictEqual(window.Zeph.components,["testing-component-one","testing-component-two","testing-component-three"]);
 	});
 
 	it("as collection suffix",async function(){
 		await window.Zeph.load(`data:,
-			define(()=>{
-				name("component-one");
-			});
-
-			define(()=>{
-				name("component-two");
-			});
-
-			define(()=>{
-				name("component-three");
-			});
+			component("component-one",()=>{});
+			component("component-two",()=>{});
+			component("component-three",()=>{});
 		`,"*-for-testing");
 		assert.deepStrictEqual(window.Zeph.components,["component-one-for-testing","component-two-for-testing","component-three-for-testing"]);
 	});

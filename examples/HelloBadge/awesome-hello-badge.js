@@ -1,11 +1,12 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global name,requires,html,css */
+/* global component,requires,html,css */
 
 "use strict";
 
-requires("awesome-border-layout");
+component("awesome-hello-badge",()=>{
+	requires("awesome-border-layout");
 
-name("awesome-hello-badge");
-html("./awesome-hello-badge.html");
-css("./awesome-hello-badge.css");
+	html("./awesome-hello-badge.html");
+	css("./awesome-hello-badge.css");
+});
