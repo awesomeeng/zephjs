@@ -4,22 +4,20 @@ ZephJS (commonly called just "Zeph" and pronounced "Zef") is an ultra-light fram
 
 ## Justification
 
-The promise of Web Components was that we would be able to easily load a component onto our web page and use it. But to date that promise has not been fulfilled. The current Web Components standards lack an implemented method for easily loading components or component libraries, and writing a web component in JavaScript is far from an easy or straight-forward task.  Couple this with the current generation of web frameworks that add even more complexity to what was promised to be a very simple activity. Writing a web component should not require you to learn a new language (or superset lagnuage) or learn a new programming paradigm. It should be simple, obvious, and require no more effort than writing JavaScript/HTML/CSS does.
+The promise of Web Components was that we would be able to easily load a component onto our web page and use it. But to date that promise has not been fulfilled. The current Web Components standards lack an implemented method for easily loading components or component libraries, and writing a web component in JavaScript is far from an easy or straight-forward task.  Couple this with the current generation of web frameworks that add even more complexity to what was promised to be a very simple activity. Writing a web component should not require you to learn a new language (or superset language) or learn a new programming paradigm. It should be simple, obvious, and require no more effort than writing JavaScript/HTML/CSS does.
 
 ZephJS aims to bring the promised ease of web components back to our community. It does so by living up the following principals:
 
- - Make it easy for a component or component library to be used by others!
- - No new languages!
- - No new programming paradigms.
+ - Make it easy for a component or component library to be used by others.
  - Use the standards and technologies that have made the web great from the beginning.
  - Apply modern browser standards (Web Components, Shadow DOM, ElementOberserver, etc).
  - Keep it incredibly small and light. ZephJS is currently less than 32k.
 
-Please dont misunderstand us: React, Vue, Angular, Svelte (more people should use Svelte) all have their place. Very large web applications will always have a need for frameworks such as these. Server-side rendering is also a valuable consideration. But a lot of sites dont need this kind of weight; they just want to drop in a handful of components and go.  And that's the space for whicch ZephJS was built.
+Please dont misunderstand us: React, Vue, Angular, Svelte (more people should use Svelte) all have their place. Very large web applications will always have a need for frameworks such as these. Server-side rendering is also a valuable consideration. But a lot of sites dont need this kind of weight; they just want to drop in a handful of components and go.  And that's the space for which ZephJS was built.
 
 ## Usage
 
-Mostly people using ZephJS do not even need to know how to use ZephJS. Instead they just want to include a collection of components built on top of ZephJS.  Fortunately, that means they can stop reading now and instead go read the instructions for that component collection.
+Mostly people using ZephJS do not even need to know how to use ZephJS or what it is. Instead they just want to include a collection of components built on top of ZephJS.  Fortunately, that means they can stop reading now and instead go read the instructions for that component collection.
 
 If you are interested in finding a component collection, here is a list of known collections:
 
@@ -29,7 +27,7 @@ However, for those who want to build their own component collections, well, keep
 
 ## Build your first Component
 
-Creating a component or a collection of components using ZephJS is super easy.
+Creating a component in ZephJS is super easy.
 
 #### Step 1 - Install node.js
 
@@ -37,69 +35,15 @@ ZephJS is built as a node.js application, so you will need nodejs installed. You
 
 #### Step 2 - Install ZephJS from npm:
 ```
-npm install zephjs
+npm -g install zephjs
 ```
 
-#### Step 3 - Create a JavaScript file to contain your component:
-
+#### Step 3 - Create the "Hello" example using the ZephJS Command Line tool:
 ```
-// hello-world.js
-
-name("hello-world");
-html("./hello-world.html");
-css("./hello-world.css");
+zeph hello
 ```
 
-#### Step 4 - Create a matching HTML markup file:
-
-```
-<!-- hello-world.html -->
-
-<div class="hello">
-	Hello
-</div>
-<div class="world">
-	World
-</div>
-```
-
-#### Step 5 - Create a matching CSS style file:
-
-```
-/* hello-world.css */
-
-.hello {
-	background: red;
-	font-size: 48px;
-}
-.world {
-	bakground: green;
-	font-size: 48px;
-}
-```
-
-#### Step 6 - Create an index.html file to bring it all together:
-
-```
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-	<head>
-		<meta charset="utf-8">
-		<title>Hello World</title>
-		<script src="zeph.min.js" type="text/javascript"></script>
-		<script>
-			document.addEventListener("zeph:initialized",()=>{
-				Zeph.load("hello-world");
-			});
-		</script>
-	</head>
-	<body>
-		<awesome-hello>Homer Simpson</awesome-hello>
-	</body>
-</html>
-```
-
-#### Step 7 - Run a Server
+#### Step 4 - Run a Server
 
 If you dont have a Web Server installed, dont sweat it. ZephJS's command line tool has you covered.
 
@@ -107,6 +51,149 @@ If you dont have a Web Server installed, dont sweat it. ZephJS's command line to
 zeph serve
 ```
 
-#### Step 8 - Have a Look
+#### Step 5 - Have a Look
 
 Surf your favorite web browser over to [http://localhost:4000](http://localhost:4000) and have a look at your work.
+
+## Breaking Down a Component
+
+Now that we have seen a component in action, lets take a quick look at what makes it tick.
+
+### What is a Web Component?
+
+A Web Component is a set of Browser API standards for defining custom html elements that encapsulate their content (HTML), styling (CSS) and behavior (JavaScript) into a unified, reusable HTML compliant package.  You create a Web Component by defining a custom element name and supplying it iwth content, styling, and behaviors.
+
+However, as is often the case with Browser Standards, using Web Components can be a little confusing and esorteric.  ZephJS aims to solve that by defining a simple, lightweight wrapper around these standards and abstracting away the confusing bits. Using ZephJS makes your components simple and clean, easy to read and work with.  ZephJS is not the only solution out there to do this, but we think it's the best.
+
+You can learn more about Web Components at the [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/Web_Components).
+
+### ZephJS Components
+
+A ZephJS Component is made up of a single `component(name,function)` definition.  The `name` argument provides the name of the custom element you are defining.  The `function` argument provides all the the details about the component and how it works.  When you ran the `zeph hello` command, ZephJS created a `hello-world.js` file that describes the `<hello-world>` component we are going to use. Let's take a look at that code now:
+
+```
+ 1: component("hello-world",()=>{
+ 2:   html("./hello-world.html");
+ 3:   css("./hello-world.css");
+ 4:
+ 5:   bindAttribute("name",".output .name","$");
+ 6:
+ 7:   onEventAt("input","keyup",(event,selected,element)=>{
+ 8:     let value = selected.value;
+ 9:     if (!value) element.removeAttribute("name");
+10:     else element.setAttribute("name",value);
+11:   });
+12: });
+```
+
+ - Line 1 is our component definition. We are defining a component called `hello-world` with the given behavior.
+
+ - Lines 2-12 describe the behaviors for creating that component.
+
+ - Line 2 states that our component will have the given HTML. This can be a string of HTML or a filename to an external source of HTML as shown here.
+
+ - Line 3 states that our component will have the given CSS. This can be a string oc CSS or a filename to an external source of CSS as shown here.
+
+ - Line 5 bind the attribute `name` of the component we are creating, to the attribute of another component in our internal HTML.  We cover binding in much great detail in our [Bindings](./docs/Binding.md) documentation.
+
+ - Lines 7-11 describe an event handler for our custom element. Specifically we are going to listen for a `keyup` Event At (`onEventAt()`) a specific element in our internal html content. When the keyup event occurs, the given function will execute. We cover event handling in much greater detail in our [Event Handling](./docs/EventHandler.md) documentation.
+
+There is a whole lot more you can do in a component definition, but for now lets move on.
+
+### ZephJS Component HTML
+
+In our above component definition we used the `html()` method to specify the HTML we use to make up the internals of our custom element.  In the Hello example, we reference the `hello-world.html` file. Here's what that file looks like:
+
+```
+<div class="input">
+	<div>
+		<label for="name">Enter your first name...</label>
+		<input type="text" name="name"></input>
+	</div>
+</div>
+<div class="output">
+	<div class="hello">Hello there <span class="name"></span>!</div>
+	<div class="greeting">It is a pleasure to meet you.</div>
+</div>
+```
+
+As you can see, the HTML we use is plain old HTML. ZephJS has no special markup templating language or the like. It is 100% plain HTML. You can write any HTML you want (even no HTML at all) including reference to other custom elements.
+
+The HTML you specify becomes the "content" HTML of the component we are defining. And this is where one of the great Web Components Standards comes into play: Shadow DOM. Shadow DOM allows any HTML Element to define a shadow structure that houses an entirely isolated DOM structure of HTML. This shadow HTML is used in rendering the custom element.
+
+ZephJS doesn't want you to worry too much about the Shadow DOM technology, so we handle all of the shadow details for you.  That said, there are some nuances to working with a Shadow DOM. We cover Shadow DOM in more detail in our [Component HTML](./docs/ComponentHTML.md) documentation.
+
+### ZephJS Component CSS
+
+Like the HTML in our Hello example, we use the `css()` method to specify the CSS we use to style our custom element. In the Hello example, we reference the `hello-world.css` file. Here's what that file looks like:
+
+```
+:host {
+	font-family: sans-serif;
+}
+
+.input {
+	width: 400px;
+	margin: 10px;
+	padding: 10px;
+	border: 1px solid black;
+	background: #C0C0C0;
+}
+
+.input label {
+	display: block;
+	font-size: 18px;
+}
+
+.input input {
+	display: block;
+	font-size: 18px;
+	font-weight: bold;
+	border: 2px solid black;
+	border-radius: 2px;
+	background: #FFFFAA;
+	width: 100%;
+	padding: 5px 10px;
+	box-sizing: border-box;
+}
+
+.output {
+	width: 400px;
+	display: grid;
+	grid-row-gap: 10px;
+	border: 1px solid black;
+	background: #E0E0E0;
+	margin: 10px;
+	overflow: hidden;
+	padding: 10px;
+	word-break: break-word;
+	opacity: 0;
+	transition: opacity: 1s;
+}
+
+.output .hello {
+	font-size: 24px;
+}
+
+.output .hello .name {
+	font-weight: bold;
+	text-transform: capitalize;
+}
+
+.output .greeting {
+	font-size: 24px;
+}
+
+:host([name]) .output {
+	opacity: 1;
+	transition: opacity: 1s;
+}
+```
+
+The CSS we use in our `css()` method (or external file) is 100% standard CSS. There are a few selectors like `:host` and `:host()` that might be new to you, but are standard CSS selector.
+
+Like the HTML of our custom element, the CSS your provide is inserted into the Shadow DOM for this element. This means that it only applies to styling the custom element itself or the elements within the shadow.
+
+We cover a lot more stuff about using CSS in custom components in our [Component CSS](./docs/ComponentCSS.md) documentation.
+
+### All Together Now
