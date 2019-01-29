@@ -14,6 +14,8 @@ class CLI extends AwesomeCLI.CommandCLI {
 		// this.addOptionShortcut("a","another"); // maps --a to --another
 
 		this.addCommand("create",AwesomeUtils.Module.resolve(module,"./commands/Create.js"));
+		this.addCommand("hello",AwesomeUtils.Module.resolve(module,"./commands/Hello.js"));
+		this.addCommand("helloworld",AwesomeUtils.Module.resolve(module,"./commands/Hello.js"));
 		this.addCommand("new",AwesomeUtils.Module.resolve(module,"./commands/Create.js"));
 		this.addCommand("bundle",AwesomeUtils.Module.resolve(module,"./commands/Bundle.js"));
 		this.addCommand("serve",AwesomeUtils.Module.resolve(module,"./commands/Serve.js"));

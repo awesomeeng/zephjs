@@ -53,16 +53,16 @@ class Create extends AwesomeCLI.AbstractCommand {
 	and is released under the MIT licesne.
  */
 
-/* global name, from, html, css, define, requires, load, onInit, onCreate, onAdd, onRemove, onAttribute, onEvent, onEventAt, binding, bindAttributes, bindAttributeToAttribute, bindAttributeToContent, bindAttributeToProperty, bindContentToAttribute, bindContents, bindContentToContent, bindContentToProperty, bindOtherAttributes, bindOtherAttributeToAttribute, bindOtherAttributeToContent, bindOtherAttributeToProperty, bindOtherContentToAttribute, bindOtherContents, bindOtherContentToContent, bindOtherContentToProperty */
+/* global component,services,html,css,define,requires,load,bindAttribute,bindContent,bindAttributeAt,bindContentAt,onInit,onCreate,onAdd,onRemove,onAttribute,onEvent,onEventAt */
 
 "use strict";
 
-name("${name}");
-html("${htmlpath}");
-css("${csspath}");
+component("${name}",()=>{
+	html("${htmlpath}");
+	css("${csspath}");
 
-// Place your JS code here. See the ZephJS documentation for more information.
-
+	// Place your JS code here. See the ZephJS documentation for more information.
+});
 `);
 
 			FS.writeFileSync(html,`
