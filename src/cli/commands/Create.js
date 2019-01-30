@@ -7,6 +7,7 @@
 const Path = require("path");
 const FS = require("fs");
 
+const AwesomeUtils = require("@awesomeeng/awesome-utils");
 const AwesomeCLI = require("@awesomeeng/awesome-cli");
 
 class Create extends AwesomeCLI.AbstractCommand {
@@ -44,6 +45,38 @@ class Create extends AwesomeCLI.AbstractCommand {
 			let htmlpath = "./"+rootname+".html";
 			let css = Path.resolve(rootdir,rootname+".css");
 			let csspath = "./"+rootname+".css";
+			let zeph = Path.resolve(rootdir,"Zeph.js");
+			let zephsource = AwesomeUtils.Module.resolve(module,"../../Zeph.js");
+
+			if (AwesomeUtils.FS.existsSync(js)) return console.error("File "+js+" already exists. Stopping to prevent overwritting.");
+			if (AwesomeUtils.FS.existsSync(html)) return console.error("File "+html+" already exists. Stopping to prevent overwritting.");
+			if (AwesomeUtils.FS.existsSync(css)) return console.error("File "+css+" already exists. Stopping to prevent overwritting.");
+
+			if (!AwesomeUtils.FS.existsSync(zeph)) {
+				FS.writeFileSync(zeph,FS.readFileSync(zephsource));
+				console.log("Copied Zeph.js locally.");
+			}
+
+			let index = Path.resolve(rootdir,"index.html");
+
+			if (!AwesomeUtils.FS.existsSync(index)) {
+				FS.writeFileSync(index,`
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>${name}</title>
+
+		<!-- Loads the ${name} component. -->
+		<script src="${name}.js" type="module"></script>
+	</head>
+	<body>
+		<${name}></${name}>
+	</body>
+</html>
+`);
+				console.log("Create example index.html file.");
+			}
 
 			FS.writeFileSync(js,`
 /*
@@ -53,15 +86,13 @@ class Create extends AwesomeCLI.AbstractCommand {
 	and is released under the MIT licesne.
  */
 
-/* global component,services,html,css,define,requires,load,bindAttribute,bindContent,bindAttributeAt,bindContentAt,onInit,onCreate,onAdd,onRemove,onAttribute,onEvent,onEventAt */
+import {ZephComponents,html,css} from "./Zeph.js";
 
-"use strict";
-
-component("${name}",()=>{
+ZephComponents.define("${name}",()=>{
 	html("${htmlpath}");
 	css("${csspath}");
 
-	// Place your JS code here. See the ZephJS documentation for more information.
+	// Place your compnent defintion calls here. See the ZephJS documentation for more information.
 });
 `);
 

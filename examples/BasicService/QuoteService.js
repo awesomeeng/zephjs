@@ -1,10 +1,10 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global service */
-
 "use strict";
 
-class QuoteServices extends window.Zeph.AbstractService {
+import {ZephService,ZephServices} from "../../Zeph.js";
+
+class QuoteServices extends ZephService {
 	getQuotes() {
 		return new Promise(async (resolve,reject)=>{
 			try {
@@ -19,4 +19,4 @@ class QuoteServices extends window.Zeph.AbstractService {
 	}
 }
 
-service("quotes",new QuoteServices());
+ZephServices.register("quotes",new QuoteServices());

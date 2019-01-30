@@ -1,12 +1,9 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global component,requires,html,css */
+import "./awesome-border-layout.js";
+import {ZephComponents,html,css} from "../../Zeph.js";
 
-"use strict";
-
-component("awesome-hello-badge",()=>{
-	requires("awesome-border-layout");
-
+ZephComponents.define("awesome-hello-badge",()=>{
 	html("./awesome-hello-badge.html");
 	css("./awesome-hello-badge.css");
 });

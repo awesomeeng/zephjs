@@ -38,11 +38,18 @@ class Create extends AwesomeCLI.AbstractCommand {
 			let index = Path.resolve(rootdir,"index.html");
 			let html = Path.resolve(rootdir,rootname+".html");
 			let css = Path.resolve(rootdir,rootname+".css");
+			let zeph = Path.resolve(rootdir,"Zeph.js");
+			let zephsource = AwesomeUtils.Module.resolve(module,"../../Zeph.js");
 
 			if (AwesomeUtils.FS.existsSync(index)) return console.error("File "+index+" already exists. Stopping to prevent overwritting.");
 			if (AwesomeUtils.FS.existsSync(js)) return console.error("File "+js+" already exists. Stopping to prevent overwritting.");
 			if (AwesomeUtils.FS.existsSync(html)) return console.error("File "+html+" already exists. Stopping to prevent overwritting.");
 			if (AwesomeUtils.FS.existsSync(css)) return console.error("File "+css+" already exists. Stopping to prevent overwritting.");
+
+			if (!AwesomeUtils.FS.existsSync(zeph)) {
+				FS.writeFileSync(zeph,FS.readFileSync(zephsource));
+				console.log("Copied Zeph.js locally.");
+			}
 
 			FS.writeFileSync(index,`
 <!DOCTYPE html>
@@ -52,15 +59,7 @@ class Create extends AwesomeCLI.AbstractCommand {
 		<title>Hello World</title>
 
 		<!-- Loads the ZephJS runtime -->
-		<script src="Zeph.js" type="text/javascript"></script>
-
-		<!-- Loads the hello-world component once ZephJS is ready. -->
-		<script>
-			document.addEventListener("zeph:initialized",()=>{
-				Zeph.load("hello-world");
-			});
-		</script>
-
+		<script src="hello-world.js" type="module"></script>
 	</head>
 	<body>
 		<hello-world></hello-world>
@@ -76,11 +75,9 @@ class Create extends AwesomeCLI.AbstractCommand {
 	and is released under the MIT licesne.
  */
 
-/* global component,services,html,css,define,requires,load,bindAttribute,bindContent,bindAttributeAt,bindContentAt,onInit,onCreate,onAdd,onRemove,onAttribute,onEvent,onEventAt */
+import {ZephComponents,html,css,bindAttribute,onEventAt} from "./Zeph.js";
 
-"use strict";
-
-component("hello-world",()=>{
+ZephComponents.define("hello-world",()=>{
 	html("./hello-world.html");
 	css("./hello-world.css");
 

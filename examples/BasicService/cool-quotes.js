@@ -1,14 +1,11 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global Zeph,component,requires,html,css,onCreate */
+import "./QuoteService.js";
 
-"use strict";
+import "./cool-quote.js";
+import {ZephComponents,ZephServices,html,css,onCreate} from "../../Zeph.js";
 
-
-component("cool-quotes",()=>{
-	requires("cool-quote");
-	requires("QuoteService");
-
+ZephComponents.define("cool-quotes",()=>{
 	html("./cool-quotes.html");
 	css("./cool-quotes.css");
 
@@ -18,7 +15,7 @@ component("cool-quotes",()=>{
 		});
 
 		try {
-			let quotes = await Zeph.services.quotes.getQuotes();
+			let quotes = await ZephServices.services.quotes.getQuotes();
 			quotes.forEach((entry)=>{
 				let e = document.createElement("cool-quote");
 				e.setAttribute("quote",entry.quote);

@@ -61,48 +61,54 @@ Now that we have seen a component in action, lets take a quick look at what make
 
 ### What is a Web Component?
 
-A Web Component is a set of Browser API standards for defining custom html elements that encapsulate their content (HTML), styling (CSS) and behavior (JavaScript) into a unified, reusable HTML compliant package.  You create a Web Component by defining a custom element name and supplying it iwth content, styling, and behaviors.
+A Web Component is a set of Browser API standards for defining custom html elements that encapsulate their content (HTML), styling (CSS) and behavior (JavaScript) into a unified, reusable HTML compliant package.  You create a Web Component by defining a custom element name and supplying it with content, styling, and behaviors.
 
-However, as is often the case with Browser Standards, using Web Components can be a little confusing and esorteric.  ZephJS aims to solve that by defining a simple, lightweight wrapper around these standards and abstracting away the confusing bits. Using ZephJS makes your components simple and clean, easy to read and work with.  ZephJS is not the only solution out there to do this, but we think it's the best.
+However, as is often the case with browser standards, using Web Components can be a little confusing and esorteric.  ZephJS aims to solve that by defining a simple, lightweight wrapper around these standards and abstracting away the confusing bits. Using ZephJS makes your components simple and clean, easy to read and work with.  ZephJS is not the only solution out there to do this, but we think it's the best.
 
 You can learn more about Web Components at the [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/Web_Components).
 
 ### ZephJS Components
 
-A ZephJS Component is made up of a single `component(name,function)` definition.  The `name` argument provides the name of the custom element you are defining.  The `function` argument provides all the the details about the component and how it works.  When you ran the `zeph hello` command, ZephJS created a `hello-world.js` file that describes the `<hello-world>` component we are going to use. Let's take a look at that code now:
+A ZephJS Component created by calling `ZephComponents.define(name,definition)`.  The `name` argument provides the name of the custom element you are defining; and it must contain at least one dash '-' character.  The `definition` argument provides all the the details about the component and how it works; it is a function and within that function you make various definition calls to describe your component: its content, its styling, and its behaviors.
+
+When you ran the `zeph hello` command, ZephJS created a `hello-world.js` file that describes the `<hello-world>` component we are going to use. Let's take a look at that code now:
 
 ```
- 1: component("hello-world",()=>{
- 2:   html("./hello-world.html");
- 3:   css("./hello-world.css");
- 4:
- 5:   bindAttribute("name",".output .name","$");
+ 1: import {ZephComponents,html,css,bindAttribute,onEventAt} from "./Zeph.js";
+ 2:
+ 3: ZephComponents.define("hello-world",()=>{
+ 4:   html("./hello-world.html");
+ 5:   css("./hello-world.css");
  6:
- 7:   onEventAt("input","keyup",(event,selected,element)=>{
- 8:     let value = selected.value;
- 9:     if (!value) element.removeAttribute("name");
-10:     else element.setAttribute("name",value);
-11:   });
-12: });
+ 7:   bindAttribute("name",".output .name","$");
+ 8:
+ 9:   onEventAt("input","keyup",(event,selected,element)=>{
+10:     let value = selected.value;
+11:     if (!value) element.removeAttribute("name");
+12:     else element.setAttribute("name",value);
+13:   });
+14: });
 ```
 
- - Line 1 is our component definition. We are defining a component called `hello-world` with the given behavior.
+ - Line 1 imports our objects and methods from ZephJS.  There's a lot more of these and we will cover them all in a bit.
 
- - Lines 2-12 describe the behaviors for creating that component.
+ - Line 3 is our component definition. We are defining a component called `hello-world` with the given definition.
 
- - Line 2 states that our component will have the given HTML. This can be a string of HTML or a filename to an external source of HTML as shown here.
+ - Lines 4-13 describe the definition pieces for creating that component.
 
- - Line 3 states that our component will have the given CSS. This can be a string oc CSS or a filename to an external source of CSS as shown here.
+ - Line 4 states that our component will have the given HTML. This can be a string of HTML or a filename to an external source of HTML as shown here.
 
- - Line 5 bind the attribute `name` of the component we are creating, to the attribute of another component in our internal HTML.  We cover binding in much great detail in our [Bindings](./docs/Binding.md) documentation.
+ - Line 5 states that our component will have the given CSS. This can be a string oc CSS or a filename to an external source of CSS as shown here.
 
- - Lines 7-11 describe an event handler for our custom element. Specifically we are going to listen for a `keyup` Event At (`onEventAt()`) a specific element in our internal html content. When the keyup event occurs, the given function will execute. We cover event handling in much greater detail in our [Event Handling](./docs/EventHandler.md) documentation.
+ - Line 6 binds the attribute `name` of the component we are creating, to the attribute of another component in our internal HTML.  We cover binding in much great detail in our [Bindings](./docs/Binding.md) documentation.
+
+ - Lines 9-13 describe an event handler for our custom element. Specifically we are going to listen for a `keyup` Event At a specific element in our internal html content. When the keyup event occurs, the given function will execute. We cover event handling in much greater detail in our [Event Handling](./docs/EventHandler.md) documentation.
 
 There is a whole lot more you can do in a component definition, but for now lets move on.
 
 ### ZephJS Component HTML
 
-In our above component definition we used the `html()` method to specify the HTML we use to make up the internals of our custom element.  In the Hello example, we reference the `hello-world.html` file. Here's what that file looks like:
+In our above component definition we used the `html()` method to specify the HTML we use to make up the internals of our custom element.  In the Hello example, we reference the `./hello-world.html` file. Here's what that file looks like:
 
 ```
 <div class="input">
@@ -117,7 +123,7 @@ In our above component definition we used the `html()` method to specify the HTM
 </div>
 ```
 
-As you can see, the HTML we use is plain old HTML. ZephJS has no special markup templating language or the like. It is 100% plain HTML. You can write any HTML you want (even no HTML at all) including reference to other custom elements.
+As you can see, the HTML we use is plain HTML. ZephJS has no special markup templating language or the like. It is 100% plain HTML. You can write any HTML you want (even no HTML at all) including references to other custom elements.
 
 The HTML you specify becomes the "content" HTML of the component we are defining. And this is where one of the great Web Components Standards comes into play: Shadow DOM. Shadow DOM allows any HTML Element to define a shadow structure that houses an entirely isolated DOM structure of HTML. This shadow HTML is used in rendering the custom element.
 
@@ -190,9 +196,9 @@ Like the HTML in our Hello example, we use the `css()` method to specify the CSS
 }
 ```
 
-The CSS we use in our `css()` method (or external file) is 100% standard CSS. There are a few selectors like `:host` and `:host()` that might be new to you, but are standard CSS selector.
+The CSS we use in our `css()` method (or external file) is 100% standard CSS. There are a few selectors like `:host` and `:host()` that might be new to you, but are standard CSS selectors.
 
-Like the HTML of our custom element, the CSS your provide is inserted into the Shadow DOM for this element. This means that it only applies to styling the custom element itself or the elements within the shadow.
+Like the HTML of our custom element, the CSS your provide is inserted into the Shadow DOM for this element. This means that it only applies to styling the custom element itself or the elements within the shadow. Styles within a custom element do not leak out to external elements.
 
 We cover a lot more stuff about using CSS in custom components in our [Component CSS](./docs/ComponentCSS.md) documentation.
 

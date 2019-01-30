@@ -1,10 +1,8 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global component,html,css */
+import {ZephComponents,html,css} from "../../Zeph.js";
 
-"use strict";
-
-component("awesome-hello",()=>{
+ZephComponents.define("awesome-hello",()=>{
 	html("./awesome-hello.html");
 	css("./awesome-hello.css");
 });

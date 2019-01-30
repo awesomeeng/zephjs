@@ -3,19 +3,25 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Zeph - Examples - BasicService</title>
-		<script src="../../src/Zeph.js" type="text/javascript"></script>
+		<script src="./cool-quotes.js" type="module"></script>
 		<script>
-			document.addEventListener("zeph:initialized",()=>{
-				Zeph.load("cool-quotes");
-			});
 			document.addEventListener("zeph:loading",(event)=>{
 				console.log("zeph:loading",event.detail.toString());
 			});
 			document.addEventListener("zeph:loaded",(event)=>{
 				console.log("zeph:loaded",event.detail.toString());
 			});
-			document.addEventListener("zeph:component",(event)=>{
-				console.log("zeph:component",event.detail.name);
+			document.addEventListener("zeph:service:registered",(event)=>{
+				console.log("zeph:service:registered",event.detail.name);
+			});
+			document.addEventListener("zeph:service:unregistered",(event)=>{
+				console.log("zeph:service:unregistered",event.detail.name);
+			});
+			document.addEventListener("zeph:component:defined",(event)=>{
+				console.log("zeph:component:defined",event.detail.name);
+			});
+			document.addEventListener("zeph:component:undefined",(event)=>{
+				console.log("zeph:component:undefined",event.detail.name);
 			});
 			document.addEventListener("zeph:ready",()=>{
 				console.log("zeph:ready");

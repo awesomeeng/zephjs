@@ -1,10 +1,8 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
-/* global component,html,css */
+import {ZephComponents,html,css} from "../../Zeph.js";
 
-"use strict";
-
-component("component-one",()=>{
+ZephComponents.define("component-one",()=>{
 	html(`
 		<div class="one">
 			I am component one!
@@ -17,7 +15,7 @@ component("component-one",()=>{
 	`);
 });
 
-component("component-two",()=>{
+ZephComponents.define("component-two",()=>{
 	html(`
 		<div class="two">
 			I am component two!
@@ -30,7 +28,7 @@ component("component-two",()=>{
 	`);
 });
 
-component("component-three",()=>{
+ZephComponents.define("component-three",()=>{
 	html(`
 		<div class="three">
 			I am component three!
