@@ -288,7 +288,7 @@ class ZephComponentExecution {
 
 		not.uon(sourceName,"sourceName");
 		not.string(sourceName,"sourceName");
-		if (!sourceName.startsWith("$") && !sourceName.startsWith("@") && !sourceName.startsWith("#")) throw new Error("Invalid sourceName; must start with a '$' or a '@' or a '#'.");
+		if (!sourceName.startsWith("$") && !sourceName.startsWith("@") && !sourceName.startsWith(".")) throw new Error("Invalid sourceName; must start with a '$' or a '@' or a '.'.");
 
 		not.uon(targetElement,"targetElement");
 		if (typeof targetElement!=="string" && !(targetElement instanceof HTMLElement)) throw new Error("Invalid targetElement; must be a string or an instance of HTMLElement.");
@@ -296,7 +296,7 @@ class ZephComponentExecution {
 
 		not.uon(targetName,"targetName");
 		not.string(targetName,"targetName");
-		if (!targetName.startsWith("$") && !targetName.startsWith("@") && !targetName.startsWith("#")) throw new Error("Invalid targetName; must start with a '$' or a '@' or a '#'.");
+		if (!targetName.startsWith("$") && !targetName.startsWith("@") && !targetName.startsWith(".")) throw new Error("Invalid targetName; must start with a '$' or a '@' or a '.'.");
 
 		not.uon(transformFunction,"transformFunction");
 		not.function(transformFunction,"transformFunction");
@@ -461,7 +461,7 @@ class ZephElementClass {
 									});
 								};
 							}
-							else if (binding.target.name.startsWith("#")) {
+							else if (binding.target.name.startsWith(".")) {
 								handler = (value)=>{
 									let name = binding.target.name.slice(1);
 									value = binding.transform(value);
@@ -488,7 +488,7 @@ class ZephElementClass {
 							}
 							else {
 								/* eslint-disable no-console */
-								console.warn("Unable to handle binding to '"+binding.target.name+"'; Must start with '@' or '$' or '#'.");
+								console.warn("Unable to handle binding to '"+binding.target.name+"'; Must start with '@' or '$' or '.'.");
 								/* eslint-enable no-console */
 								return;
 							}
