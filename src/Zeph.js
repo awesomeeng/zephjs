@@ -196,6 +196,8 @@ class ZephComponent {
 				this[$ELEMENT] = ZephElementClass.generateClass(this.context);
 				customElements.define(this.name,this[$ELEMENT]);
 
+				utils.fire(context.init,this.name,this);
+
 				resolve();
 			}
 			catch (ex) {
@@ -393,7 +395,6 @@ class ZephComponentExecution {
 		this.context.eventsAt = this.context.eventsAt || [];
 		this.context.eventsAt.push({selector,eventName,listener});
 	}
-
 }
 
 class ZephElementClass {
