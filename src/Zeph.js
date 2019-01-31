@@ -196,7 +196,7 @@ class ZephComponent {
 				this[$ELEMENT] = ZephElementClass.generateClass(this.context);
 				customElements.define(this.name,this[$ELEMENT]);
 
-				utils.fire(context.init,this.name,this);
+				utils.fire(this.context.init,this.name,this);
 
 				resolve();
 			}
