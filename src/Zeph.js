@@ -121,17 +121,17 @@ const utils = {
 			try {
 				if (url.toString().match(/[\n\r\t<]/g)) return resolve(undefined);
 
-				if (await utils.exists(url)) return resolve(url);
-
 				let resolved = utils.resolve(url,base);
 				if (await utils.exists(resolved)) return resolve(resolved);
 
-				if (extension) {
-					let extended = url+extension;
-					if (await utils.exists(extended)) return resolve(extended);
+				if (await utils.exists(url)) return resolve(url);
 
+				if (extension) {
 					let resolvedextended = utils.resolve(extended,base);
 					if (await utils.exists(resolvedextended)) return resolve(resolvedextended);
+
+					let extended = url+extension;
+					if (await utils.exists(extended)) return resolve(extended);
 				}
 
 				resolve(undefined);
@@ -727,8 +727,24 @@ class ZephComponents {
 
 		if (this[$COMPONENTS][name]) throw new Error("Component already defined.");
 
-		let origin = new Error().stack.split(/\r\n|\n/g).slice(-2,-1)[0] || document.URL.toString();
-		origin = origin.replace(/^@/,"").replace(/:\d+:\d+$|:\d+$/g,"");
+		// Compute the origin by looking at an error's stack trace.
+		let origin = document.URL.toString();
+		let err = new Error();
+		if (err.fileName) origin = err.filename;
+		if (err.stack) {
+			err = err.stack.split(/\r\n|\n/g);
+			err = err.reverse();
+			while (err.length>0) {
+				let line = err.shift();
+				if (!line) continue;
+				if (!line.match(/\w+:/g)) continue;
+				line = line.trim().replace(/^.*?(?=\w+:)/,"");
+				line = line.replace(/:\d+$|:\d+\)$|:\d+:\d+$|:\d+:\d+\)$/,"");
+				err = line;
+				break;
+			}
+			origin = err;
+		}
 
 		PENDING["component:"+origin] = true;
 
