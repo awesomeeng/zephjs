@@ -31,7 +31,7 @@ Mostly people using ZephJS do not even need to know how to use ZephJS or what it
 
 If you are interested in finding a component collection, here is a list of known collections:
 
- - **[Mistral](https://github.com/awesomeeng/Mistral)** - Mistral is the "default" collection that was built using ZephJS.
+ - **[Mistral](https://github.com/awesomeeng/zephjs-mistral)** - Mistral is the "default" collection that was built using ZephJS.
 
 However, for those who want to build their own component collections, well, keep reading and we will walk your through building your own components.
 
