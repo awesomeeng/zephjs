@@ -1,5 +1,5 @@
 {
-  "name": "@awesomeeng/ZephJS",
+  "name": "zephjs",
   "version": "0.0.1",
   "author": "the awesome engineering company",
   "license": "MIT",
@@ -38,14 +38,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/awesomeeng/ZephJS.git"
+    "url": "git+https://github.com/awesomeeng/zephjs.git"
   },
   "keywords": [
+	"zeph",
+	"zephjs",
     "mistral",
     "zeph-mistral",
     "zephjs-mistral",
-    "zeph",
-    "zephjs",
     "web",
     "component",
     "components",
@@ -59,7 +59,7 @@
     "engineering"
   ],
   "bugs": {
-    "url": "https://github.com/awesomeeng/ZephJS/issues"
+    "url": "https://github.com/awesomeeng/zephjs/issues"
   },
-  "homepage": "https://github.com/awesomeeng/ZephJS#readme"
+  "homepage": "https://github.com/awesomeeng/zephjs#readme"
 }
