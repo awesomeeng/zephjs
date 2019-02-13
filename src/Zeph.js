@@ -282,6 +282,33 @@ class ZephComponentExecution {
 		this.context.pending.push(prom);
 	}
 
+	attribute(attributeName,initialValue) {
+		not.uon(attributeName,"attributeName");
+		not.string(attributeName);
+		not.undefined(initialValue,"initialValue");
+
+		this.context.attributes = this.context.attributes || {};
+		if (this.context.attributes[name]) throw new Error("Attribute '"+attributeName+"' already defined for custom element; cannot have multiple definitions.");
+		this.context.attributes[attributeName] = {
+			attributeName,
+			initialValue
+		};
+	}
+
+	property(propertyName,initialValue,transformFunction) {
+		not.uon(propertyName,"attributeName");
+		not.string(propertyName);
+		not.undefined(initialValue,"initialValue");
+
+		this.context.properties = this.context.properties || {};
+		if (this.context.properties[name]) throw new Error("Property '"+propertyName+"' already defined for custom element; cannot have multiple definitions.");
+		this.context.properties[propertyName] = {
+			propertyName,
+			initialValue,
+			transformFunction
+		};
+	}
+
 	binding(sourceElement,sourceName,targetElement,targetName,transformFunction) {
 		not.uon(sourceElement,"sourceElement");
 		if (typeof sourceElement!=="string" && !(sourceElement instanceof HTMLElement)) throw new Error("Invalid sourceElement; must be a string or an instance of HTMLElement.");
@@ -427,6 +454,29 @@ class ZephElementClass {
 					styleElement.textContent = style;
 					shadow.appendChild(styleElement);
 				});
+
+				if (context.attributes) {
+					Object.values(context.attributes).forEach((attr)=>{
+						let value = element.hasAttribute(attr.attributeName) ? element.getAttribute(attr.attributeName) : attr.initialValue;
+
+						if (value===undefined || value===null) element.removeAttribute(attr.attributeName);
+						else element.setAttribute(attr.attributeName,attr.transformFunction ? attr.transformFunction(value) : value);
+					});
+				}
+
+				if (context.properties) {
+					Object.values(context.properties).forEach((prop)=>{
+						prop.value = prop.transformFunction ? prop.transformFunction(prop.initialValue) : prop.initialValue;
+						Object.defineProperty(element,prop.propertyName,{
+							get: ()=>{
+								return prop.value;
+							},
+							set: (value)=>{
+								prop.value = prop.transformFunction ? prop.transformFunction(value) : value;
+							}
+						});
+					});
+				}
 
 				// fire our create event. We need to do this here and immediately
 				// so the onCreate handlers can do whatever setup they need to do
@@ -941,6 +991,8 @@ const contextCall = function(name) {
 
 const html = contextCall("html");
 const css = contextCall("css");
+const attribute = contextCall("attribute");
+const property = contextCall("property");
 const bindAttribute = contextCall("bindAttribute");
 const bindContent = contextCall("bindContent");
 const bindAttributeAt = contextCall("bindAttributeAt");
@@ -960,4 +1012,4 @@ const zs = new ZephServices();
 export {ZephService};
 export {zc as ZephComponents};
 export {zs as ZephServices};
-export {html,css,bindAttribute,bindContent,bindAttributeAt,bindContentAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt};
+export {html,css,attribute,property,bindAttribute,bindContent,bindAttributeAt,bindContentAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt};
