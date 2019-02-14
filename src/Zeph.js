@@ -14,6 +14,10 @@ const $PROXY = Symbol("proxy");
 let CODE_CONTEXT = null;
 let PENDING = {};
 
+const IDENTITY_FUNCTION = (x)=>{
+	return x;
+};
+
 const not = {
 	undefined: (arg,name)=>{
 		if (arg===undefined) throw new Error("Undefined "+name+".");
@@ -285,7 +289,6 @@ class ZephComponentExecution {
 	attribute(attributeName,initialValue) {
 		not.uon(attributeName,"attributeName");
 		not.string(attributeName);
-		not.undefined(initialValue,"initialValue");
 
 		this.context.attributes = this.context.attributes || {};
 		if (this.context.attributes[name]) throw new Error("Attribute '"+attributeName+"' already defined for custom element; cannot have multiple definitions.");
@@ -309,7 +312,13 @@ class ZephComponentExecution {
 		};
 	}
 
-	binding(sourceElement,sourceName,targetElement,targetName,transformFunction) {
+	binding(sourceName,targetElement,targetName,transformFunction) {
+		return this.bindingAt(".",sourceName,targetElement,targetName,transformFunction);
+	}
+
+	bindingAt(sourceElement,sourceName,targetElement,targetName,transformFunction) {
+		if (sourceElement && sourceName && targetElement && targetName===undefined) targetName = sourceName;
+
 		not.uon(sourceElement,"sourceElement");
 		if (typeof sourceElement!=="string" && !(sourceElement instanceof HTMLElement)) throw new Error("Invalid sourceElement; must be a string or an instance of HTMLElement.");
 
@@ -320,11 +329,11 @@ class ZephComponentExecution {
 		not.uon(targetElement,"targetElement");
 		if (typeof targetElement!=="string" && !(targetElement instanceof HTMLElement)) throw new Error("Invalid targetElement; must be a string or an instance of HTMLElement.");
 
-
 		not.uon(targetName,"targetName");
 		not.string(targetName,"targetName");
 		if (!targetName.startsWith("$") && !targetName.startsWith("@") && !targetName.startsWith(".")) throw new Error("Invalid targetName; must start with a '$' or a '@' or a '.'.");
 
+		if (transformFunction===undefined || transformFunction===null) transformFunction = IDENTITY_FUNCTION;
 		not.uon(transformFunction,"transformFunction");
 		not.function(transformFunction,"transformFunction");
 
@@ -340,22 +349,6 @@ class ZephComponentExecution {
 			},
 			transform: transformFunction
 		});
-	}
-
-	bindAttribute(sourceName,targetElement,targetName="@"+sourceName,transformFunction=(x)=>{ return x; }) {
-		return this.binding(".","@"+sourceName,targetElement,targetName,transformFunction);
-	}
-
-	bindContent(targetElement,targetName,transformFunction=(x)=>{ return x; }) {
-		return this.binding(".","$",targetElement,targetName,transformFunction);
-	}
-
-	bindAttributeAt(sourceElement,sourceName,targetElement,targetName="@"+sourceName,transformFunction=(x)=>{ return x; }) {
-		return this.binding(sourceElement,"@"+sourceName,targetElement,targetName,transformFunction);
-	}
-
-	bindContentAt(sourceElement,targetElement,transformFunction=(x)=>{ return x; }) {
-		return this.binding(sourceElement,"$",targetElement,"$",transformFunction);
 	}
 
 	onInit(listener) {
@@ -993,10 +986,8 @@ const html = contextCall("html");
 const css = contextCall("css");
 const attribute = contextCall("attribute");
 const property = contextCall("property");
-const bindAttribute = contextCall("bindAttribute");
-const bindContent = contextCall("bindContent");
-const bindAttributeAt = contextCall("bindAttributeAt");
-const bindContentAt = contextCall("bindContentAt");
+const bind = contextCall("binding");
+const bindAt = contextCall("bindingAt");
 const onInit = contextCall("onInit");
 const onCreate = contextCall("onCreate");
 const onAdd = contextCall("onAdd");
@@ -1012,4 +1003,4 @@ const zs = new ZephServices();
 export {ZephService};
 export {zc as ZephComponents};
 export {zs as ZephServices};
-export {html,css,attribute,property,bindAttribute,bindContent,bindAttributeAt,bindContentAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt};
+export {html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt};
