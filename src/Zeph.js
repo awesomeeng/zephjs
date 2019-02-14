@@ -158,8 +158,33 @@ const utils = {
 		listeners.forEach((listener)=>{
 			return listener.apply(listener,args);
 		});
+	},
+	getPropertyDescriptor(object,propertyName) {
+		while (true) {
+			if (object===null) return null;
+
+			let desc = Object.getOwnPropertyDescriptor(object,propertyName);
+			if (desc) return desc;
+
+			object = Object.getPrototypeOf(object);
+		}
+	},
+	propetize(object,propertyName,descriptor) {
+		not.uon(object,"object");
+		not.uon(propertyName,"propertyName");
+		not.string(propertyName,"propertyName");
+		not.uon(descriptor,"descriptor");
+
+		let oldDesc = utils.getPropertyDescriptor(object,propertyName);
+		let newDesc = Object.assign({},oldDesc||{},descriptor);
+
+		Object.defineProperty(object,propertyName,newDesc);
+
+		return newDesc;
 	}
 };
+
+window.zu = utils;
 
 class ZephComponent {
 	constructor(name,context) {
@@ -305,11 +330,11 @@ class ZephComponentExecution {
 
 		this.context.properties = this.context.properties || {};
 		if (this.context.properties[name]) throw new Error("Property '"+propertyName+"' already defined for custom element; cannot have multiple definitions.");
-		this.context.properties[propertyName] = {
+		this.context.properties[propertyName] = Object.assign(this.context.properties[propertyName]||{},{
 			propertyName,
 			initialValue,
 			transformFunction
-		};
+		});
 	}
 
 	binding(sourceName,targetElement,targetName,transformFunction) {
@@ -419,8 +444,7 @@ class ZephComponentExecution {
 
 class ZephElementClass {
 	static generateClass(context) {
-		const TO_BE_REPLACED = (class {});
-		const clazz = (class ZephCustomElement extends TO_BE_REPLACED {
+		const clazz = (class ZephCustomElement extends HTMLElement {
 			static get observedAttributes() {
 				return this[$OBSERVED];
 			}
@@ -459,15 +483,20 @@ class ZephElementClass {
 
 				if (context.properties) {
 					Object.values(context.properties).forEach((prop)=>{
-						prop.value = prop.transformFunction ? prop.transformFunction(prop.initialValue) : prop.initialValue;
-						Object.defineProperty(element,prop.propertyName,{
+						utils.propetize(element,prop.propertyName,{
 							get: ()=>{
 								return prop.value;
 							},
 							set: (value)=>{
-								prop.value = prop.transformFunction ? prop.transformFunction(value) : value;
+								let val = prop.transformFunction ? prop.transformFunction(value) : value;
+								(prop.changes||[]).forEach((listener)=>{
+									listener(prop.propertyName,val,element,shadow);
+								});
+								prop.value = val;
 							}
 						});
+
+						element[prop.propertyName] = element[prop.propertyName]!==undefined && prop.initialValue || element[prop.propertyName];
 					});
 				}
 
@@ -553,11 +582,49 @@ class ZephElementClass {
 
 								observer.addAttributeObserver(name,handler);
 							}
+							else if (binding.source.name.startsWith(".")) {
+								let name = binding.source.name.slice(1);
+
+								context.properties = context.properties || {};
+								if (!context.properties[name]) {
+									context.properties[name] = {
+										propertyName: name,
+										changes: [],
+										value: element[name]
+									};
+
+									let prop = context.properties[name];
+									utils.propetize(element,name,{
+										get: ()=>{
+											return prop.value;
+										},
+										set: (value)=>{
+											let val = prop.transformFunction ? prop.transformFunction(value) : value;
+											(prop.changes||[]).forEach((listener)=>{
+												listener(prop.propertyName,val,element,shadow);
+											});
+											prop.value = val;
+										}
+									});
+								}
+
+								let prop = context.properties[name];
+								prop.changes = prop.changes || [];
+								prop.changes.push((name,value)=>{
+									handler(value);
+								});
+							}
 							else if (binding.source.name==="$") {
 								let value = srcele.textContent;
 								handler(value,null,srcele);
 
 								observer.addContentObserver(handler);
+							}
+							else {
+								/* eslint-disable no-console */
+								console.warn("Unable to handle binding to '"+binding.target.name+"'; Must start with '@' or '$' or '.'.");
+								/* eslint-enable no-console */
+								return;
 							}
 						});
 					});
@@ -610,15 +677,7 @@ class ZephElementClass {
 			}
 		});
 
-		let c = "("+clazz.toString().replace(/TO_BE_REPLACED/,"HTMLElement")+")";
-
-		try {
-			let clazz = eval(c);
-			return clazz;
-		}
-		catch (ex) {
-			throw ex;
-		}
+		return clazz;
 	}
 }
 
