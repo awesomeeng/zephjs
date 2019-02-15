@@ -40,18 +40,14 @@ The following definition methods can be included, but it is best to only call.
  - css
  - attribute
  - property
- - bindAttribute
- - bindProperty
- - bindContent
- - bindAttributeAt
- - bindPropertyAt
- - bindContentAt
- - onInit
  - onCreate
  - onAdd
  - onRemove
  - onAdopt
  - onAttribute
+ - bind
+ - bindAt
+ - onInit
  - onEvent
  - onEventAt
 
@@ -225,8 +221,6 @@ The use case for `property()` is to define a property and set its initial value.
 
 If `initialValue` is provided and the propertyu is already included in the element, the set value will win over the initialValue.
 
-### Add Bindings
-
 ### Add Lifecycle Handlers
 
 A custom element has the following lifecycle:
@@ -331,5 +325,22 @@ You may tap into all of these Lifecycles in your component definition using the 
 	 });
  });
  ```
+
+### Add Bindings
+
+A particular use case comes up around watching attributes for changes and then propagating those changes to another part of the internal DOM of your custom element.  This could be done with the `onAttribute()` lifecylce handler, but since its such a common need, there is probably a better way. Once we started thinking about this case we also saw a need for not just watching attributes, but watcinhg content and properties as well.
+
+That's where bindings come in. Bindings let you bind one part of your element or internal content to another part of your element or internal content.  You can bind an attribute, a property, or the content of your element or an internal content element, to an attribute, property, or content of the element or inner content elements.
+
+A binding works like a copy function; it copies the value the attrbiute, property, or content of X to the attribute, property, or content of Y.  Additionally, each binding can be provided with a transformFunction, that is a function which is passed the value after it is copied.  The value returned by the transformFunction is the value which is set on the receiving end of the binding. This allows you to further enrich, format, or augment the binding value as it copies.
+
+Bindings only update when the source of the binding (element and attribute/property/content) change.
+
+Once you start thinking with bindings, doing certain things becomes super easy because ZephJS handles most of the work for you.
+
+ - Copy an attrbiute of your custom element into a property of your custom element.
+ - And vice-versa.
+ - Copy an attribute of your custom element into the content property of an internal content element.
+ - Copy a property from an internal content element to a different internal content element.
 
 ### Add Event Handlers
