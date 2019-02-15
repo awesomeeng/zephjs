@@ -178,6 +178,19 @@ const utils = {
 		let oldDesc = utils.getPropertyDescriptor(object,propertyName);
 		let newDesc = Object.assign({},oldDesc||{},descriptor);
 
+		if (oldDesc && descriptor.get) {
+			newDesc.get = ()=>{
+				let $super = oldDesc.get || null;
+				return descriptor.get($super);
+			};
+		}
+		if (oldDesc && descriptor.set) {
+			newDesc.set = (value)=>{
+				let $super = oldDesc.set || null;
+				return descriptor.set(value,$super);
+			};
+		}
+
 		Object.defineProperty(object,propertyName,newDesc);
 
 		return newDesc;
@@ -484,15 +497,18 @@ class ZephElementClass {
 				if (context.properties) {
 					Object.values(context.properties).forEach((prop)=>{
 						utils.propetize(element,prop.propertyName,{
-							get: ()=>{
+							get: ($super)=>{
+								if ($super) return $super();
 								return prop.value;
 							},
-							set: (value)=>{
+							set: (value,$super)=>{
 								let val = prop.transformFunction ? prop.transformFunction(value) : value;
+								if ($super) $super(val);
+								prop.value = val;
+
 								(prop.changes||[]).forEach((listener)=>{
 									listener(prop.propertyName,val,element,shadow);
 								});
-								prop.value = val;
 							}
 						});
 
@@ -595,15 +611,18 @@ class ZephElementClass {
 
 									let prop = context.properties[name];
 									utils.propetize(element,name,{
-										get: ()=>{
+										get: ($super)=>{
+											if ($super) return $super();
 											return prop.value;
 										},
-										set: (value)=>{
+										set: (value,$super)=>{
 											let val = prop.transformFunction ? prop.transformFunction(value) : value;
+											if ($super) $super(val);
+											prop.value = val;
+
 											(prop.changes||[]).forEach((listener)=>{
 												listener(prop.propertyName,val,element,shadow);
 											});
-											prop.value = val;
 										}
 									});
 								}
