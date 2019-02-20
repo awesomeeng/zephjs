@@ -494,15 +494,17 @@ class ZephElementClass {
 
 				if (context.properties) {
 					Object.values(context.properties).forEach((prop)=>{
+						let value = element[prop.propertyName]!==undefined ? element[prop.propertyName] : prop.initialValue;
+
 						utils.propetize(element,prop.propertyName,{
 							get: ($super)=>{
 								if ($super) return $super();
-								return prop.value;
+								return value;
 							},
-							set: (value,$super)=>{
-								let val = prop.transformFunction ? prop.transformFunction(value) : value;
-								if ($super) $super(val);
-								prop.value = val;
+							set: (val,$super)=>{
+								val = prop.transformFunction ? prop.transformFunction(val) : val;
+								if ($super) val = $super(val);
+								value = val;
 
 								(prop.changes||[]).forEach((listener)=>{
 									listener(prop.propertyName,val,element,shadow);
@@ -510,7 +512,7 @@ class ZephElementClass {
 							}
 						});
 
-						element[prop.propertyName] = element[prop.propertyName]!==undefined && prop.initialValue || element[prop.propertyName];
+						element[prop.propertyName] = element[prop.propertyName]===undefined ? prop.initialValue : element[prop.propertyName];
 					});
 				}
 
