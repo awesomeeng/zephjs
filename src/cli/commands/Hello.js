@@ -81,7 +81,7 @@ ZephComponents.define("hello-world",()=>{
 	html("./hello-world.html");
 	css("./hello-world.css");
 
-	bindAttribute("name",".output .name","$");
+	bind("@name",".output .name","$");
 
 	onEventAt("input","keyup",(event,selected,element)=>{
 		let value = selected.value;

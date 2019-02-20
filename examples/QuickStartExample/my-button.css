@@ -1,0 +1,45 @@
+button {
+	display: flex;
+	flex-direction: row;
+	border: 2px outset #66CCFF;
+	border-radius: 3px;
+	background: #DDEEFF;
+	cursor: pointer;
+	height: 100%;
+	padding: 2px 5px;
+	font-size: 14pt;
+	align-items: center;
+}
+
+button > img {
+	flex: 0 0 auto;
+	margin: 2px 0px 2px 5px;
+}
+
+button > span {
+	flex: 0 1 auto;
+	align-items: center;
+	justify-content: center;
+}
+
+button[disabled] {
+	border-color: #AAAAAA;
+	cursor: not-allowed;
+}
+
+button:hover:not([disabled]) {
+	border-color: #3399FF;
+	background: #66CCFF;
+}
+
+button:active:not([disabled]) {
+	background: #DDEEFF;
+}
+
+:host([icon-placement=right]) button {
+	flex-direction: row-reverse;
+}
+
+:host(:not([icon-placement=right])) button > img {
+	margin: 2px 5px 2px 0px;
+}
