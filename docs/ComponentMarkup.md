@@ -3,7 +3,7 @@
 ### Sections
 
 - [Quick Start](./ComponentQuickStart.md)
-- [Component Concepts](./Component Concepts.md)
+- [Component Concepts](./ComponentConcepts.md)
 - [Importing ZephJS](./ComponentImporting.md)
 - [Defining the Component](./ComponentDefinition.md)
 - **HTML**

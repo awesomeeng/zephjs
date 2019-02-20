@@ -18,8 +18,8 @@ Please dont misunderstand us: React, Vue, Angular, Svelte (more people should us
 
 ## Contents
  - [Usage](#usage)
- - [Build Your First Component](#build_your_first_component)
- - [Breaking Down a Component](#servers)
+ - [Your First Component](#your_first_component)
+ - [Writing Your Own Components](#writing-your-own-components)
  - [Documentation](#documentation)
  - [Examples](#examples)
  - [Awesome Engineering](#the-awesome-engineering-company)
@@ -36,7 +36,7 @@ If you are interested in finding a component collection, here is a list of known
 
 However, for those who want to build their own component collections, well, keep reading and we will walk your through building your own components.
 
-## Build your first Component
+## Your First Component
 
 Creating a component in ZephJS is super easy.
 
@@ -66,7 +66,7 @@ zeph serve
 
 Surf your favorite web browser over to [http://localhost:4000](http://localhost:4000) and have a look at your work.
 
-## Writing a Component
+## Writing Your Own Components
 
 Now that we have seen a component in action, you are definately excited to try it. Fortunately, its super easy to do so and we've written you a great little Quick Start guide on how to write your own component.
 
@@ -78,7 +78,7 @@ So head over there and start building awesome components!
 
 **Components**
  - [Quick Start](./docs/ComponentQuickStart.md)
- - [Component Concepts](./docs/Component Concepts.md)
+ - [Component Concepts](./docs/ComponentConcepts.md)
  - [Importing ZephJS](./docs/ComponentImporting.md)
  - [Defining the Component](./docs/ComponentDefinition.md)
  - [HTML](./docs/ComponentMarkup.md)

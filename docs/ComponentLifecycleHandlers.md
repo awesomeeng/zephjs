@@ -3,7 +3,7 @@
 ### Sections
 
 - [Quick Start](./ComponentQuickStart.md)
-- [Component Concepts](./Component Concepts.md)
+- [Component Concepts](./ComponentConcepts.md)
 - [Importing ZephJS](./ComponentImporting.md)
 - [Defining the Component](./ComponentDefinition.md)
 - [HTML](./ComponentMarkup.md)
@@ -14,7 +14,7 @@
 - [Bindings](./ComponentBindings.md)
 - [Event Handlers](./ComponentEvents.md)
 
-### Component Lifecycle 
+### Component Lifecycle
 
 A custom element built with ZephJS has the following lifecycle, meaning it moves through the following stages at some point.  Each of these lifecylces has an associated Lifecycle Event. These events can be tapped within the component definition for you to use as needed.
 

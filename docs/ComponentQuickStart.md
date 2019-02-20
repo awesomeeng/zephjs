@@ -4,7 +4,7 @@
 ### Sections
 
 - **Quick Start**
-- [Component Concepts](./Component Concepts.md)
+- [Component Concepts](./ComponentConcepts.md)
 - [Importing ZephJS](./ComponentImporting.md)
 - [Defining the Component](./ComponentDefinition.md)
 - [HTML](./ComponentMarkup.md)
@@ -390,7 +390,7 @@ The lines to pay attention to here are Line 6, where we import our `my-button` e
 After you have the quick start down we strongly encourage you to continue reading with the next sections of our guide [Component Concepts](./Component Concepts.md).
 
  - **Quick Start**
- - [Component Concepts](./Component Concepts.md)
+ - [Component Concepts](./ComponentConcepts.md)
  - [Importing ZephJS](./ComponentImporting.md)
  - [Defining the Component](./ComponentDefinition.md)
  - [HTML](./ComponentMarkup.md)
