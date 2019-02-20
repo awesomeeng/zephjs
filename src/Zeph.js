@@ -197,8 +197,6 @@ const utils = {
 	}
 };
 
-window.zu = utils;
-
 class ZephComponent {
 	constructor(name,context) {
 		not.uon(name,"name");
