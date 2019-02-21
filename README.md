@@ -25,7 +25,7 @@ Please dont misunderstand us: React, Vue, Angular, Svelte (more people should us
  - [Awesome Engineering](#the-awesome-engineering-company)
  - [Support and Help](#support-and-help)
  - [License](#license)
- -
+
 ## Usage
 
 Mostly people using ZephJS do not even need to know how to use ZephJS or what it is. Instead they just want to include a collection of components built on top of ZephJS.  Fortunately, that means they can stop reading now and instead go read the instructions for that component collection.
@@ -70,8 +70,8 @@ Surf your favorite web browser over to [http://localhost:4000](http://localhost:
 
 Now that we have seen a component in action, you are definately excited to try it. Fortunately, its super easy to do so and we've written you a great little Quick Start guide on how to write your own component.
 
-<div style="font-size: 18pt;font-weight: bold; margin-left: 15px;">[The ZephJS Quick Start Guide](./docs/ComponentsQuickStart.md)</div>
-<br/>
+**[The ZephJS Quick Start Guide](./docs/ComponentsQuickStart.md)**
+
 So head over there and start building awesome components!
 
 ## Documentation
