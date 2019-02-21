@@ -1,5 +1,7 @@
 // (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
 
+/* eslint no-console: off */
+
 import {ZephComponents} from "./Zeph.js";
 import {html,css,attribute,property,bind,onCreate,onEvent} from "./Zeph.js";
 
