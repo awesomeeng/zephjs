@@ -54,8 +54,7 @@ const not = {
 
 const utils = {
 	exists: (url)=>{
-		not.uon(url,"url");
-		not.empty(url,"url");
+		if (url===undefined || url===null || url==="") return Promise.resolve(false);
 
 		return new Promise(async (resolve,reject)=>{
 			try {
@@ -131,10 +130,10 @@ const utils = {
 				if (await utils.exists(url)) return resolve(url);
 
 				if (extension) {
+					let extended = url+extension;
 					let resolvedextended = utils.resolve(extended,base);
 					if (await utils.exists(resolvedextended)) return resolve(resolvedextended);
 
-					let extended = url+extension;
 					if (await utils.exists(extended)) return resolve(extended);
 				}
 
@@ -327,7 +326,7 @@ class ZephComponentExecution {
 		not.string(attributeName);
 
 		this.context.attributes = this.context.attributes || {};
-		if (this.context.attributes[name]) throw new Error("Attribute '"+attributeName+"' already defined for custom element; cannot have multiple definitions.");
+		if (this.context.attributes[attributeName]) throw new Error("Attribute '"+attributeName+"' already defined for custom element; cannot have multiple definitions.");
 		this.context.attributes[attributeName] = {
 			attributeName,
 			initialValue
@@ -340,7 +339,7 @@ class ZephComponentExecution {
 		not.undefined(initialValue,"initialValue");
 
 		this.context.properties = this.context.properties || {};
-		if (this.context.properties[name]) throw new Error("Property '"+propertyName+"' already defined for custom element; cannot have multiple definitions.");
+		if (this.context.properties[propertyName]) throw new Error("Property '"+propertyName+"' already defined for custom element; cannot have multiple definitions.");
 		this.context.properties[propertyName] = Object.assign(this.context.properties[propertyName]||{},{
 			propertyName,
 			initialValue,
@@ -390,48 +389,56 @@ class ZephComponentExecution {
 	onInit(listener) {
 		not.uon(listener,"listener");
 		not.function(listener,"listener");
-		this.context.init = this.context.init || [];
-		this.context.init.push(listener);
+		this.context.lifecycle = this.context.lifecycle || {};
+		this.context.lifecycle.init = this.context.lifecycle.init || [];
+		this.context.lifecycle.init.push(listener);
 	}
 
 	onCreate(listener) {
 		not.uon(listener,"listener");
 		not.function(listener,"listener");
-		this.context.create = this.context.create || [];
-		this.context.create.push(listener);
+		this.context.lifecycle = this.context.lifecycle || {};
+		this.context.lifecycle.create = this.context.lifecycle.create || [];
+		this.context.lifecycle.create.push(listener);
 	}
 
 	onAdd(listener) {
 		not.uon(listener,"listener");
 		not.function(listener,"listener");
-		this.context.add = this.context.add || [];
-		this.context.add.push(listener);
+		this.context.lifecycle = this.context.lifecycle || {};
+		this.context.lifecycle.add = this.context.lifecycle.add || [];
+		this.context.lifecycle.add.push(listener);
 	}
 
 	onRemove(listener) {
 		not.uon(listener,"listener");
 		not.function(listener,"listener");
-		this.context.remove = this.context.remove || [];
-		this.context.remove.push(listener);
+		this.context.lifecycle = this.context.lifecycle || {};
+		this.context.lifecycle.remove = this.context.lifecycle.remove || [];
+		this.context.lifecycle.remove.push(listener);
 	}
 
 	onAdopt(listener) {
 		not.uon(listener,"listener");
 		not.function(listener,"listener");
-		this.context.adopt = this.context.adopt || [];
-		this.context.adopt.push(listener);
+		this.context.lifecycle = this.context.lifecycle || {};
+		this.context.lifecycle.adopt = this.context.lifecycle.adopt || [];
+		this.context.lifecycle.adopt.push(listener);
 	}
 
-	onAttribute(attribute,listener) {
-		not.uon(attribute,"attribute");
-		not.string(attribute,"attribute");
+	onAttribute(attributeName,listener) {
+		not.uon(attributeName,"attribute");
+		not.string(attributeName,"attribute");
 		not.uon(listener,"listener");
 		not.function(listener,"listener");
+
 		this.context.observed = this.context.observed || [];
-		this.context.observed.push(attribute);
-		this.context.attributes = this.context.attributes || {};
-		this.context.attributes[attribute] = this.context.attributes[attribute] || [];
-		this.context.attributes[attribute].push(listener);
+		this.context.observed.push(attributeName);
+
+		this.context.lifecycle = this.context.lifecycle || {};
+		this.context.lifecycle.attributes = this.context.lifecycle.attributes || {};
+		this.context.lifecycle.attributes[attributeName] = this.context.lifecycle.attributes[attributeName] || [];
+		this.context.lifecycle.attributes[attributeName].push(listener);
 	}
 
 	onEvent(eventName,listener) {
@@ -519,7 +526,7 @@ class ZephElementClass {
 				// fire our create event. We need to do this here and immediately
 				// so the onCreate handlers can do whatever setup they need to do
 				// before we go off and register bindings and events.
-				utils.fireImmediately(context.create,this,this.shadowRoot);
+				utils.fireImmediately(context.lifecycle.create,this,this.shadowRoot);
 
 				if (context.bindings) {
 					context.bindings.forEach((binding)=>{
@@ -680,19 +687,19 @@ class ZephElementClass {
 			}
 
 			connectedCallback() {
-				utils.fire(context.add,this,this.shadowRoot);
+				utils.fire(context.lifecycle.add,this,this.shadowRoot);
 			}
 
 			disconnectedCallback() {
-				utils.fire(context.remove,this,this.shadowRoot);
+				utils.fire(context.lifecycle.remove,this,this.shadowRoot);
 			}
 
 			adoptedCallback() {
-				utils.fire(context.adopt,this,this.shadowRoot);
+				utils.fire(context.lifecycle.adopt,this,this.shadowRoot);
 			}
 
 			attributeChangedCallback(attribute,oldValue,newValue) {
-				utils.fire(context.attributes[attribute],oldValue,newValue,this,this.shadowRoot);
+				utils.fire(context.lifecycle.attributes[attribute],oldValue,newValue,this,this.shadowRoot);
 			}
 		});
 
