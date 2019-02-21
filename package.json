@@ -1,6 +1,6 @@
 {
   "name": "zephjs",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "the awesome engineering company",
   "license": "MIT",
   "contributors": [
@@ -14,15 +14,17 @@
     "zeph": "./bin/zeph"
   },
   "dependencies": {
-    "@awesomeeng/awesome-utils": "^1.4.4",
-    "@awesomeeng/awesome-server": "^1.2.1",
+    "@awesomeeng/awesome-cli": "^1.0.1",
     "@awesomeeng/awesome-log": "^3.0.0",
-    "@awesomeeng/awesome-cli": "^1.0.1"
+    "@awesomeeng/awesome-server": "^1.2.1",
+    "@awesomeeng/awesome-utils": "^1.4.4",
+    "esm": "^3.2.5"
   },
   "devDependencies": {
     "acorn": "^6.0.5",
     "jsdoc-to-markdown": "*",
-    "mocha": "*"
+    "mocha": "*",
+	"esm": "3.2.5"
   },
   "optionalDependencies": {},
   "scripts": {
@@ -41,8 +43,8 @@
     "url": "git+https://github.com/awesomeeng/zephjs.git"
   },
   "keywords": [
-	"zeph",
-	"zephjs",
+    "zeph",
+    "zephjs",
     "mistral",
     "zeph-mistral",
     "zephjs-mistral",
