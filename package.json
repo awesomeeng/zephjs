@@ -17,14 +17,14 @@
     "@awesomeeng/awesome-cli": "^1.0.1",
     "@awesomeeng/awesome-log": "^3.0.0",
     "@awesomeeng/awesome-server": "^1.2.1",
-    "@awesomeeng/awesome-utils": "^1.4.4",
+    "@awesomeeng/awesome-utils": "^1.4.7",
     "esm": "^3.2.5"
   },
   "devDependencies": {
     "acorn": "^6.0.5",
     "jsdoc-to-markdown": "*",
     "mocha": "*",
-	"esm": "3.2.5"
+    "esm": "3.2.5"
   },
   "optionalDependencies": {},
   "scripts": {
