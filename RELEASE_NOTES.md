@@ -1,8 +1,8 @@
 # AwesomeComponenets Release Notes
 
-#### **Version 0.0.1**
+#### **Version 0.1.1**
 
- - Alpha release and ongoing development work.
+ - Fixes broken reference to AwesomeUtils.
 
 #### **Version 0.1.0**
 
@@ -16,4 +16,8 @@
 
  - Revapmped documentation greatly.
 
- - Updated tests for new structure. 
+ - Updated tests for new structure.
+
+#### **Version 0.0.1**
+
+ - Alpha release and ongoing development work.
