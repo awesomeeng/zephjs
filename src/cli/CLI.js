@@ -32,6 +32,18 @@ class CLI extends AwesomeCLI.CommandCLI {
 	get usage() {
 		return "zeph [command]";
 	}
+
+	run(args,options) {
+		({args,options} = this.init(args,options));
+
+		if (args.length<1) {
+			this.help();
+			return Promise.resolve();
+		}
+		else {
+			return super.run(args,options);
+		}
+	}
 }
 
 new CLI().run();
