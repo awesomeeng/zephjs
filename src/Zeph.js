@@ -235,7 +235,7 @@ class ZephComponent {
 				this[$ELEMENT] = ZephElementClass.generateClass(this.context);
 				customElements.define(this.name,this[$ELEMENT]);
 
-				utils.fire(this.context.init,this.name,this);
+				utils.fire(this.context && this.context.lifecycle && this.context.lifecycle.init || [],this.name,this);
 
 				resolve();
 			}
@@ -526,7 +526,7 @@ class ZephElementClass {
 				// fire our create event. We need to do this here and immediately
 				// so the onCreate handlers can do whatever setup they need to do
 				// before we go off and register bindings and events.
-				utils.fireImmediately(context.lifecycle.create,this,this.shadowRoot);
+				utils.fireImmediately(context && context.lifecycle && context.lifecycle.create || [],this,this.shadowRoot);
 
 				if (context.bindings) {
 					context.bindings.forEach((binding)=>{
@@ -687,19 +687,19 @@ class ZephElementClass {
 			}
 
 			connectedCallback() {
-				utils.fire(context.lifecycle.add,this,this.shadowRoot);
+				utils.fire(context && context.lifecycle && context.lifecycle.add || [],this,this.shadowRoot);
 			}
 
 			disconnectedCallback() {
-				utils.fire(context.lifecycle.remove,this,this.shadowRoot);
+				utils.fire(context && context.lifecycle && context.lifecycle.remove || [],this,this.shadowRoot);
 			}
 
 			adoptedCallback() {
-				utils.fire(context.lifecycle.adopt,this,this.shadowRoot);
+				utils.fire(context && context.lifecycle && context.lifecycle.adopt || [],this,this.shadowRoot);
 			}
 
-			attributeChangedCallback(attribute,oldValue,newValue) {
-				utils.fire(context.lifecycle.attributes[attribute],oldValue,newValue,this,this.shadowRoot);
+			attributeChangedCallback(attributeName,oldValue,newValue) {
+				utils.fire(context && context.lifecycle && context.lifecycle.attributes && context.lifecycle.attributes[attributeName] || [],oldValue,newValue,this,this.shadowRoot);
 			}
 		});
 
@@ -806,7 +806,7 @@ class ZephElementObserver {
 	}
 }
 
-class ZephComponents {
+class ZephComponentsClass {
 	constructor() {
 		this[$COMPONENTS] = {};
 		this[$PROXY] = new Proxy(this[$COMPONENTS],{
@@ -983,7 +983,7 @@ class ZephService {
 	}
 }
 
-class ZephServices {
+class ZephServicesClass {
 	constructor() {
 		this[$SERVICES] = {};
 		this[$PROXY] = new Proxy(this[$SERVICES],{
@@ -1082,10 +1082,8 @@ const onAttribute = contextCall("onAttribute");
 const onEvent = contextCall("onEvent");
 const onEventAt = contextCall("onEventAt");
 
-const zc = new ZephComponents();
-const zs = new ZephServices();
+const ZephComponents = new ZephComponentsClass();
+const ZephServices = new ZephServicesClass();
 
-export {ZephService};
-export {zc as ZephComponents};
-export {zs as ZephServices};
+export {ZephComponents,ZephService,ZephServices};
 export {html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt};
