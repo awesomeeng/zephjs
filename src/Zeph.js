@@ -53,7 +53,7 @@ const not = {
 	}
 };
 
-const utils = {
+const ZephUtils = {
 	exists: (url)=>{
 		if (url===undefined || url===null || url==="") return Promise.resolve(false);
 
@@ -91,7 +91,7 @@ const utils = {
 
 		return new Promise(async (resolve,reject)=>{
 			try {
-				let response = await utils.fetch(url);
+				let response = await ZephUtils.fetch(url);
 				if (!response) resolve(undefined);
 
 				let text = await response.text();
@@ -125,17 +125,17 @@ const utils = {
 			try {
 				if (url.toString().match(/[\n\r\t<]/g)) return resolve(undefined);
 
-				let resolved = utils.resolve(url,base);
-				if (await utils.exists(resolved)) return resolve(resolved);
+				let resolved = ZephUtils.resolve(url,base);
+				if (await ZephUtils.exists(resolved)) return resolve(resolved);
 
-				if (await utils.exists(url)) return resolve(url);
+				if (await ZephUtils.exists(url)) return resolve(url);
 
 				if (extension) {
 					let extended = url+extension;
-					let resolvedextended = utils.resolve(extended,base);
-					if (await utils.exists(resolvedextended)) return resolve(resolvedextended);
+					let resolvedextended = ZephUtils.resolve(extended,base);
+					if (await ZephUtils.exists(resolvedextended)) return resolve(resolvedextended);
 
-					if (await utils.exists(extended)) return resolve(extended);
+					if (await ZephUtils.exists(extended)) return resolve(extended);
 				}
 
 				resolve(undefined);
@@ -144,66 +144,6 @@ const utils = {
 				return reject(ex);
 			}
 		});
-	},
-	fire(listeners,...args) {
-		listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
-		listeners.forEach((listener)=>{
-			setTimeout(()=>{
-				return listener.apply(listener,args);
-			},0);
-		});
-	},
-	fireImmediately(listeners,...args) {
-		listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
-		listeners.forEach((listener)=>{
-			return listener.apply(listener,args);
-		});
-	},
-	fireZephReady() {
-		if (READY) clearTimeout(READY);
-		READY = setTimeout(()=>{
-			if (Object.keys(PENDING).length<1) {
-				document.dispatchEvent(new CustomEvent("zeph:ready",{
-					bubbles: false
-				}));
-			}
-		},10);
-	},
-	getPropertyDescriptor(object,propertyName) {
-		while (true) {
-			if (object===null) return null;
-
-			let desc = Object.getOwnPropertyDescriptor(object,propertyName);
-			if (desc) return desc;
-
-			object = Object.getPrototypeOf(object);
-		}
-	},
-	propetize(object,propertyName,descriptor) {
-		not.uon(object,"object");
-		not.uon(propertyName,"propertyName");
-		not.string(propertyName,"propertyName");
-		not.uon(descriptor,"descriptor");
-
-		let oldDesc = utils.getPropertyDescriptor(object,propertyName);
-		let newDesc = Object.assign({},oldDesc||{},descriptor);
-
-		if (oldDesc && descriptor.get) {
-			newDesc.get = ()=>{
-				let $super = oldDesc.get || null;
-				return descriptor.get($super);
-			};
-		}
-		if (oldDesc && descriptor.set) {
-			newDesc.set = (value)=>{
-				let $super = oldDesc.set || null;
-				return descriptor.set(value,$super);
-			};
-		}
-
-		Object.defineProperty(object,propertyName,newDesc);
-
-		return newDesc;
 	}
 };
 
@@ -246,7 +186,7 @@ class ZephComponent {
 				this[$ELEMENT] = ZephElementClass.generateClass(this.context);
 				customElements.define(this.name,this[$ELEMENT]);
 
-				utils.fire(this.context && this.context.lifecycle && this.context.lifecycle.init || [],this.name,this);
+				fire(this.context && this.context.lifecycle && this.context.lifecycle.init || [],this.name,this);
 
 				resolve();
 			}
@@ -299,8 +239,8 @@ class ZephComponentExecution {
 	html(content) {
 		let prom = new Promise(async (resolve,reject)=>{
 			try {
-				let url = await utils.resolveName(content,this.context.origin||document.URL.toString(),".html");
-				if (url) content = await utils.fetchText(url);
+				let url = await ZephUtils.resolveName(content,this.context.origin||document.URL.toString(),".html");
+				if (url) content = await ZephUtils.fetchText(url);
 
 				this.context.html.push(content);
 
@@ -317,8 +257,8 @@ class ZephComponentExecution {
 	css(content) {
 		let prom = new Promise(async (resolve,reject)=>{
 			try {
-				let url = await utils.resolveName(content,this.context.origin,".css");
-				if (url) content = await utils.fetchText(url);
+				let url = await ZephUtils.resolveName(content,this.context.origin,".css");
+				if (url) content = await ZephUtils.fetchText(url);
 
 				this.context.css.push(content);
 
@@ -514,7 +454,7 @@ class ZephElementClass {
 					Object.values(context.properties).forEach((prop)=>{
 						let value = element[prop.propertyName]!==undefined ? element[prop.propertyName] : prop.initialValue;
 
-						utils.propetize(element,prop.propertyName,{
+						propetize(element,prop.propertyName,{
 							get: ($super)=>{
 								if ($super) return $super();
 								return value;
@@ -537,7 +477,7 @@ class ZephElementClass {
 				// fire our create event. We need to do this here and immediately
 				// so the onCreate handlers can do whatever setup they need to do
 				// before we go off and register bindings and events.
-				utils.fireImmediately(context && context.lifecycle && context.lifecycle.create || [],this,this.shadowRoot);
+				fireImmediately(context && context.lifecycle && context.lifecycle.create || [],this,this.shadowRoot);
 
 				if (context.bindings) {
 					context.bindings.forEach((binding)=>{
@@ -628,7 +568,7 @@ class ZephElementClass {
 									};
 
 									let prop = context.properties[name];
-									utils.propetize(element,name,{
+									propetize(element,name,{
 										get: ($super)=>{
 											if ($super) return $super();
 											return prop.value;
@@ -698,19 +638,19 @@ class ZephElementClass {
 			}
 
 			connectedCallback() {
-				utils.fire(context && context.lifecycle && context.lifecycle.add || [],this,this.shadowRoot);
+				fire(context && context.lifecycle && context.lifecycle.add || [],this,this.shadowRoot);
 			}
 
 			disconnectedCallback() {
-				utils.fire(context && context.lifecycle && context.lifecycle.remove || [],this,this.shadowRoot);
+				fire(context && context.lifecycle && context.lifecycle.remove || [],this,this.shadowRoot);
 			}
 
 			adoptedCallback() {
-				utils.fire(context && context.lifecycle && context.lifecycle.adopt || [],this,this.shadowRoot);
+				fire(context && context.lifecycle && context.lifecycle.adopt || [],this,this.shadowRoot);
 			}
 
 			attributeChangedCallback(attributeName,oldValue,newValue) {
-				utils.fire(context && context.lifecycle && context.lifecycle.attributes && context.lifecycle.attributes[attributeName] || [],oldValue,newValue,this,this.shadowRoot);
+				fire(context && context.lifecycle && context.lifecycle.attributes && context.lifecycle.attributes[attributeName] || [],oldValue,newValue,this,this.shadowRoot);
 			}
 		});
 
@@ -911,7 +851,7 @@ class ZephComponentsClass {
 					bubbles: false,
 					detail: origin
 				}));
-				utils.fireZephReady();
+				fireZephReady();
 
 				resolve(component);
 			}
@@ -1061,6 +1001,71 @@ class ZephServicesClass {
 	}
 }
 
+const fire = function fire(listeners,...args) {
+	listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
+	listeners.forEach((listener)=>{
+		setTimeout(()=>{
+			return listener.apply(listener,args);
+		},0);
+	});
+};
+
+const fireImmediately = function fireImmediately(listeners,...args) {
+	listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
+	listeners.forEach((listener)=>{
+		return listener.apply(listener,args);
+	});
+};
+
+const fireZephReady = function fireZephReady() {
+	if (READY) clearTimeout(READY);
+	READY = setTimeout(()=>{
+		if (Object.keys(PENDING).length<1) {
+			document.dispatchEvent(new CustomEvent("zeph:ready",{
+				bubbles: false
+			}));
+		}
+	},10);
+};
+
+const getPropertyDescriptor = function getPropertyDescriptor(object,propertyName) {
+	while (true) {
+		if (object===null) return null;
+
+		let desc = Object.getOwnPropertyDescriptor(object,propertyName);
+		if (desc) return desc;
+
+		object = Object.getPrototypeOf(object);
+	}
+};
+
+const propetize = function propetize(object,propertyName,descriptor) {
+	not.uon(object,"object");
+	not.uon(propertyName,"propertyName");
+	not.string(propertyName,"propertyName");
+	not.uon(descriptor,"descriptor");
+
+	let oldDesc = getPropertyDescriptor(object,propertyName);
+	let newDesc = Object.assign({},oldDesc||{},descriptor);
+
+	if (oldDesc && descriptor.get) {
+		newDesc.get = ()=>{
+			let $super = oldDesc.get || null;
+			return descriptor.get($super);
+		};
+	}
+	if (oldDesc && descriptor.set) {
+		newDesc.set = (value)=>{
+			let $super = oldDesc.set || null;
+			return descriptor.set(value,$super);
+		};
+	}
+
+	Object.defineProperty(object,propertyName,newDesc);
+
+	return newDesc;
+};
+
 const contextCall = function(name) {
 	not.uon(name,"name");
 	not.string(name,"name");
@@ -1092,5 +1097,12 @@ const onEventAt = contextCall("onEventAt");
 const ZephComponents = new ZephComponentsClass();
 const ZephServices = new ZephServicesClass();
 
-export {ZephComponents,ZephService,ZephServices};
+export {ZephComponents,ZephService,ZephServices,ZephUtils};
 export {html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt};
+
+window.Zeph = {
+	ZephComponents,
+	ZephServices,
+	ZephService,
+	ZephUtils
+};
