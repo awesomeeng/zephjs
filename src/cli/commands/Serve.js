@@ -27,7 +27,7 @@ class Create extends AwesomeCLI.AbstractCommand {
 	}
 
 	get usage() {
-		return "zeph sort [--port <port>] [path_to_serve] [<path_to_server> ...]";
+		return "zeph serve [--port <port>] [path_to_serve] [<path_to_server> ...]";
 	}
 
 	execute(args,options) {

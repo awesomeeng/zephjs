@@ -30,7 +30,7 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 	constructor() {
 		super();
 
-		this.refs = {};
+		this.addOption("quiet","boolean",false,"Disable displaying information details during bundle operation. Defaults to false.");
 	}
 
 	get title() {
@@ -42,12 +42,10 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 	}
 
 	get usage() {
-		return "zeph bundle <source_filename> <target_filename>";
+		return "zeph bundle [--quiet] <source_filename> <target_filename>";
 	}
 
 	execute(args,options) {
-		this.refs = {};
-
 		let quiet = options.quiet;
 
 		if (args.length===0) {
