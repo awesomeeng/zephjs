@@ -1,5 +1,13 @@
 # AwesomeComponenets Release Notes
 
+#### **Version 0.2.0**
+
+ - Bundle now uses rollup.js and works with new ES Module structure.
+
+ - Fixes bug in lifecycle events firing incorrectly.
+
+ - Zeph CLI now shows help is no sub-command provided.
+
 #### **Version 0.1.1**
 
  - Fixes broken reference to AwesomeUtils.
