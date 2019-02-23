@@ -13,6 +13,7 @@
 - [Lifecycle Handlers](./ComponentLifecycleHandlers.md)
 - **Bindings**
 - [Event Handlers](./ComponentEvents.md)
+- [Bundling for Distribution](./docs/ComponentBundling.md)
 
 ### Bindings
 

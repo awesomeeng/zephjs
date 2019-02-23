@@ -1,4 +1,4 @@
-// (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
+// (c) 2018-present, The Awesome Engineering Company, https://awesomeneg.com
 
 /* eslint-disable no-console */
 

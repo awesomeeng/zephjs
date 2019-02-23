@@ -1,4 +1,4 @@
-// (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
+// (c) 2018-present, The Awesome Engineering Company, https://awesomeneg.com
 
 import "./awesome-border-layout.js";
 import {ZephComponents,html,css} from "../../Zeph.js";

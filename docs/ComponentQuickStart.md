@@ -14,6 +14,7 @@
 - [Lifecycle Handlers](./ComponentLifecycleHandlers.md)
 - [Bindings](./ComponentBindings.md)
 - [Event Handlers](./ComponentEvents.md)
+- [Bundling for Distribution](./docs/ComponentBundling.md)
 
 ### How To Build a ZephJS Component
 
@@ -400,3 +401,4 @@ After you have the quick start down we strongly encourage you to continue readin
  - [Lifecycle Handlers](./ComponentLifecycleHandlers.md)
  - [Bindings](./ComponentBindings.md)
  - [Event Handlers](./ComponentEvents.md)
+ - [Bundling for Distribution](./docs/ComponentBundling.md)

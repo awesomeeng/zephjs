@@ -96,6 +96,9 @@ So head over there and start building awesome components!
  - [ZephComponents API](./docs/ZephComponents.md)
  - [ZephServices API](./docs/ZephServices.md)
 
+**Bundling**
+  - [Bundling for Distribution](./docs/ComponentBundling.md)
+
 **Command Line Tool**
  - [Command Line Tool](./docs/CLI.md)
 

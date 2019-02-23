@@ -1,4 +1,4 @@
-// (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
+// (c) 2018-present, The Awesome Engineering Company, https://awesomeneg.com
 
 const $COMPONENTS = Symbol("components");
 const $SERVICES = Symbol("services");
@@ -13,6 +13,7 @@ const $PROXY = Symbol("proxy");
 
 let CODE_CONTEXT = null;
 let PENDING = {};
+let READY = null;
 
 const IDENTITY_FUNCTION = (x)=>{
 	return x;
@@ -157,6 +158,16 @@ const utils = {
 		listeners.forEach((listener)=>{
 			return listener.apply(listener,args);
 		});
+	},
+	fireZephReady() {
+		if (READY) clearTimeout(READY);
+		READY = setTimeout(()=>{
+			if (Object.keys(PENDING).length<1) {
+				document.dispatchEvent(new CustomEvent("zeph:ready",{
+					bubbles: false
+				}));
+			}
+		},10);
 	},
 	getPropertyDescriptor(object,propertyName) {
 		while (true) {
@@ -900,11 +911,7 @@ class ZephComponentsClass {
 					bubbles: false,
 					detail: origin
 				}));
-				if (Object.keys(PENDING).length<1) {
-					document.dispatchEvent(new CustomEvent("zeph:ready",{
-						bubbles: false
-					}));
-				}
+				utils.fireZephReady();
 
 				resolve(component);
 			}

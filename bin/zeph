@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-// license-extractor by Glen R. Goodwin (@areinet)
-// https://github.com/arei/license-extractor.git
+// (c) 2018-present, The Awesome Engineering Company, https://awesomeneg.com
 
 require("./src/cli/CLI.js");
