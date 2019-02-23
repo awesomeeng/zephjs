@@ -20,7 +20,7 @@ Please dont misunderstand us: React, Vue, Angular, Svelte (more people should us
  - [Usage](#usage)
  - [Your First Component](#your_first_component)
  - [Writing Your Own Components](#writing-your-own-components)
- - [The Zeph Command Line Tool](@the-zeph-command-line-tool)
+ - [The Zeph Command Line Tool](#the-zeph-command-line-tool)
  - [Documentation](#documentation)
  - [Examples](#examples)
  - [Awesome Engineering](#the-awesome-engineering-company)
