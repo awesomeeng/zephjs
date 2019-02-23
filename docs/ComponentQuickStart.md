@@ -1,24 +1,6 @@
 # [ZephJS](../README.md) > Writing Components > Quick Start
 
-
-### Sections
-
-- **Quick Start**
-- [Component Concepts](./ComponentConcepts.md)
-- [Importing ZephJS](./ComponentImporting.md)
-- [Defining the Component](./ComponentDefinition.md)
-- [HTML](./ComponentMarkup.md)
-- [CSS](./ComponentStyling.md)
-- [Attributes](./ComponentAttributes.md)
-- [Properties](./ComponentProperties.md)
-- [Lifecycle Handlers](./ComponentLifecycleHandlers.md)
-- [Bindings](./ComponentBindings.md)
-- [Event Handlers](./ComponentEvents.md)
-- [Bundling for Distribution](./docs/ComponentBundling.md)
-
-### How To Build a ZephJS Component
-
-A ZephJS Component can be built in nine (9) super easy steps which we are going to run through really quickly.  This is intended to be just a quick introduction.  For more information, each of these steps has a lot more detailed documentation which you can find in the [Sections](#sections) above.
+A ZephJS Component can be built in ten (10) super easy steps which we are going to run through really quickly.  This is intended to be just a quick introduction.  For more information, each of these steps has a lot more detailed documentation which you can find in the [Sections](#sections) above.
 
 ### Our Example Component
 
@@ -131,9 +113,27 @@ After we look at the code we will break it down piece by piece.
 45:	}
 ```
 
+### Creating a New Component
+
+We are going to need three files for writing our component:
+
+ - `my-button.js`: A JavaScript file for defining our component.
+ - `my-button.html`: An HTML file for providing our component content.
+ - `my-button.css`: For styling our component and its content.
+
+ZephJS provides a super fast way to generate stubs of these files using the Zeph Command Line Interface tool.  You can do this now if you wish to do so, or create these files by hand.
+
+```shell
+zeph create my-button
+```
+
+> Learn More: [Creating a New Component](./docs/ComponentCreation.md)
+
+> Learn More: [Zeph Command Line Interface](./docs/CLI.md)
+
 ### Importing ZephJS
 
-First, we need to import the pieces we need to define a component. At the bare minimum we need to import the `ZephComponents` object, which contains our `define()` function we are going to use in the next step.
+Next we edit our `my-button.js` file. We need to import the pieces we need to define a component. At the bare minimum we need to import the `ZephComponents` object, which contains our `define()` function we are going to use in the next step.
 
 In this particular example we are also using:
 
@@ -392,6 +392,7 @@ After you have the quick start down we strongly encourage you to continue readin
 
  - **Quick Start**
  - [Component Concepts](./ComponentConcepts.md)
+ - [Creating a New Component](./docs/ComponentCreation.md)
  - [Importing ZephJS](./ComponentImporting.md)
  - [Defining the Component](./ComponentDefinition.md)
  - [HTML](./ComponentMarkup.md)

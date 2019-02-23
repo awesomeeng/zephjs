@@ -20,6 +20,7 @@ Please dont misunderstand us: React, Vue, Angular, Svelte (more people should us
  - [Usage](#usage)
  - [Your First Component](#your_first_component)
  - [Writing Your Own Components](#writing-your-own-components)
+ - [The Zeph Command Line Tool](@the-zeph-command-line-tool)
  - [Documentation](#documentation)
  - [Examples](#examples)
  - [Awesome Engineering](#the-awesome-engineering-company)
@@ -70,15 +71,33 @@ Surf your favorite web browser over to [http://localhost:4000](http://localhost:
 
 Now that we have seen a component in action, you are definately excited to try it. Fortunately, its super easy to do so and we've written you a great little Quick Start guide on how to write your own component.
 
-**[The ZephJS Quick Start Guide](./docs/ComponentsQuickStart.md)**
+**[The ZephJS Quick Start Guide](./docs/ComponentQuickStart.md)**
 
 So head over there and start building awesome components!
+
+## The Zeph Command Line Tool
+
+ZephJS ships with a little command line tool (CLI) to help with your ZephJS related needs.  This is installed locally when you install ZephJS via npm and can be accessed with the shell command `zeph`.  It has the following syntax:
+
+```shell
+zeph <command>
+```
+
+There are a number of commands you can do. Very quickly:
+
+ - **`hello`**: Generate the example hello world application.
+ - **`create`**: Create a new component including .js, .html, and .css stub files.
+ - **`serve`**: Run a small Web Server on http://localhost:4000 that will serve the current directory.
+ - **`bundle`**: Bundle multiple ZephJS components into a single file.
+
+> For more information, see our documentation on the [Zeph Command Line Interface](./docs/CLI.md).
 
 ## Documentation
 
 **Components**
  - [Quick Start](./docs/ComponentQuickStart.md)
  - [Component Concepts](./docs/ComponentConcepts.md)
+ - [Creating a New Component](./docs/ComponentCreation.md)
  - [Importing ZephJS](./docs/ComponentImporting.md)
  - [Defining the Component](./docs/ComponentDefinition.md)
  - [HTML](./docs/ComponentMarkup.md)

@@ -4,6 +4,7 @@
 
 - [Quick Start](./ComponentQuickStart.md)
 - [Component Concepts](./ComponentConcepts.md)
+- [Creating a New Component](./docs/ComponentCreation.md)
 - **Importing ZephJS**
 - [Defining the Component](./ComponentDefinition.md)
 - [HTML](./ComponentMarkup.md)
