@@ -107,4 +107,4 @@ The tool will read in the `source_filename` provided and bundle it with ZephJS i
 
 You can then distribute this package to your customers as a nice self-contained entity.
 
-> There is a lot more information on the `bundle` command in our - [Bundling for Distribution](./docs/ComponentBundling.md) documentation. We highly recommend you read it if Bundling is something you are interested in doing.
+> There is a lot more information on the `bundle` command in our - [Bundling for Distribution](./ComponentBundling.md) documentation. We highly recommend you read it if Bundling is something you are interested in doing.
