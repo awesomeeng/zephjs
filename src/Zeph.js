@@ -415,7 +415,7 @@ class ZephElementClass {
 	static generateClass(context) {
 		const clazz = (class ZephCustomElement extends HTMLElement {
 			static get observedAttributes() {
-				return this[$OBSERVED];
+				return context && context.observed || [];
 			}
 
 			constructor() {

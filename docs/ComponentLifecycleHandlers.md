@@ -136,14 +136,14 @@ The `onAttribute(attributeName,handler)` definition method is associated with th
 
 > **`onAttribute(attributeName,handler)`**
  - **attributeName** [string]: The name of the attribute to observe for changes. This may not be undefined or null or empty string.
- - **handler** [Function]: The function executed when the Attribute Lifecycle event occurs.  The function has the signature `(element,content)` where `element` is the created element and `content` is the internal Shadow DOM based on any `html()` calls.
+ - **handler** [Function]: The function executed when the Attribute Lifecycle event occurs.  The function has the signature `(oldValue,newValue,element,content)` where `oldValue` is the value prior to the attribute change, `newValue` is the value being set, `element` is the created element, and `content` is the internal Shadow DOM based on any `html()` calls.
 
 ```
 ZephComponents.define("my-component",()=>{
 	html("./my-component.html");
 	css("./my-component.css");
 
-	onAttribute((element,content)=>{
+	onAttribute((oldValue,newValue,element,content)=>{
 		... do something ...
 	});
 });
