@@ -35,6 +35,12 @@ If you are interested in finding a component collection, here is a list of known
 
  - **[Mistral](https://github.com/awesomeeng/zephjs-mistral)** - Mistral is the "default" collection that was built using ZephJS.
 
+Also, we have released some ZephJS supported elements and examples that may be of interest:
+
+ - **[zephjs-router](https://github.com/awesomeeng/zephjs-router)** - An html content router built specifically for ZephJS with support for lazy loading.
+
+ - **[zephjs-loading](https://github.com/awesomeeng/zephjs-loading)** - An example of how to build a loading screen to support ZephJS components.
+
 However, for those who want to build their own component collections, well, keep reading and we will walk your through building your own components.
 
 ## Your First Component
