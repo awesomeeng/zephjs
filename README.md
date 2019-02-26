@@ -23,6 +23,7 @@ Please dont misunderstand us: React, Vue, Angular, Svelte (more people should us
  - [The Zeph Command Line Tool](#the-zeph-command-line-tool)
  - [Documentation](#documentation)
  - [Examples](#examples)
+ - [Browser Compatability](#browser-compatability)
  - [Awesome Engineering](#the-awesome-engineering-company)
  - [Support and Help](#support-and-help)
  - [License](#license)
@@ -140,6 +141,33 @@ ZephJS ships with a set of examples for your reference.
  - [ExampleCollection](./examples/ExampleCollection): An example of grouping several components together into a single file, called a collection.
 
  - [BasicService](./examples/BasicService): An example of using the ZephServices service registry.
+
+## Browser Compatability
+
+ZephJS is built on modern browser standards and thus requires a modern browser to work.  In particular it requires the following Web Standards: Shadow DOM v1, Custom Elements v1, Mutation Observer and Fetch.
+
+The following browser compatability chart indicates which browsers are supported and which are not. (All browser statistics taken from [caniuse.com](https://caniuse.com) and used under the conditions of thier license.)
+
+| Browser                     | Minimum Required Version | Notes
+|-----------------------------|--------------------------|----------------------------
+| Microsoft Internet Explorer | NOT SUPPORTED            | No support as of v11.
+| Microsoft Edge              | NOT SUPPORTED            | No support as of v18, but in development
+| **Firefox**                 | 63                       | |
+| **Chrome**                  | 54                       | |
+| **Safari**                  | 10.1                     | :host and ::slotted psuedo-selectors are buggy.
+| **Opera**                   | 41                       | |
+| **IOS Safari**              | 10.3                     | :host and ::slotted psuedo-selectors are buggy.
+| **Android Browser**         | 67                       | |
+| Blackberry Browser          | NOT SUPPORTED            | No support as ov v10.
+| **Opera Mobile**            | 46                       | |
+| **Chrome for Android**      | 71                       | |
+| **Firefox for Android**     | 64                       | |
+| IE Mobile                   | NOT SUPPORTED            | No support as of v11
+| **UC Browser for Android**  | 11.8                     | |
+| **Samsung Internet**        | 6.2                      | |
+| QQBrowser                   | NOT SUPPORTED            | No support as of v1.2
+| Baidu Browser               | NOT SUPPORTED            | No support as of v7.12
+(Chart last updated Feb 25, 2019)
 
 ## The Awesome Engineering Company
 
