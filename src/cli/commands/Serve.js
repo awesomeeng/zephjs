@@ -40,7 +40,7 @@ class Create extends AwesomeCLI.AbstractCommand {
 			port: options.port
 		});
 		server.route("*","*",(path,request)=>{
-			Log.access("Request "+request.path+" from "+request.origin+".");
+			Log.access("Request "+request.method+" "+request.path+" from "+request.origin+".");
 		});
 
 		let zeph = AwesomeUtils.Module.resolve(module,"../../Zeph.js");
@@ -57,7 +57,7 @@ class Create extends AwesomeCLI.AbstractCommand {
 				let path,route;
 				if (arg==="." || arg==="/" || arg==="./") {
 					path = cwd;
-					route = "/";
+					route = "/*";
 				}
 				else {
 					path = Path.resolve(cwd,arg);

@@ -6,14 +6,14 @@ const $NAME = Symbol("name");
 const $CONTEXT = Symbol("context");
 const $ELEMENT = Symbol("element");
 const $SHADOW = Symbol("shadow");
-const $OBSERVED = Symbol("observed");
 const $OBSERVER = Symbol("observer");
 const $LISTENERS = Symbol("listeners");
 const $PROXY = Symbol("proxy");
 
 let CODE_CONTEXT = null;
 let PENDING = {};
-let READY = null;
+let FIREREADY = null;
+let READY = false;
 
 const IDENTITY_FUNCTION = (x)=>{
 	return x;
@@ -54,6 +54,9 @@ const not = {
 };
 
 const ZephUtils = {
+	ready: ()=>{
+		return READY;
+	},
 	exists: (url)=>{
 		if (url===undefined || url===null || url==="") return Promise.resolve(false);
 
@@ -1018,9 +1021,10 @@ const fireImmediately = function fireImmediately(listeners,...args) {
 };
 
 const fireZephReady = function fireZephReady() {
-	if (READY) clearTimeout(READY);
-	READY = setTimeout(()=>{
+	if (FIREREADY) clearTimeout(FIREREADY);
+	FIREREADY = setTimeout(()=>{
 		if (Object.keys(PENDING).length<1) {
+			READY = true;
 			document.dispatchEvent(new CustomEvent("zeph:ready",{
 				bubbles: false
 			}));
