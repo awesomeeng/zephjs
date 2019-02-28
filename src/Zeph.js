@@ -21,7 +21,10 @@ const IDENTITY_FUNCTION = (x)=>{
 
 const not = {
 	undefined: (arg,name)=>{
-		if (arg===undefined) throw new Error("Undefined "+name+".");
+		if (arg===undefined) {
+			console.log(new Error("Asdf"));
+			throw new Error("Undefined "+name+".");
+		}
 	},
 	null: (arg,name)=>{
 		if (arg===null) throw new Error("Null "+name+".");
@@ -186,7 +189,7 @@ class ZephComponent {
 
 				await Promise.all(this.context.pending);
 
-				this[$ELEMENT] = ZephElementClass.generateClass(this.context);
+				this[$ELEMENT] = ZephElementClass.generateClass(this.context,this.context.from||HTMLElement);
 				customElements.define(this.name,this[$ELEMENT]);
 
 				fire(this.context && this.context.lifecycle && this.context.lifecycle.init || [],this.name,this);
@@ -237,6 +240,19 @@ class ZephComponentExecution {
 
 	get context() {
 		return this[$CONTEXT];
+	}
+
+	async from(clazz) {
+		not.uon(clazz,"from argument");
+		if (clazz && typeof clazz==="string") {
+			await ZephComponents.waitFor(clazz);
+			clazz = ZephComponents.get(clazz);
+			not.uon(clazz,"from argument");
+		}
+		if (!(clazz instanceof ZephComponent)) throw new Error("Invalid from argument; must inherit from a ZephComponent.");
+
+		clazz = clazz.customElementClass;
+		this.context.from = clazz;
 	}
 
 	html(content,options={}) {
@@ -423,8 +439,8 @@ class ZephComponentExecution {
 }
 
 class ZephElementClass {
-	static generateClass(context) {
-		const clazz = (class ZephCustomElement extends HTMLElement {
+	static generateClass(context,from=HTMLElement) {
+		const clazz = (class ZephCustomElement extends from {
 			static get observedAttributes() {
 				return context && context.observed || [];
 			}
@@ -435,10 +451,14 @@ class ZephElementClass {
 				let element = this;
 				this[$ELEMENT] = element;
 
-				let shadow  = this.attachShadow({
+				let shadow = this.shadowRoot || this.attachShadow({
 					mode:"open"
 				});
 				this[$SHADOW] = shadow;
+
+				let css = shadow.querySelector("style");
+				if (css) css = css.textContent;
+				else css = "";
 
 				let html = shadow.innerHTML;
 				(context.html||[]).forEach((markup)=>{
@@ -450,7 +470,6 @@ class ZephElementClass {
 				});
 				shadow.innerHTML = html;
 
-				let css = "";
 				(context.css||[]).forEach((style)=>{
 					let content = style.content;
 					let options = style.options;
@@ -461,7 +480,7 @@ class ZephElementClass {
 				if (css) {
 					let styleElement = document.createElement("style");
 					styleElement.textContent = css;
-					shadow.appendChild(styleElement);					
+					shadow.appendChild(styleElement);
 				}
 
 				if (context.attributes) {
@@ -794,6 +813,7 @@ class ZephComponentsClass {
 				return Object.keys(target);
 			}
 		});
+		this[$OBSERVER] = [];
 	}
 
 	get components() {
@@ -818,6 +838,18 @@ class ZephComponentsClass {
 		not.empty(name,"name");
 
 		return this[$COMPONENTS][name];
+	}
+
+	waitFor(name) {
+		not.uon(name,"name");
+		not.string(name,"name");
+		not.empty(name,"name");
+
+		if (this[$COMPONENTS][name]) Promise.resolve();
+
+		return new Promise((resolve,reject)=>{
+			this[$OBSERVER].push({name,resolve,reject});
+		});
 	}
 
 	define(name,code) {
@@ -863,6 +895,10 @@ class ZephComponentsClass {
 				await component.define();
 
 				this[$COMPONENTS][name] = component;
+				this[$OBSERVER] = this[$OBSERVER].filter((waiting)=>{
+					if (waiting.name===name) waiting.resolve();
+					return waiting.name!==name;
+				});
 
 				delete PENDING["component:"+origin];
 
@@ -1103,6 +1139,7 @@ const contextCall = function(name) {
 	return f;
 };
 
+const from = contextCall("from");
 const html = contextCall("html");
 const css = contextCall("css");
 const attribute = contextCall("attribute");
@@ -1122,7 +1159,7 @@ const ZephComponents = new ZephComponentsClass();
 const ZephServices = new ZephServicesClass();
 
 export {ZephComponents,ZephService,ZephServices,ZephUtils};
-export {html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt};
+export {from,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt};
 
 window.Zeph = {
 	ZephComponents,
