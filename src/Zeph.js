@@ -239,13 +239,17 @@ class ZephComponentExecution {
 		return this[$CONTEXT];
 	}
 
-	html(content) {
+	html(content,options={}) {
+		options = Object.assign({
+			overwrite: false
+		},options||{});
+
 		let prom = new Promise(async (resolve,reject)=>{
 			try {
 				let url = await ZephUtils.resolveName(content,this.context.origin||document.URL.toString(),".html");
 				if (url) content = await ZephUtils.fetchText(url);
 
-				this.context.html.push(content);
+				this.context.html.push({content,options});
 
 				resolve();
 			}
@@ -257,13 +261,17 @@ class ZephComponentExecution {
 		this.context.pending.push(prom);
 	}
 
-	css(content) {
+	css(content,options={}) {
+		options = Object.assign({
+			overwrite: false
+		},options||{});
+
 		let prom = new Promise(async (resolve,reject)=>{
 			try {
 				let url = await ZephUtils.resolveName(content,this.context.origin,".css");
 				if (url) content = await ZephUtils.fetchText(url);
 
-				this.context.css.push(content);
+				this.context.css.push({content,options});
 
 				resolve();
 			}
@@ -434,15 +442,27 @@ class ZephElementClass {
 
 				let html = shadow.innerHTML;
 				(context.html||[]).forEach((markup)=>{
-					html += markup;
+					let content = markup.content;
+					let options = markup.options;
+
+					if (options.overwrite) html = content;
+					else html += content;
 				});
 				shadow.innerHTML = html;
 
+				let css = "";
 				(context.css||[]).forEach((style)=>{
-					let styleElement = document.createElement("style");
-					styleElement.textContent = style;
-					shadow.appendChild(styleElement);
+					let content = style.content;
+					let options = style.options;
+
+					if (options.overwrite) css = content;
+					else css += content+"\n";
 				});
+				if (css) {
+					let styleElement = document.createElement("style");
+					styleElement.textContent = css;
+					shadow.appendChild(styleElement);					
+				}
 
 				if (context.attributes) {
 					Object.values(context.attributes).forEach((attr)=>{
