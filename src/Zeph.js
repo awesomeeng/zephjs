@@ -15,35 +15,35 @@ let PENDING = {};
 let FIREREADY = null;
 let READY = false;
 
-const IDENTITY_FUNCTION = (x)=>{
-	return x;
-};
+const IDENTITY_FUNCTION = (x)=>{ return x; };
 
-const not = {
-	undefined: (arg,name)=>{
-		if (arg===undefined) throw new Error("Undefined "+name+".");
-	},
-	null: (arg,name)=>{
-		if (arg===null) throw new Error("Null "+name+".");
-	},
-	uon: (arg,name)=>{
-		not.undefined(arg,name);
-		not.null(arg,name);
-	},
-	empty: (arg,name)=>{
-		if (typeof arg==="string" && arg==="") throw new Error("Empty "+name+".");
+const check = {
+	not: {
+		undefined: (arg,name)=>{
+			if (arg===undefined) throw new Error("Undefined "+name+".");
+		},
+		null: (arg,name)=>{
+			if (arg===null) throw new Error("Null "+name+".");
+		},
+		uon: (arg,name)=>{
+			check.not.undefined(arg,name);
+			check.not.null(arg,name);
+		},
+		empty: (arg,name)=>{
+			if (typeof arg==="string" && arg==="") throw new Error("Empty "+name+".");
+		}
 	},
 	type: (arg,type,name)=>{
 		if (typeof arg!==type) throw new Error("Invalid "+name+"; must be a "+type+".");
 	},
 	string: (arg,name)=>{
-		not.type(arg,"string",name);
+		check.type(arg,"string",name);
 	},
 	number: (arg,name)=>{
-		not.type(arg,"number",name);
+		check.type(arg,"number",name);
 	},
 	boolean: (arg,name)=>{
-		not.type(arg,"string",name);
+		check.type(arg,"string",name);
 	},
 	function: (arg,type,name)=>{
 		if (!(arg instanceof Function)) throw new Error("Invalid "+name+"; must be a Function.");
@@ -74,8 +74,8 @@ const ZephUtils = {
 		});
 	},
 	fetch: (url)=>{
-		not.uon(url,"url");
-		not.empty(url,"url");
+		check.not.uon(url,"url");
+		check.not.empty(url,"url");
 
 		return new Promise(async (resolve,reject)=>{
 			try {
@@ -89,8 +89,8 @@ const ZephUtils = {
 		});
 	},
 	fetchText: (url)=>{
-		not.uon(url,"url");
-		not.empty(url,"url");
+		check.not.uon(url,"url");
+		check.not.empty(url,"url");
 
 		return new Promise(async (resolve,reject)=>{
 			try {
@@ -108,8 +108,8 @@ const ZephUtils = {
 		});
 	},
 	resolve: (url,base=document.URL)=>{
-		not.uon(url,"url");
-		not.empty(url,"url");
+		check.not.uon(url,"url");
+		check.not.empty(url,"url");
 		if (!(url instanceof URL) && typeof url!=="string") throw new Error("Invalid url; must be a string or URL.");
 
 		try {
@@ -152,14 +152,14 @@ const ZephUtils = {
 
 class ZephComponent {
 	constructor(name,origin,code) {
-		not.uon(name,"name");
-		not.string(name,"name");
-		not.empty(name,"name");
-		not.uon(origin,"origin");
-		not.string(origin,"origin");
-		not.empty(origin,"origin");
-		not.uon(code,"code");
-		not.function(code,"code");
+		check.not.uon(name,"name");
+		check.string(name,"name");
+		check.not.empty(name,"name");
+		check.not.uon(origin,"origin");
+		check.string(origin,"origin");
+		check.not.empty(origin,"origin");
+		check.not.uon(code,"code");
+		check.function(code,"code");
 
 		let context = {};
 		context.name = name;
@@ -226,9 +226,9 @@ class ZephComponent {
 
 class ZephComponentExecution {
 	constructor(context,code) {
-		not.uon(context,"context");
-		not.uon(code,"code");
-		not.function(code,"code");
+		check.not.uon(context,"context");
+		check.not.uon(code,"code");
+		check.function(code,"code");
 
 		this[$CONTEXT] = context;
 		this[$CODE] = code;
@@ -254,9 +254,9 @@ class ZephComponentExecution {
 	}
 
 	from(fromTagName) {
-		not.uon(fromTagName,"fromTagName");
-		not.empty(fromTagName,"fromTagName");
-		not.string(fromTagName,"fromTagName");
+		check.not.uon(fromTagName,"fromTagName");
+		check.not.empty(fromTagName,"fromTagName");
+		check.string(fromTagName,"fromTagName");
 
 		this.context.pending = this.context.pending || [];
 		this.context.pending.push(ZephComponents.waitFor(fromTagName));
@@ -319,8 +319,8 @@ class ZephComponentExecution {
 	}
 
 	attribute(attributeName,initialValue) {
-		not.uon(attributeName,"attributeName");
-		not.string(attributeName);
+		check.not.uon(attributeName,"attributeName");
+		check.string(attributeName);
 
 		this.context.attributes = this.context.attributes || {};
 		if (this.context.attributes[attributeName]) throw new Error("Attribute '"+attributeName+"' already defined for custom element; cannot have multiple definitions.");
@@ -331,9 +331,9 @@ class ZephComponentExecution {
 	}
 
 	property(propertyName,initialValue,transformFunction) {
-		not.uon(propertyName,"attributeName");
-		not.string(propertyName);
-		not.undefined(initialValue,"initialValue");
+		check.not.uon(propertyName,"attributeName");
+		check.string(propertyName);
+		check.not.undefined(initialValue,"initialValue");
 
 		this.context.properties = this.context.properties || {};
 		if (this.context.properties[propertyName]) throw new Error("Property '"+propertyName+"' already defined for custom element; cannot have multiple definitions.");
@@ -351,23 +351,23 @@ class ZephComponentExecution {
 	bindingAt(sourceElement,sourceName,targetElement,targetName,transformFunction) {
 		if (sourceElement && sourceName && targetElement && targetName===undefined) targetName = sourceName;
 
-		not.uon(sourceElement,"sourceElement");
+		check.not.uon(sourceElement,"sourceElement");
 		if (typeof sourceElement!=="string" && !(sourceElement instanceof HTMLElement)) throw new Error("Invalid sourceElement; must be a string or an instance of HTMLElement.");
 
-		not.uon(sourceName,"sourceName");
-		not.string(sourceName,"sourceName");
+		check.not.uon(sourceName,"sourceName");
+		check.string(sourceName,"sourceName");
 		if (!sourceName.startsWith("$") && !sourceName.startsWith("@") && !sourceName.startsWith(".")) throw new Error("Invalid sourceName; must start with a '$' or a '@' or a '.'.");
 
-		not.uon(targetElement,"targetElement");
+		check.not.uon(targetElement,"targetElement");
 		if (typeof targetElement!=="string" && !(targetElement instanceof HTMLElement)) throw new Error("Invalid targetElement; must be a string or an instance of HTMLElement.");
 
-		not.uon(targetName,"targetName");
-		not.string(targetName,"targetName");
+		check.not.uon(targetName,"targetName");
+		check.string(targetName,"targetName");
 		if (!targetName.startsWith("$") && !targetName.startsWith("@") && !targetName.startsWith(".")) throw new Error("Invalid targetName; must start with a '$' or a '@' or a '.'.");
 
 		if (transformFunction===undefined || transformFunction===null) transformFunction = IDENTITY_FUNCTION;
-		not.uon(transformFunction,"transformFunction");
-		not.function(transformFunction,"transformFunction");
+		check.not.uon(transformFunction,"transformFunction");
+		check.function(transformFunction,"transformFunction");
 
 		let name = sourceElement+":"+sourceName+">"+targetElement+":"+targetName;
 
@@ -386,50 +386,50 @@ class ZephComponentExecution {
 	}
 
 	onInit(listener) {
-		not.uon(listener,"listener");
-		not.function(listener,"listener");
+		check.not.uon(listener,"listener");
+		check.function(listener,"listener");
 		this.context.lifecycle = this.context.lifecycle || {};
 		this.context.lifecycle.init = this.context.lifecycle.init || [];
 		this.context.lifecycle.init.push(listener);
 	}
 
 	onCreate(listener) {
-		not.uon(listener,"listener");
-		not.function(listener,"listener");
+		check.not.uon(listener,"listener");
+		check.function(listener,"listener");
 		this.context.lifecycle = this.context.lifecycle || {};
 		this.context.lifecycle.create = this.context.lifecycle.create || [];
 		this.context.lifecycle.create.push(listener);
 	}
 
 	onAdd(listener) {
-		not.uon(listener,"listener");
-		not.function(listener,"listener");
+		check.not.uon(listener,"listener");
+		check.function(listener,"listener");
 		this.context.lifecycle = this.context.lifecycle || {};
 		this.context.lifecycle.add = this.context.lifecycle.add || [];
 		this.context.lifecycle.add.push(listener);
 	}
 
 	onRemove(listener) {
-		not.uon(listener,"listener");
-		not.function(listener,"listener");
+		check.not.uon(listener,"listener");
+		check.function(listener,"listener");
 		this.context.lifecycle = this.context.lifecycle || {};
 		this.context.lifecycle.remove = this.context.lifecycle.remove || [];
 		this.context.lifecycle.remove.push(listener);
 	}
 
 	onAdopt(listener) {
-		not.uon(listener,"listener");
-		not.function(listener,"listener");
+		check.not.uon(listener,"listener");
+		check.function(listener,"listener");
 		this.context.lifecycle = this.context.lifecycle || {};
 		this.context.lifecycle.adopt = this.context.lifecycle.adopt || [];
 		this.context.lifecycle.adopt.push(listener);
 	}
 
 	onAttribute(attributeName,listener) {
-		not.uon(attributeName,"attribute");
-		not.string(attributeName,"attribute");
-		not.uon(listener,"listener");
-		not.function(listener,"listener");
+		check.not.uon(attributeName,"attribute");
+		check.string(attributeName,"attribute");
+		check.not.uon(listener,"listener");
+		check.function(listener,"listener");
 
 		this.context.observed = this.context.observed || [];
 		this.context.observed.push(attributeName);
@@ -441,19 +441,19 @@ class ZephComponentExecution {
 	}
 
 	onEvent(eventName,listener) {
-		not.uon(eventName,"eventName");
-		not.string(eventName,"eventName");
-		not.uon(listener,"listener");
-		not.function(listener,"listener");
+		check.not.uon(eventName,"eventName");
+		check.string(eventName,"eventName");
+		check.not.uon(listener,"listener");
+		check.function(listener,"listener");
 		this.context.events = this.context.events || [];
 		this.context.events.push({eventName,listener});
 	}
 
 	onEventAt(selector,eventName,listener) {
-		not.uon(eventName,"eventName");
-		not.string(eventName,"eventName");
-		not.uon(listener,"listener");
-		not.function(listener,"listener");
+		check.not.uon(eventName,"eventName");
+		check.string(eventName,"eventName");
+		check.not.uon(listener,"listener");
+		check.function(listener,"listener");
 		this.context.eventsAt = this.context.eventsAt || [];
 		this.context.eventsAt.push({selector,eventName,listener});
 	}
@@ -734,20 +734,20 @@ class ZephElementObserver {
 	}
 
 	addAttributeObserver(attribute,handler) {
-		not.uon(attribute,"attribute");
-		not.string(attribute,"attribute");
-		not.uon(handler,"handler");
-		not.function(handler,"handler");
+		check.not.uon(attribute,"attribute");
+		check.string(attribute,"attribute");
+		check.not.uon(handler,"handler");
+		check.function(handler,"handler");
 
 		this.attributes[attribute] = this.attributes[attribute] || [];
 		this.attributes[attribute].push(handler);
 	}
 
 	removeAttributeObserver(attribute,handler) {
-		not.uon(attribute,"attribute");
-		not.string(attribute,"attribute");
-		not.uon(handler,"handler");
-		not.function(handler,"handler");
+		check.not.uon(attribute,"attribute");
+		check.string(attribute,"attribute");
+		check.not.uon(handler,"handler");
+		check.function(handler,"handler");
 
 		if (!this.attributes[attribute]) return;
 		this.attributes[attribute] = this.attributes[attribute].filter((h)=>{
@@ -763,15 +763,15 @@ class ZephElementObserver {
 	}
 
 	addContentObserver(handler) {
-		not.uon(handler,"handler");
-		not.function(handler,"handler");
+		check.not.uon(handler,"handler");
+		check.function(handler,"handler");
 
 		this.content.push(handler);
 	}
 
 	removeContentObserver(handler) {
-		not.uon(handler,"handler");
-		not.function(handler,"handler");
+		check.not.uon(handler,"handler");
+		check.function(handler,"handler");
 
 		this.content = this.content.filter((h)=>{
 			return h!==handler;
@@ -847,25 +847,25 @@ class ZephComponentsClass {
 	}
 
 	has(name) {
-		not.uon(name,"name");
-		not.string(name,"name");
-		not.empty(name,"name");
+		check.not.uon(name,"name");
+		check.string(name,"name");
+		check.not.empty(name,"name");
 
 		return !!this[$COMPONENTS][name];
 	}
 
 	get(name) {
-		not.uon(name,"name");
-		not.string(name,"name");
-		not.empty(name,"name");
+		check.not.uon(name,"name");
+		check.string(name,"name");
+		check.not.empty(name,"name");
 
 		return this[$COMPONENTS][name];
 	}
 
 	waitFor(name) {
-		not.uon(name,"name");
-		not.string(name,"name");
-		not.empty(name,"name");
+		check.not.uon(name,"name");
+		check.string(name,"name");
+		check.not.empty(name,"name");
 
 		if (this[$COMPONENTS][name]) return Promise.resolve();
 
@@ -875,12 +875,12 @@ class ZephComponentsClass {
 	}
 
 	define(name,code) {
-		not.uon(name,"name");
-		not.string(name,"name");
-		not.empty(name,"name");
+		check.not.uon(name,"name");
+		check.string(name,"name");
+		check.not.empty(name,"name");
 
-		not.uon(code,"code");
-		not.function(code,"code");
+		check.not.uon(code,"code");
+		check.function(code,"code");
 
 		if (this[$COMPONENTS][name]) throw new Error("Component already defined.");
 
@@ -942,9 +942,9 @@ class ZephComponentsClass {
 	}
 
 	undefine(name) {
-		not.uon(name,"name");
-		not.string(name,"name");
-		not.empty(name,"name");
+		check.not.uon(name,"name");
+		check.string(name,"name");
+		check.not.empty(name,"name");
 
 		let component = this[$COMPONENTS][name];
 		if (!component) return;
@@ -1035,27 +1035,27 @@ class ZephServicesClass {
 	}
 
 	has(name) {
-		not.uon(name,"name");
-		not.string(name,"name");
-		not.empty(name,"name");
+		check.not.uon(name,"name");
+		check.string(name,"name");
+		check.not.empty(name,"name");
 
 		return !!this[$SERVICES][name];
 	}
 
 	get(name) {
-		not.uon(name,"name");
-		not.string(name,"name");
-		not.empty(name,"name");
+		check.not.uon(name,"name");
+		check.string(name,"name");
+		check.not.empty(name,"name");
 
 		return this[$SERVICES][name];
 	}
 
 	register(name,service) {
-		not.uon(name,"name");
-		not.string(name,"name");
-		not.empty(name,"name");
+		check.not.uon(name,"name");
+		check.string(name,"name");
+		check.not.empty(name,"name");
 
-		not.uon(service,"service");
+		check.not.uon(service,"service");
 		if (!(service instanceof ZephService)) throw new Error("Invalid service; must be an instance of ZephService.");
 
 		if (this[$SERVICES][name]) throw new Error("Service already registered.");
@@ -1142,10 +1142,10 @@ const getPropertyDescriptor = function getPropertyDescriptor(object,propertyName
 };
 
 const propetize = function propetize(object,propertyName,descriptor) {
-	not.uon(object,"object");
-	not.uon(propertyName,"propertyName");
-	not.string(propertyName,"propertyName");
-	not.uon(descriptor,"descriptor");
+	check.not.uon(object,"object");
+	check.not.uon(propertyName,"propertyName");
+	check.string(propertyName,"propertyName");
+	check.not.uon(descriptor,"descriptor");
 
 	let oldDesc = getPropertyDescriptor(object,propertyName);
 	let newDesc = Object.assign({},oldDesc||{},descriptor);
@@ -1169,9 +1169,9 @@ const propetize = function propetize(object,propertyName,descriptor) {
 };
 
 const contextCall = function(name) {
-	not.uon(name,"name");
-	not.string(name,"name");
-	not.empty(name,"name");
+	check.not.uon(name,"name");
+	check.string(name,"name");
+	check.not.empty(name,"name");
 
 	let f = {[name]: function() {
 		if (!CODE_CONTEXT) throw new Error(name+"() may only be used within the ZephComponent.define() method.");
