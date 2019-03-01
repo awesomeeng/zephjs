@@ -107,6 +107,7 @@ There are a number of commands you can do. Very quickly:
  - [Creating a New Component](./docs/ComponentCreation.md)
  - [Importing ZephJS](./docs/ComponentImporting.md)
  - [Defining the Component](./docs/ComponentDefinition.md)
+ - [Inheritance](./docs/ComponentInheritance.md)
  - [HTML](./docs/ComponentMarkup.md)
  - [CSS](./docs/ComponentStyling.md)
  - [Attributes](./docs/ComponentAttributes.md)

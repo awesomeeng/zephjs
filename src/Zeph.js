@@ -2,8 +2,8 @@
 
 const $COMPONENTS = Symbol("components");
 const $SERVICES = Symbol("services");
-const $NAME = Symbol("name");
 const $CONTEXT = Symbol("context");
+const $CODE = Symbol("code");
 const $ELEMENT = Symbol("element");
 const $SHADOW = Symbol("shadow");
 const $OBSERVER = Symbol("observer");
@@ -21,10 +21,7 @@ const IDENTITY_FUNCTION = (x)=>{
 
 const not = {
 	undefined: (arg,name)=>{
-		if (arg===undefined) {
-			console.log(new Error("Asdf"));
-			throw new Error("Undefined "+name+".");
-		}
+		if (arg===undefined) throw new Error("Undefined "+name+".");
 	},
 	null: (arg,name)=>{
 		if (arg===null) throw new Error("Null "+name+".");
@@ -154,23 +151,39 @@ const ZephUtils = {
 };
 
 class ZephComponent {
-	constructor(name,context) {
+	constructor(name,origin,code) {
 		not.uon(name,"name");
 		not.string(name,"name");
 		not.empty(name,"name");
-		not.uon(context,"context");
+		not.uon(origin,"origin");
+		not.string(origin,"origin");
+		not.empty(origin,"origin");
+		not.uon(code,"code");
+		not.function(code,"code");
 
-		this[$NAME] = name;
+		let context = {};
+		context.name = name;
+		context.origin = origin;
+
+		this[$CODE] = code;
 		this[$CONTEXT] = context;
 		this[$ELEMENT] = null;
 	}
 
-	get name() {
-		return this[$NAME];
-	}
-
 	get context() {
 		return this[$CONTEXT];
+	}
+
+	get name() {
+		return this.context.name;
+	}
+
+	get origin() {
+		return this.context.origin;
+	}
+
+	get code() {
+		return this[$CODE];
 	}
 
 	get defined() {
@@ -184,12 +197,12 @@ class ZephComponent {
 	define() {
 		return new Promise(async (resolve,reject)=>{
 			try {
-				let execution = new ZephComponentExecution(this.context);
+				let execution = new ZephComponentExecution(this.context,this.code);
 				await execution.run();
 
 				await Promise.all(this.context.pending);
 
-				this[$ELEMENT] = ZephElementClass.generateClass(this.context,this.context.from||HTMLElement);
+				this[$ELEMENT] = ZephElementClass.generateClass(this.context);
 				customElements.define(this.name,this[$ELEMENT]);
 
 				fire(this.context && this.context.lifecycle && this.context.lifecycle.init || [],this.name,this);
@@ -203,31 +216,21 @@ class ZephComponent {
 	}
 }
 
-class ZephComponentContext {
-	constructor(code,origin=document.URL.toString()) {
+class ZephComponentExecution {
+	constructor(context,code) {
+		not.uon(context,"context");
 		not.uon(code,"code");
 		not.function(code,"code");
 
-		this.code = code;
-		this.origin = origin;
-
-		this.pending = [];
-		this.html = [];
-		this.css = [];
-	}
-}
-
-class ZephComponentExecution {
-	constructor(context) {
-		not.uon(context,"context");
 		this[$CONTEXT] = context;
+		this[$CODE] = code;
 	}
 
 	run() {
 		return new Promise(async (resolve,reject)=>{
 			try {
 				CODE_CONTEXT = this;
-				await this.context.code.bind(this)();
+				await this[$CODE].bind(this)();
 				CODE_CONTEXT = null;
 
 				resolve();
@@ -242,17 +245,15 @@ class ZephComponentExecution {
 		return this[$CONTEXT];
 	}
 
-	async from(clazz) {
-		not.uon(clazz,"from argument");
-		if (clazz && typeof clazz==="string") {
-			await ZephComponents.waitFor(clazz);
-			clazz = ZephComponents.get(clazz);
-			not.uon(clazz,"from argument");
-		}
-		if (!(clazz instanceof ZephComponent)) throw new Error("Invalid from argument; must inherit from a ZephComponent.");
+	from(fromTagName) {
+		not.uon(fromTagName,"fromTagName");
+		not.empty(fromTagName,"fromTagName");
+		not.string(fromTagName,"fromTagName");
 
-		clazz = clazz.customElementClass;
-		this.context.from = clazz;
+		this.context.pending = this.context.pending || [];
+		this.context.pending.push(ZephComponents.waitFor(fromTagName));
+
+		this.context.from = fromTagName;
 	}
 
 	html(content,options={}) {
@@ -265,6 +266,7 @@ class ZephComponentExecution {
 				let url = await ZephUtils.resolveName(content,this.context.origin||document.URL.toString(),".html");
 				if (url) content = await ZephUtils.fetchText(url);
 
+				this.context.html = this.context.html || [];
 				this.context.html.push({content,options});
 
 				resolve();
@@ -274,6 +276,7 @@ class ZephComponentExecution {
 			}
 		});
 
+		this.context.pending = this.context.pending || [];
 		this.context.pending.push(prom);
 	}
 
@@ -287,6 +290,7 @@ class ZephComponentExecution {
 				let url = await ZephUtils.resolveName(content,this.context.origin,".css");
 				if (url) content = await ZephUtils.fetchText(url);
 
+				this.context.css = this.context.css || [];
 				this.context.css.push({content,options});
 
 				resolve();
@@ -296,6 +300,7 @@ class ZephComponentExecution {
 			}
 		});
 
+		this.context.pending = this.context.pending || [];
 		this.context.pending.push(prom);
 	}
 
@@ -350,8 +355,10 @@ class ZephComponentExecution {
 		not.uon(transformFunction,"transformFunction");
 		not.function(transformFunction,"transformFunction");
 
-		this.context.bindings = this.context.bindings || [];
-		this.context.bindings.push({
+		let name = sourceElement+":"+sourceName+">"+targetElement+":"+targetName;
+
+		this.context.bindings = this.context.bindings || {};
+		this.context.bindings[name] = {
 			source: {
 				element: sourceElement,
 				name: sourceName
@@ -361,7 +368,7 @@ class ZephComponentExecution {
 				name: targetName
 			},
 			transform: transformFunction
-		});
+		};
 	}
 
 	onInit(listener) {
@@ -439,8 +446,14 @@ class ZephComponentExecution {
 }
 
 class ZephElementClass {
-	static generateClass(context,from=HTMLElement) {
-		const clazz = (class ZephCustomElement extends from {
+	static generateClass(context) {
+		if (context.from) {
+			let from = ZephComponents.get(context.from);
+			if (!from) throw new Error("Component '"+context.from+"' not found; inheritence by '"+context.name+"' is not possible.");
+			context = extend({},from.context,context);
+		}
+
+		const clazz = (class ZephCustomElement extends HTMLElement {
 			static get observedAttributes() {
 				return context && context.observed || [];
 			}
@@ -522,7 +535,8 @@ class ZephElementClass {
 				fireImmediately(context && context.lifecycle && context.lifecycle.create || [],this,this.shadowRoot);
 
 				if (context.bindings) {
-					context.bindings.forEach((binding)=>{
+					Object.keys(context.bindings).forEach((name)=>{
+						let binding = context.bindings[name];
 						if (!binding) return;
 
 						if (binding.target.element===".") binding.target.element = element;
@@ -890,8 +904,7 @@ class ZephComponentsClass {
 
 		return new Promise(async (resolve,reject)=>{
 			try {
-				let context = new ZephComponentContext(code,origin);
-				let component = new ZephComponent(name,context);
+				let component = new ZephComponent(name,origin,code);
 				await component.define();
 
 				this[$COMPONENTS][name] = component;
@@ -1059,6 +1072,27 @@ class ZephServicesClass {
 		}
 	}
 }
+
+const extend = function extend(target,...sources) {
+	if (target===undefined || target===null) target = {};
+	sources.forEach((source)=>{
+		Object.keys(source).forEach((key)=>{
+			let val = source[key];
+			let tgt = target[key];
+			if (val===undefined) return;
+			else if (val===null) target[key] = null;
+			else if (val instanceof Promise) target[key] = val;
+			else if (val instanceof Function) target[key] = val;
+			else if (val instanceof RegExp) target[key] = val;
+			else if (val instanceof Date) target[key] = new Date(val);
+			else if (val instanceof Array) target[key] = [].concat(tgt||[],val);
+			else if (typeof val==="object") target[key] = extend(tgt,val);
+			else target[key] = val;
+		});
+	});
+	return target;
+};
+window.glen = extend;
 
 const fire = function fire(listeners,...args) {
 	listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
