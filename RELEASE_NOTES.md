@@ -1,5 +1,35 @@
 # AwesomeComponenets Release Notes
 
+#### **Version 0.3.0**
+
+ - adds component inheritance via from().
+
+ - adds options to html() and css():
+   - overwrite: to overwrite html content instead of appending
+   - noRemote: to disable attempting to remotely find content.
+
+ - Refactor not functions to be more expressive.
+
+ - Exposes ZephUtils and added ZephUtils.ready().
+
+ - Fixes bug in onAttribute() not firing.
+
+ - Updated tests and adds inheritance test.
+
+ - Locks dependency versions.
+
+ - Adds feature list to readme.
+
+ - Add Browser Compatability table to readme.
+
+ - Add documentation references to zephjs-loading and zephjs-router.
+
+ - Updates documentation for onAttribute to reflect correct handler signature.
+
+ - Adds CLI information to documentation.
+
+ - Minor inline documentation changes for the CLI tools.
+
 #### **Version 0.2.0**
 
  - Bundle now uses rollup.js and works with new ES Module structure.
