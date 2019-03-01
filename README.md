@@ -12,9 +12,30 @@ ZephJS aims to bring the promised ease of web components back to our community. 
  - Use the standards and technologies that have made the web great.
  - Apply modern browser standards (Web Components, Shadow DOM, ElementOberserver, etc).
  - Make it super easy to read and understand.
- - Keep it incredibly small and light. ZephJS is currently less than 32k.
+ - Keep it incredibly small and light.
 
 Please dont misunderstand us: React, Vue, Angular, Svelte (more people should use Svelte) all have their place. Very large web applications will always have a need for frameworks such as these. But a lot of sites don't need this kind of weight; they just want to drop in a handful of components and go.  And that's the space for which ZephJS was built.
+
+## Features
+
+ZephJS has the following features...
+
+ - Easily define Web Components;
+ - Uses 100% Standard Browser APIs;
+ - Extremely readable;
+ - Uses 100% Standard JavaScript/ES2018;
+ - Uses 100% Standard HTML, inline or separated;
+ - Uses 100% Standard CSS, inline or separated;
+ - Encapsulated stlyes and content do not leak;
+ - Components can extend other components;
+ - Value propagation via Attribute/Property/Content binding;
+ - Includes a simple Service Registry;
+ - Supports building one off components;
+ - or Supports building component libraries;
+ - or Supports building entire applications;
+ - Included CLI for easy new component scafolding;
+ - Included Bundler (using Rollup) to package into a single distributable;
+ - and ZephJS is just a few bytes over 32K!
 
 ## Contents
  - [Usage](#usage)
