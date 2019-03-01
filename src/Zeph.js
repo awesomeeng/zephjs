@@ -200,6 +200,14 @@ class ZephComponent {
 				let execution = new ZephComponentExecution(this.context,this.code);
 				await execution.run();
 
+				// if we are inheriting we need to update the context
+				// to reflect the inheritance.
+				if (this.context.from) {
+					let from = ZephComponents.get(this.context.from);
+					if (!from) throw new Error("Component '"+this.context.from+"' not found; inheritence by '"+this.context.name+"' is not possible.");
+					this[$CONTEXT] = extend({},from.context,this.context);
+				}
+
 				await Promise.all(this.context.pending||[]);
 
 				this[$ELEMENT] = ZephElementClass.generateClass(this.context);
@@ -258,13 +266,16 @@ class ZephComponentExecution {
 
 	html(content,options={}) {
 		options = Object.assign({
-			overwrite: false
+			overwrite: false,
+			noRemote: false
 		},options||{});
 
 		let prom = new Promise(async (resolve,reject)=>{
 			try {
-				let url = await ZephUtils.resolveName(content,this.context.origin||document.URL.toString(),".html");
-				if (url) content = await ZephUtils.fetchText(url);
+				if (!options.noRemote) {
+					let url = await ZephUtils.resolveName(content,this.context.origin||document.URL.toString(),".html");
+					if (url) content = await ZephUtils.fetchText(url);
+				}
 
 				this.context.html = this.context.html || [];
 				this.context.html.push({content,options});
@@ -282,13 +293,16 @@ class ZephComponentExecution {
 
 	css(content,options={}) {
 		options = Object.assign({
-			overwrite: false
+			overwrite: false,
+			noRemote: false
 		},options||{});
 
 		let prom = new Promise(async (resolve,reject)=>{
 			try {
-				let url = await ZephUtils.resolveName(content,this.context.origin,".css");
-				if (url) content = await ZephUtils.fetchText(url);
+				if (!options.noRemote) {
+					let url = await ZephUtils.resolveName(content,this.context.origin,".css");
+					if (url) content = await ZephUtils.fetchText(url);
+				}
 
 				this.context.css = this.context.css || [];
 				this.context.css.push({content,options});
@@ -447,12 +461,6 @@ class ZephComponentExecution {
 
 class ZephElementClass {
 	static generateClass(context) {
-		if (context.from) {
-			let from = ZephComponents.get(context.from);
-			if (!from) throw new Error("Component '"+context.from+"' not found; inheritence by '"+context.name+"' is not possible.");
-			context = extend({},from.context,context);
-		}
-
 		const clazz = (class ZephCustomElement extends HTMLElement {
 			static get observedAttributes() {
 				return context && context.observed || [];
@@ -859,7 +867,7 @@ class ZephComponentsClass {
 		not.string(name,"name");
 		not.empty(name,"name");
 
-		if (this[$COMPONENTS][name]) Promise.resolve();
+		if (this[$COMPONENTS][name]) return Promise.resolve();
 
 		return new Promise((resolve,reject)=>{
 			this[$OBSERVER].push({name,resolve,reject});
