@@ -200,7 +200,7 @@ class ZephComponent {
 				let execution = new ZephComponentExecution(this.context,this.code);
 				await execution.run();
 
-				await Promise.all(this.context.pending);
+				await Promise.all(this.context.pending||[]);
 
 				this[$ELEMENT] = ZephElementClass.generateClass(this.context);
 				customElements.define(this.name,this[$ELEMENT]);

@@ -24,7 +24,7 @@ const assert = require("assert");
 const ZephComponents = require("../src/Zeph.js").ZephComponents;
 const {html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt} = require("../src/Zeph.js");
 
-describe("Zeph",function(){
+describe("ZephComponents",function(){
 	it("methods",function(){
 		assert(ZephComponents);
 		assert(ZephComponents.components);
@@ -99,7 +99,9 @@ describe("Zeph",function(){
 		assert(component.context);
 		assert(component.context.origin);
 		assert(component.context.html);
+		assert(component.context.html[0]);
 		assert(component.context.css);
+		assert(component.context.css[0]);
 		assert(component.context.attributes);
 		assert(component.context.attributes.xyz);
 		assert(component.context.attributes.def);
@@ -127,17 +129,19 @@ describe("Zeph",function(){
 		assert.equal(component.name,"test-component1");
 		assert.equal(component.context.attributes.xyz.initialValue,123);
 		assert.equal(component.context.attributes.def.initialValue,"abc");
-		assert.equal(component.context.bindings.length,2);
-		assert.deepStrictEqual(component.context.html,["<div></div>"]);
-		assert.deepStrictEqual(component.context.css,["/*some css*/"]);
-		assert.equal(component.context.bindings[0].source.element,".");
-		assert.equal(component.context.bindings[0].source.name,"@xyz");
-		assert.equal(component.context.bindings[0].target.element,"div");
-		assert.equal(component.context.bindings[0].target.name,"@xyz");
-		assert.equal(component.context.bindings[1].source.element,"div");
-		assert.equal(component.context.bindings[1].source.name,"@xyz");
-		assert.equal(component.context.bindings[1].target.element,"div");
-		assert.equal(component.context.bindings[1].target.name,".xyz");
+		assert.equal(Object.keys(component.context.bindings).length,2);
+		assert.equal(component.context.html.length,1);
+		assert.equal(component.context.html[0].content,"<div></div>");
+		assert.equal(component.context.css.length,1);
+		assert.equal(component.context.css[0].content,"/*some css*/");
+		assert.equal(component.context.bindings[".:@xyz>div:@xyz"].source.element,".");
+		assert.equal(component.context.bindings[".:@xyz>div:@xyz"].source.name,"@xyz");
+		assert.equal(component.context.bindings[".:@xyz>div:@xyz"].target.element,"div");
+		assert.equal(component.context.bindings[".:@xyz>div:@xyz"].target.name,"@xyz");
+		assert.equal(component.context.bindings["div:@xyz>div:.xyz"].source.element,"div");
+		assert.equal(component.context.bindings["div:@xyz>div:.xyz"].source.name,"@xyz");
+		assert.equal(component.context.bindings["div:@xyz>div:.xyz"].target.element,"div");
+		assert.equal(component.context.bindings["div:@xyz>div:.xyz"].target.name,".xyz");
 		assert.equal(component.context.events[0].eventName,"click");
 		assert.equal(component.context.eventsAt[0].eventName,"click");
 	});
