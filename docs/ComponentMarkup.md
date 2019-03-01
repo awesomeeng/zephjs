@@ -7,6 +7,7 @@
 - [Creating a New Component](./docs/ComponentCreation.md)
 - [Importing ZephJS](./ComponentImporting.md)
 - [Defining the Component](./ComponentDefinition.md)
+- [Inheritance](./ComponentInheritance.md)
 - **HTML**
 - [CSS](./ComponentStyling.md)
 - [Attributes](./ComponentAttributes.md)
@@ -20,8 +21,10 @@
 
 We add content to a custom element with our `html()` definition method.
 
-> **`html(content)`**
+> **`html(content,options)`**
  - **content** [string]: The content argument may be either a filename to an HTML file that contains the content or it can be the content itself.  ZephJS will attempts to resolve and read the content argument and use the results of that is the read was successful. If the read was not successful, the content is treated as raw content and used.
+ - **options** [object|null]: OPTIONAL. An optional options object can be passed into the `html()` definition method. This options object can have the following properties:
+	 - **overwrite** [boolean]: If set to true, the html content provided will overwrite any previous `html()` content.  If false, the content is appended. This is useful when inheriting from another component. Defaults to false
 
 ```
 ZephComponents.define("my-component",()=>{

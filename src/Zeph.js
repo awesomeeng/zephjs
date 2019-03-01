@@ -2,8 +2,8 @@
 
 const $COMPONENTS = Symbol("components");
 const $SERVICES = Symbol("services");
-const $NAME = Symbol("name");
 const $CONTEXT = Symbol("context");
+const $CODE = Symbol("code");
 const $ELEMENT = Symbol("element");
 const $SHADOW = Symbol("shadow");
 const $OBSERVER = Symbol("observer");
@@ -151,23 +151,39 @@ const ZephUtils = {
 };
 
 class ZephComponent {
-	constructor(name,context) {
+	constructor(name,origin,code) {
 		not.uon(name,"name");
 		not.string(name,"name");
 		not.empty(name,"name");
-		not.uon(context,"context");
+		not.uon(origin,"origin");
+		not.string(origin,"origin");
+		not.empty(origin,"origin");
+		not.uon(code,"code");
+		not.function(code,"code");
 
-		this[$NAME] = name;
+		let context = {};
+		context.name = name;
+		context.origin = origin;
+
+		this[$CODE] = code;
 		this[$CONTEXT] = context;
 		this[$ELEMENT] = null;
 	}
 
-	get name() {
-		return this[$NAME];
-	}
-
 	get context() {
 		return this[$CONTEXT];
+	}
+
+	get name() {
+		return this.context.name;
+	}
+
+	get origin() {
+		return this.context.origin;
+	}
+
+	get code() {
+		return this[$CODE];
 	}
 
 	get defined() {
@@ -181,10 +197,18 @@ class ZephComponent {
 	define() {
 		return new Promise(async (resolve,reject)=>{
 			try {
-				let execution = new ZephComponentExecution(this.context);
+				let execution = new ZephComponentExecution(this.context,this.code);
 				await execution.run();
 
-				await Promise.all(this.context.pending);
+				// if we are inheriting we need to update the context
+				// to reflect the inheritance.
+				if (this.context.from) {
+					let from = ZephComponents.get(this.context.from);
+					if (!from) throw new Error("Component '"+this.context.from+"' not found; inheritence by '"+this.context.name+"' is not possible.");
+					this[$CONTEXT] = extend({},from.context,this.context);
+				}
+
+				await Promise.all(this.context.pending||[]);
 
 				this[$ELEMENT] = ZephElementClass.generateClass(this.context);
 				customElements.define(this.name,this[$ELEMENT]);
@@ -200,31 +224,21 @@ class ZephComponent {
 	}
 }
 
-class ZephComponentContext {
-	constructor(code,origin=document.URL.toString()) {
+class ZephComponentExecution {
+	constructor(context,code) {
+		not.uon(context,"context");
 		not.uon(code,"code");
 		not.function(code,"code");
 
-		this.code = code;
-		this.origin = origin;
-
-		this.pending = [];
-		this.html = [];
-		this.css = [];
-	}
-}
-
-class ZephComponentExecution {
-	constructor(context) {
-		not.uon(context,"context");
 		this[$CONTEXT] = context;
+		this[$CODE] = code;
 	}
 
 	run() {
 		return new Promise(async (resolve,reject)=>{
 			try {
 				CODE_CONTEXT = this;
-				await this.context.code.bind(this)();
+				await this[$CODE].bind(this)();
 				CODE_CONTEXT = null;
 
 				resolve();
@@ -239,16 +253,31 @@ class ZephComponentExecution {
 		return this[$CONTEXT];
 	}
 
+	from(fromTagName) {
+		not.uon(fromTagName,"fromTagName");
+		not.empty(fromTagName,"fromTagName");
+		not.string(fromTagName,"fromTagName");
+
+		this.context.pending = this.context.pending || [];
+		this.context.pending.push(ZephComponents.waitFor(fromTagName));
+
+		this.context.from = fromTagName;
+	}
+
 	html(content,options={}) {
 		options = Object.assign({
-			overwrite: false
+			overwrite: false,
+			noRemote: false
 		},options||{});
 
 		let prom = new Promise(async (resolve,reject)=>{
 			try {
-				let url = await ZephUtils.resolveName(content,this.context.origin||document.URL.toString(),".html");
-				if (url) content = await ZephUtils.fetchText(url);
+				if (!options.noRemote) {
+					let url = await ZephUtils.resolveName(content,this.context.origin||document.URL.toString(),".html");
+					if (url) content = await ZephUtils.fetchText(url);
+				}
 
+				this.context.html = this.context.html || [];
 				this.context.html.push({content,options});
 
 				resolve();
@@ -258,19 +287,24 @@ class ZephComponentExecution {
 			}
 		});
 
+		this.context.pending = this.context.pending || [];
 		this.context.pending.push(prom);
 	}
 
 	css(content,options={}) {
 		options = Object.assign({
-			overwrite: false
+			overwrite: false,
+			noRemote: false
 		},options||{});
 
 		let prom = new Promise(async (resolve,reject)=>{
 			try {
-				let url = await ZephUtils.resolveName(content,this.context.origin,".css");
-				if (url) content = await ZephUtils.fetchText(url);
+				if (!options.noRemote) {
+					let url = await ZephUtils.resolveName(content,this.context.origin,".css");
+					if (url) content = await ZephUtils.fetchText(url);
+				}
 
+				this.context.css = this.context.css || [];
 				this.context.css.push({content,options});
 
 				resolve();
@@ -280,6 +314,7 @@ class ZephComponentExecution {
 			}
 		});
 
+		this.context.pending = this.context.pending || [];
 		this.context.pending.push(prom);
 	}
 
@@ -334,8 +369,10 @@ class ZephComponentExecution {
 		not.uon(transformFunction,"transformFunction");
 		not.function(transformFunction,"transformFunction");
 
-		this.context.bindings = this.context.bindings || [];
-		this.context.bindings.push({
+		let name = sourceElement+":"+sourceName+">"+targetElement+":"+targetName;
+
+		this.context.bindings = this.context.bindings || {};
+		this.context.bindings[name] = {
 			source: {
 				element: sourceElement,
 				name: sourceName
@@ -345,7 +382,7 @@ class ZephComponentExecution {
 				name: targetName
 			},
 			transform: transformFunction
-		});
+		};
 	}
 
 	onInit(listener) {
@@ -435,10 +472,14 @@ class ZephElementClass {
 				let element = this;
 				this[$ELEMENT] = element;
 
-				let shadow  = this.attachShadow({
+				let shadow = this.shadowRoot || this.attachShadow({
 					mode:"open"
 				});
 				this[$SHADOW] = shadow;
+
+				let css = shadow.querySelector("style");
+				if (css) css = css.textContent;
+				else css = "";
 
 				let html = shadow.innerHTML;
 				(context.html||[]).forEach((markup)=>{
@@ -450,7 +491,6 @@ class ZephElementClass {
 				});
 				shadow.innerHTML = html;
 
-				let css = "";
 				(context.css||[]).forEach((style)=>{
 					let content = style.content;
 					let options = style.options;
@@ -461,7 +501,7 @@ class ZephElementClass {
 				if (css) {
 					let styleElement = document.createElement("style");
 					styleElement.textContent = css;
-					shadow.appendChild(styleElement);					
+					shadow.appendChild(styleElement);
 				}
 
 				if (context.attributes) {
@@ -503,7 +543,8 @@ class ZephElementClass {
 				fireImmediately(context && context.lifecycle && context.lifecycle.create || [],this,this.shadowRoot);
 
 				if (context.bindings) {
-					context.bindings.forEach((binding)=>{
+					Object.keys(context.bindings).forEach((name)=>{
+						let binding = context.bindings[name];
 						if (!binding) return;
 
 						if (binding.target.element===".") binding.target.element = element;
@@ -794,6 +835,7 @@ class ZephComponentsClass {
 				return Object.keys(target);
 			}
 		});
+		this[$OBSERVER] = [];
 	}
 
 	get components() {
@@ -818,6 +860,18 @@ class ZephComponentsClass {
 		not.empty(name,"name");
 
 		return this[$COMPONENTS][name];
+	}
+
+	waitFor(name) {
+		not.uon(name,"name");
+		not.string(name,"name");
+		not.empty(name,"name");
+
+		if (this[$COMPONENTS][name]) return Promise.resolve();
+
+		return new Promise((resolve,reject)=>{
+			this[$OBSERVER].push({name,resolve,reject});
+		});
 	}
 
 	define(name,code) {
@@ -858,11 +912,14 @@ class ZephComponentsClass {
 
 		return new Promise(async (resolve,reject)=>{
 			try {
-				let context = new ZephComponentContext(code,origin);
-				let component = new ZephComponent(name,context);
+				let component = new ZephComponent(name,origin,code);
 				await component.define();
 
 				this[$COMPONENTS][name] = component;
+				this[$OBSERVER] = this[$OBSERVER].filter((waiting)=>{
+					if (waiting.name===name) waiting.resolve();
+					return waiting.name!==name;
+				});
 
 				delete PENDING["component:"+origin];
 
@@ -1024,6 +1081,27 @@ class ZephServicesClass {
 	}
 }
 
+const extend = function extend(target,...sources) {
+	if (target===undefined || target===null) target = {};
+	sources.forEach((source)=>{
+		Object.keys(source).forEach((key)=>{
+			let val = source[key];
+			let tgt = target[key];
+			if (val===undefined) return;
+			else if (val===null) target[key] = null;
+			else if (val instanceof Promise) target[key] = val;
+			else if (val instanceof Function) target[key] = val;
+			else if (val instanceof RegExp) target[key] = val;
+			else if (val instanceof Date) target[key] = new Date(val);
+			else if (val instanceof Array) target[key] = [].concat(tgt||[],val);
+			else if (typeof val==="object") target[key] = extend(tgt,val);
+			else target[key] = val;
+		});
+	});
+	return target;
+};
+window.glen = extend;
+
 const fire = function fire(listeners,...args) {
 	listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
 	listeners.forEach((listener)=>{
@@ -1103,6 +1181,7 @@ const contextCall = function(name) {
 	return f;
 };
 
+const from = contextCall("from");
 const html = contextCall("html");
 const css = contextCall("css");
 const attribute = contextCall("attribute");
@@ -1122,7 +1201,7 @@ const ZephComponents = new ZephComponentsClass();
 const ZephServices = new ZephServicesClass();
 
 export {ZephComponents,ZephService,ZephServices,ZephUtils};
-export {html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt};
+export {from,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt};
 
 window.Zeph = {
 	ZephComponents,

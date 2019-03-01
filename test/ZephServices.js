@@ -24,7 +24,7 @@ const assert = require("assert");
 const ZephService = require("../src/Zeph.js").ZephService;
 const ZephServices = require("../src/Zeph.js").ZephServices;
 
-describe("Zeph",function(){
+describe("ZephServices",function(){
 	it("methods",function(){
 		assert(ZephService);
 		assert(ZephServices);

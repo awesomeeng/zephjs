@@ -166,6 +166,12 @@ In our example, the definition is everything from line 5 to line 31 and we will 
 
 > Learn More: [Defining the Component](./ComponentDefining.md).
 
+### Inheritance
+
+It is beyond the scope of our Quick Start Example, but we wanted to just mention a word about inheritance.  ZephJS allows one component, say out `my-button` componnent to inherit from another ZephJS defined component, if desired. Inheritance has its own definition method and rules, so if that is something you are interested in, please read the [Inheritance documentation](./ComponentInheritance.md).
+
+> Learn More: [Inheritance](./ComponentInheritance.md).
+
 ### Add HTML
 
 We add HTML to our component definition with the `html()` definition method. This method can take a string of HTML or it can reference an external file. We recommend the latter approach as it keeps your code a lot cleaner.
@@ -395,6 +401,7 @@ After you have the quick start down we strongly encourage you to continue readin
  - [Creating a New Component](./docs/ComponentCreation.md)
  - [Importing ZephJS](./ComponentImporting.md)
  - [Defining the Component](./ComponentDefinition.md)
+ - [Inheritance](./ComponentInheritance.md)
  - [HTML](./ComponentMarkup.md)
  - [CSS](./ComponentStyling.md)
  - [Attributes](./ComponentAttributes.md)
