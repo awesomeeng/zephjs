@@ -1,5 +1,13 @@
 # AwesomeComponenets Release Notes
 
+#### **Version 0.3.1**
+
+ - Fixes bug with fetchText returning undefined when fetch content is empty.
+
+ - Fixes bug with document.createElement() not working with ZephComponents.
+
+ - Changed language around Mistral in readme.
+
 #### **Version 0.3.0**
 
  - adds component inheritance via from().
