@@ -1,9 +1,13 @@
 # AwesomeComponenets Release Notes
 
+#### **Version 0.4.2**
+
+ - Moved Rollup and Acorn into dependencies for devDependencies.
+
 #### **Version 0.4.1**
 
  - Fixing zeph command line tool to correctly start.
- 
+
  - Fixing some minor linting issues.
 
 #### **Version 0.4.0**
