@@ -329,16 +329,16 @@ class ZephComponentExecution {
 	}
 
 	property(propertyName,initialValue,transformFunction) {
-		check.not.uon(propertyName,"attributeName");
+		check.not.uon(propertyName,"propertyName");
 		check.string(propertyName);
-		check.not.undefined(initialValue,"initialValue");
 
 		this.context.properties = this.context.properties || {};
 		if (this.context.properties[propertyName]) throw new Error("Property '"+propertyName+"' already defined for custom element; cannot have multiple definitions.");
 		this.context.properties[propertyName] = Object.assign(this.context.properties[propertyName]||{},{
 			propertyName,
 			initialValue,
-			transformFunction
+			transformFunction,
+			changes: []
 		});
 	}
 
@@ -436,6 +436,17 @@ class ZephComponentExecution {
 		this.context.lifecycle.attributes = this.context.lifecycle.attributes || {};
 		this.context.lifecycle.attributes[attributeName] = this.context.lifecycle.attributes[attributeName] || [];
 		this.context.lifecycle.attributes[attributeName].push(listener);
+	}
+
+	onProperty(propertyName,listener) {
+		check.not.uon(propertyName,"attribute");
+		check.string(propertyName,"attribute");
+		check.not.uon(listener,"listener");
+		check.function(listener,"listener");
+
+		this.context.properties = this.context.properties || {};
+		if (!this.context.properties[propertyName]) this.property(propertyName,undefined);
+		this.context.properties[propertyName].changes.push(listener);
 	}
 
 	onEvent(eventName,listener) {
@@ -1157,12 +1168,15 @@ const propetize = function propetize(object,propertyName,descriptor) {
 	let newDesc = Object.assign({},oldDesc||{},descriptor);
 
 	if (oldDesc && descriptor.get) {
+		delete newDesc.value;
+		delete newDesc.writable;
 		newDesc.get = ()=>{
 			let $super = oldDesc.get || null;
 			return descriptor.get($super);
 		};
 	}
 	if (oldDesc && descriptor.set) {
+		delete newDesc.writable;
 		newDesc.set = (value)=>{
 			let $super = oldDesc.set || null;
 			return descriptor.set(value,$super);
@@ -1200,6 +1214,7 @@ const onAdd = contextCall("onAdd");
 const onRemove = contextCall("onRemove");
 const onAdopt = contextCall("onAdopt");
 const onAttribute = contextCall("onAttribute");
+const onProperty = contextCall("onProperty");
 const onEvent = contextCall("onEvent");
 const onEventAt = contextCall("onEventAt");
 
@@ -1207,7 +1222,7 @@ const ZephComponents = new ZephComponentsClass();
 const ZephServices = new ZephServicesClass();
 
 export {ZephComponents,ZephService,ZephServices,ZephUtils};
-export {from,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt};
+export {from,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
 
 window.Zeph = {
 	ZephComponents,
