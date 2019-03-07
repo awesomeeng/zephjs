@@ -7,9 +7,7 @@ module.exports = {
 		ecmaVersion: 8
 	},
     env: {
-        browser: true,
-        es6: true,
-		mocha: true
+        es6: true
     },
     rules: {
 		"no-self-assign": [

@@ -29,7 +29,7 @@
   },
   "optionalDependencies": {},
   "scripts": {
-    "lint": "eslint src examples test",
+    "lint": "eslint src examples test bin/zeph",
     "docs": "jsdoc2md src/** --separators > docs/API.md",
     "test": "mocha test",
     "tests": "mocha test",
