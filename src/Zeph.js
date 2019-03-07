@@ -205,6 +205,14 @@ class ZephComponent {
 
 			this[$ELEMENT] = ZephElementClass.generateClass(this.context);
 			customElements.define(this.name,this[$ELEMENT]);
+			(this.context.aliases||[]).forEach((aliasName)=>{
+				const aliasClass = (class AliasClass extends this[$ELEMENT]{
+					constructor() {
+						super();
+					}
+				});
+				customElements.define(aliasName,aliasClass);
+			});
 
 			fire(this.context && this.context.lifecycle && this.context.lifecycle.init || [],this.name,this);
 
@@ -244,6 +252,13 @@ class ZephComponentExecution {
 		this.context.pending.push(ZephComponents.waitFor(fromTagName));
 
 		this.context.from = fromTagName;
+	}
+
+	alias(aliasName) {
+		check.posstr(aliasName,"aliasName");
+
+		this.context.aliases = this.context.aliases || new Set();
+		this.context.aliases.add(aliasName);
 	}
 
 	html(content,options={}) {
@@ -1150,6 +1165,7 @@ const contextCall = function(name) {
 };
 
 const from = contextCall("from");
+const alias = contextCall("alias");
 const html = contextCall("html");
 const css = contextCall("css");
 const attribute = contextCall("attribute");
@@ -1170,7 +1186,7 @@ const ZephComponents = new ZephComponentsClass();
 const ZephServices = new ZephServicesClass();
 
 export {ZephComponents,ZephService,ZephServices,utils as ZephUtils};
-export {from,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
+export {from,alias,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
 
 window.Zeph = {
 	ZephComponents,

@@ -43,20 +43,27 @@ class Create extends AwesomeCLI.AbstractCommand {
 			Log.access("Request "+request.method+" "+request.path+" from "+request.origin+".");
 		});
 
+		let zeph = AwesomeUtils.Module.resolve(module,"../../Zeph.js");
+		if (!AwesomeUtils.FS.existsSync(zeph)) {
+			console.error("Zeph.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
+			process.exit(1);
+		}
 		let zephmin = AwesomeUtils.Module.resolve(module,"../../../zeph.min.js");
 		if (!AwesomeUtils.FS.existsSync(zephmin)) {
-			console.error("zep.min.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
+			console.error("zeph.min.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
 			process.exit(1);
 		}
 		let zephfull = AwesomeUtils.Module.resolve(module,"../../../zeph.full.js");
 		if (!AwesomeUtils.FS.existsSync(zephfull)) {
-			console.error("zep.full.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
+			console.error("zeph.full.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
 			process.exit(1);
 		}
 
+		server.serve("/Zeph.js",zeph);
+		server.serve("*/Zeph.js",zeph);
 		server.serve("/zeph.min.js",zephmin);
-		server.serve("/zeph.full.js",zephfull);
 		server.serve("*/zeph.min.js",zephmin);
+		server.serve("/zeph.full.js",zephfull);
 		server.serve("*/zeph.full.js",zephfull);
 
 		let cwd = process.cwd();
