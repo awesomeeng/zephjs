@@ -1,5 +1,11 @@
 # AwesomeComponenets Release Notes
 
+#### **Version 0.4.1**
+
+ - Fixing zeph command line tool to correctly start.
+ 
+ - Fixing some minor linting issues.
+
 #### **Version 0.4.0**
 
  - **BREAKING CHANGE**: You should now use `./zeph.min.js` or `./zeph.full.js` in your code instead of `./src/Zeph.js`.
