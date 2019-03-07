@@ -205,7 +205,9 @@ class ZephComponent {
 				if (this.context.from) {
 					let from = ZephComponents.get(this.context.from);
 					if (!from) throw new Error("Component '"+this.context.from+"' not found; inheritence by '"+this.context.name+"' is not possible.");
+
 					await Promise.all(from.pending||[]);
+
 					this[$CONTEXT] = extend({},from.context,this.context);
 				}
 
