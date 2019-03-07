@@ -39,6 +39,11 @@ const check = {
 	string: (arg,name)=>{
 		check.type(arg,"string",name);
 	},
+	posstr: (arg,name)=>{
+		check.not.uon(arg,name);
+		check.string(arg,name);
+		check.not.empty(arg,name);
+	},
 	number: (arg,name)=>{
 		check.type(arg,"number",name);
 	},
@@ -53,68 +58,64 @@ const check = {
 	}
 };
 
-const ZephUtils = {
+const utils = {
 	ready: ()=>{
 		return READY;
 	},
-	exists: (url)=>{
-		if (url===undefined || url===null || url==="") return Promise.resolve(false);
+	tryprom: (f)=>{
+		check.not.uon(f,"argument");
+		check.function(f,"argument");
 
-		return new Promise(async (resolve,reject)=>{
+		return new Promise((resolve,reject)=>{
 			try {
-				let response = await fetch(url,{
-					method: "HEAD"
-				});
-				if (response.ok) resolve(true);
-				else resolve(false);
+				f(resolve,reject);
 			}
 			catch (ex) {
 				return reject(ex);
 			}
+		});
+	},
+	exists: (url)=>{
+		if (url===undefined || url===null || url==="") return Promise.resolve(false);
+
+		return utils.tryprom(async (resolve)=>{
+			let response = await fetch(url,{
+				method: "HEAD"
+			});
+			if (response.ok) resolve(true);
+			else resolve(false);
 		});
 	},
 	fetch: (url)=>{
 		check.not.uon(url,"url");
 		check.not.empty(url,"url");
 
-		return new Promise(async (resolve,reject)=>{
-			try {
-				let response = await fetch(url);
-				if (response.ok) return resolve(response);
-				resolve(undefined);
-			}
-			catch (ex) {
-				return reject(ex);
-			}
+		return utils.tryprom(async (resolve)=>{
+			let response = await fetch(url);
+			if (response.ok) return resolve(response);
+			resolve(undefined);
 		});
 	},
 	fetchText: (url)=>{
 		check.not.uon(url,"url");
 		check.not.empty(url,"url");
 
-		return new Promise(async (resolve,reject)=>{
-			try {
-				let response = await ZephUtils.fetch(url);
-				if (!response) resolve(undefined);
+		return utils.tryprom(async (resolve)=>{
+			let response = await utils.fetch(url);
+			if (!response) resolve(undefined);
 
-				let text = await response.text();
-				resolve(text);
-			}
-			catch (ex) {
-				return reject(ex);
-			}
+			let text = await response.text();
+			resolve(text);
 		});
 	},
 	resolve: (url,base=document.URL)=>{
 		check.not.uon(url,"url");
 		check.not.empty(url,"url");
+
 		if (!(url instanceof URL) && typeof url!=="string") throw new Error("Invalid url; must be a string or URL.");
 
 		try {
-			if (typeof url==="string") {
-				if (url.startsWith("data:")) return new URL(url);
-			}
-
+			if (typeof url==="string" && url.startsWith("data:")) return new URL(url);
 			return new URL(url,base);
 		}
 		catch (ex) {
@@ -122,40 +123,32 @@ const ZephUtils = {
 		}
 	},
 	resolveName(url,base=document.URL,extension=".js") {
-		return new Promise(async (resolve,reject)=>{
-			try {
-				if (url.toString().match(/[\n\r\t<]/g)) return resolve(undefined);
+		let urlstr = ""+url;
+		if (!urlstr.match(/^http:\/\/|^https:\/\/|^ftp:\/\/|^\.\/|^\.\.\//)) return Promise.resolve(undefined);
 
-				let resolved = ZephUtils.resolve(url,base);
-				if (await ZephUtils.exists(resolved)) return resolve(resolved);
+		return utils.tryprom(async (resolve)=>{
+			let resolved = utils.resolve(url,base);
+			if (await utils.exists(resolved)) return resolve(resolved);
 
-				if (await ZephUtils.exists(url)) return resolve(url);
+			if (await utils.exists(url)) return resolve(url);
 
-				if (extension) {
-					let extended = url+extension;
-					let resolvedextended = ZephUtils.resolve(extended,base);
-					if (await ZephUtils.exists(resolvedextended)) return resolve(resolvedextended);
+			if (extension) {
+				let extended = url+extension;
+				let resolvedextended = utils.resolve(extended,base);
+				if (await utils.exists(resolvedextended)) return resolve(resolvedextended);
 
-					if (await ZephUtils.exists(extended)) return resolve(extended);
-				}
-
-				resolve(undefined);
+				if (await utils.exists(extended)) return resolve(extended);
 			}
-			catch (ex) {
-				return reject(ex);
-			}
+
+			resolve(undefined);
 		});
 	}
 };
 
 class ZephComponent {
 	constructor(name,origin,code) {
-		check.not.uon(name,"name");
-		check.string(name,"name");
-		check.not.empty(name,"name");
-		check.not.uon(origin,"origin");
-		check.string(origin,"origin");
-		check.not.empty(origin,"origin");
+		check.posstr(name,"name");
+		check.posstr(name,"origin");
 		check.not.uon(code,"code");
 		check.function(code,"code");
 
@@ -193,34 +186,29 @@ class ZephComponent {
 	}
 
 	define() {
-		return new Promise(async (resolve,reject)=>{
-			try {
-				let execution = new ZephComponentExecution(this.context,this.code);
-				await execution.run();
+		return utils.tryprom(async (resolve)=>{
+			let execution = new ZephComponentExecution(this.context,this.code);
+			await execution.run();
 
-				await Promise.all(this.context.pending||[]);
+			await Promise.all(this.context.pending||[]);
 
-				// if we are inheriting we need to update the context
-				// to reflect the inheritance.
-				if (this.context.from) {
-					let from = ZephComponents.get(this.context.from);
-					if (!from) throw new Error("Component '"+this.context.from+"' not found; inheritence by '"+this.context.name+"' is not possible.");
+			// if we are inheriting we need to update the context
+			// to reflect the inheritance.
+			if (this.context.from) {
+				let from = ZephComponents.get(this.context.from);
+				if (!from) throw new Error("Component '"+this.context.from+"' not found; inheritence by '"+this.context.name+"' is not possible.");
 
-					await Promise.all(from.pending||[]);
+				await Promise.all(from.pending||[]);
 
-					this[$CONTEXT] = extend({},from.context,this.context);
-				}
-
-				this[$ELEMENT] = ZephElementClass.generateClass(this.context);
-				customElements.define(this.name,this[$ELEMENT]);
-
-				fire(this.context && this.context.lifecycle && this.context.lifecycle.init || [],this.name,this);
-
-				resolve();
+				this[$CONTEXT] = extend({},from.context,this.context);
 			}
-			catch (ex) {
-				return reject(ex);
-			}
+
+			this[$ELEMENT] = ZephElementClass.generateClass(this.context);
+			customElements.define(this.name,this[$ELEMENT]);
+
+			fire(this.context && this.context.lifecycle && this.context.lifecycle.init || [],this.name,this);
+
+			resolve();
 		});
 	}
 }
@@ -236,17 +224,12 @@ class ZephComponentExecution {
 	}
 
 	run() {
-		return new Promise(async (resolve,reject)=>{
-			try {
-				CODE_CONTEXT = this;
-				await this[$CODE].bind(this)();
-				CODE_CONTEXT = null;
+		return utils.tryprom(async (resolve)=>{
+			CODE_CONTEXT = this;
+			await this[$CODE].bind(this)();
+			CODE_CONTEXT = null;
 
-				resolve();
-			}
-			catch (ex) {
-				return reject(ex);
-			}
+			resolve();
 		});
 	}
 
@@ -255,9 +238,7 @@ class ZephComponentExecution {
 	}
 
 	from(fromTagName) {
-		check.not.uon(fromTagName,"fromTagName");
-		check.not.empty(fromTagName,"fromTagName");
-		check.string(fromTagName,"fromTagName");
+		check.posstr(fromTagName,"fromTagName");
 
 		this.context.pending = this.context.pending || [];
 		this.context.pending.push(ZephComponents.waitFor(fromTagName));
@@ -271,21 +252,16 @@ class ZephComponentExecution {
 			noRemote: false
 		},options||{});
 
-		let prom = new Promise(async (resolve,reject)=>{
-			try {
-				if (!options.noRemote) {
-					let url = await ZephUtils.resolveName(content,this.context.origin||document.URL.toString(),".html");
-					if (url) content = await ZephUtils.fetchText(url);
-				}
-
-				this.context.html = this.context.html || [];
-				this.context.html.push({content,options});
-
-				resolve();
+		let prom = utils.tryprom(async (resolve)=>{
+			if (!options.noRemote) {
+				let url = await utils.resolveName(content,this.context.origin||document.URL.toString(),".html");
+				if (url) content = await utils.fetchText(url);
 			}
-			catch (ex) {
-				return reject(ex);
-			}
+
+			this.context.html = this.context.html || [];
+			this.context.html.push({content,options});
+
+			resolve();
 		});
 
 		this.context.pending = this.context.pending || [];
@@ -298,21 +274,16 @@ class ZephComponentExecution {
 			noRemote: false
 		},options||{});
 
-		let prom = new Promise(async (resolve,reject)=>{
-			try {
-				if (!options.noRemote) {
-					let url = await ZephUtils.resolveName(content,this.context.origin,".css");
-					if (url) content = await ZephUtils.fetchText(url);
-				}
-
-				this.context.css = this.context.css || [];
-				this.context.css.push({content,options});
-
-				resolve();
+		let prom = utils.tryprom(async (resolve)=>{
+			if (!options.noRemote) {
+				let url = await utils.resolveName(content,this.context.origin,".css");
+				if (url) content = await utils.fetchText(url);
 			}
-			catch (ex) {
-				return reject(ex);
-			}
+
+			this.context.css = this.context.css || [];
+			this.context.css.push({content,options});
+
+			resolve();
 		});
 
 		this.context.pending = this.context.pending || [];
@@ -867,25 +838,19 @@ class ZephComponentsClass {
 	}
 
 	has(name) {
-		check.not.uon(name,"name");
-		check.string(name,"name");
-		check.not.empty(name,"name");
+		check.posstr(name,"name");
 
 		return !!this[$COMPONENTS][name];
 	}
 
 	get(name) {
-		check.not.uon(name,"name");
-		check.string(name,"name");
-		check.not.empty(name,"name");
+		check.posstr(name,"name");
 
 		return this[$COMPONENTS][name];
 	}
 
 	waitFor(name) {
-		check.not.uon(name,"name");
-		check.string(name,"name");
-		check.not.empty(name,"name");
+		check.posstr(name,"name");
 
 		if (this[$COMPONENTS][name]) return Promise.resolve();
 
@@ -895,9 +860,7 @@ class ZephComponentsClass {
 	}
 
 	define(name,code) {
-		check.not.uon(name,"name");
-		check.string(name,"name");
-		check.not.empty(name,"name");
+		check.posstr(name,"name");
 
 		check.not.uon(code,"code");
 		check.function(code,"code");
@@ -930,41 +893,34 @@ class ZephComponentsClass {
 			detail: origin
 		}));
 
-		return new Promise(async (resolve,reject)=>{
-			try {
-				let component = new ZephComponent(name,origin,code);
-				this[$COMPONENTS][name] = component;
-				await component.define();
+		return utils.tryprom(async (resolve)=>{
+			let component = new ZephComponent(name,origin,code);
+			this[$COMPONENTS][name] = component;
+			await component.define();
 
-				this[$OBSERVER] = this[$OBSERVER].filter((waiting)=>{
-					if (waiting.name===name) waiting.resolve();
-					return waiting.name!==name;
-				});
+			this[$OBSERVER] = this[$OBSERVER].filter((waiting)=>{
+				if (waiting.name===name) waiting.resolve();
+				return waiting.name!==name;
+			});
 
-				delete PENDING["component:"+origin];
+			delete PENDING["component:"+origin];
 
-				document.dispatchEvent(new CustomEvent("zeph:component:defined",{
-					bubbles: false,
-					detail: {name,component}
-				}));
-				document.dispatchEvent(new CustomEvent("zeph:loaded",{
-					bubbles: false,
-					detail: origin
-				}));
-				fireZephReady();
+			document.dispatchEvent(new CustomEvent("zeph:component:defined",{
+				bubbles: false,
+				detail: {name,component}
+			}));
+			document.dispatchEvent(new CustomEvent("zeph:loaded",{
+				bubbles: false,
+				detail: origin
+			}));
+			fireZephReady();
 
-				resolve(component);
-			}
-			catch (ex) {
-				return reject(ex);
-			}
+			resolve(component);
 		});
 	}
 
 	undefine(name) {
-		check.not.uon(name,"name");
-		check.string(name,"name");
-		check.not.empty(name,"name");
+		check.posstr(name,"name");
 
 		let component = this[$COMPONENTS][name];
 		if (!component) return;
@@ -1055,25 +1011,19 @@ class ZephServicesClass {
 	}
 
 	has(name) {
-		check.not.uon(name,"name");
-		check.string(name,"name");
-		check.not.empty(name,"name");
+		check.posstr(name,"name");
 
 		return !!this[$SERVICES][name];
 	}
 
 	get(name) {
-		check.not.uon(name,"name");
-		check.string(name,"name");
-		check.not.empty(name,"name");
+		check.posstr(name,"name");
 
 		return this[$SERVICES][name];
 	}
 
 	register(name,service) {
-		check.not.uon(name,"name");
-		check.string(name,"name");
-		check.not.empty(name,"name");
+		check.posstr(name,"name");
 
 		check.not.uon(service,"service");
 		if (!(service instanceof ZephService)) throw new Error("Invalid service; must be an instance of ZephService.");
@@ -1122,7 +1072,6 @@ const extend = function extend(target,...sources) {
 	});
 	return target;
 };
-window.glen = extend;
 
 const fire = function fire(listeners,...args) {
 	listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
@@ -1194,9 +1143,7 @@ const propetize = function propetize(object,propertyName,descriptor) {
 };
 
 const contextCall = function(name) {
-	check.not.uon(name,"name");
-	check.string(name,"name");
-	check.not.empty(name,"name");
+	check.posstr(name,"name");
 
 	let f = {[name]: function() {
 		if (!CODE_CONTEXT) throw new Error(name+"() may only be used within the ZephComponent.define() method.");
@@ -1226,12 +1173,12 @@ const onEventAt = contextCall("onEventAt");
 const ZephComponents = new ZephComponentsClass();
 const ZephServices = new ZephServicesClass();
 
-export {ZephComponents,ZephService,ZephServices,ZephUtils};
+export {ZephComponents,ZephService,ZephServices,utils as ZephUtils};
 export {from,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
 
 window.Zeph = {
 	ZephComponents,
 	ZephServices,
 	ZephService,
-	ZephUtils
+	ZephUtils: utils
 };
