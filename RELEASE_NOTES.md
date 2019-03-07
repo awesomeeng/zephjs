@@ -1,5 +1,20 @@
 # AwesomeComponenets Release Notes
 
+#### **Version 0.4.0**
+
+ - **BREAKING CHANGE**: You should now use `./zeph.min.js` or `./zeph.full.js` in your code instead of `./src/Zeph.js`.
+
+ - Adds minification.
+   - Updated cli with new options and minification usage.
+   - Adds minify package to dependencies.
+   - Updates documentation for minification.
+
+ - Reduced code footprint. Adds better checking when resolving url names.
+
+ - Adds onProperty() lifecycle event and associated tests.
+
+Fixed a pending promise resolution bug on components that inherit using from().
+
 #### **Version 0.3.1**
 
  - Fixes bug with fetchText returning undefined when fetch content is empty.
