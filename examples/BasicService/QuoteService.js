@@ -2,7 +2,7 @@
 
 "use strict";
 
-import {ZephService,ZephServices} from "../../Zeph.js";
+import {ZephService,ZephServices} from "../../zeph.min.js";
 
 class QuoteServices extends ZephService {
 	getQuotes() {

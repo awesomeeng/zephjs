@@ -29,13 +29,14 @@ Generate the ZephJS hello-world example component. hello-world is a very, very s
 ### `zeph create`
 
 ```shell
-zeph create <component-name> [filename]
+zeph create [options] <component-name> [filename]
 ```
 
 The `create` command is used to create scafolding for a new component. This command takes one require argument and one optional argument:
 
  - `component-name`: The name you want to give the new component, that is the tag name it will be registered under.  This name must contain a dash ("-") character.
  - `filename`: Optional filename to write the component out as. If not provided ZephJS will use the `component-name` as the filename.
+ - `--nozeph`: When provide, do not copy the `zeph.min.js` and `zeph.full.js` files locally.
 
 So for example:
 
@@ -55,7 +56,7 @@ Would create the following files in the current directory:
  6:	        and is released under the MIT licesne.
  7:	 */
  8:
- 9:	import {ZephComponents,html,css} from "./Zeph.js";
+ 9:	import {ZephComponents,html,css} from "./zeph.min.js";
 10:
 11:	ZephComponents.define("my-button",()=>{
 12:	        html("./my-button.html");
@@ -93,18 +94,27 @@ The command has the following optional arguments:
  - **`-port <port>`**: Provide an alternate port to serve from. By default port 4000 is used.
  - **`path_to_serve`**: Zero or more alternate paths to serve.
 
+Serve will serve the current directory if no `path_to_serve` is provided.  Additionally, any reference to `zeph.min.js` or `zeph.full.js` will also be appropriately served.
+
 Internally the `serve` command uses both [AwesomeServer](https://github.com/awesomeeng/awesome-server) and [AwesomeLog](https://github.com/awesomeeng/awesome-log) if you are interested in either of those libraries.
 
 ### `zeph bundle`
 
 ```shell
-zeph bundle <source_filename> <target_filename>
+zeph bundle [options] <source_filename> <target_filename>
 ```
 
 A common use case of ZephJS is to build a collection of useful components, bundle them into a single script, and distribute that script. The ZephJS CLI tool has a helpful bundle utility to help you out.
 
-The tool will read in the `source_filename` provided and bundle it with ZephJS into a single file `target_filename`. This takes care of all the dependencies, all the `html()` and `css()` external file references, everything.  You end up with a single nice neat package.
+The bundle tool will read in the `source_filename` provided and bundle it with ZephJS into a single file `target_filename`. This takes care of all the dependencies, all the `html()` and `css()` external file references, everything.  You end up with a single nice neat package.
 
 You can then distribute this package to your customers as a nice self-contained entity.
+
+The command has the following optional arguments:
+
+ - **`source_filename`**: The filename to serve as an entry point to your bundle.
+ - **`target_filename`**: The filename to write with the bundled content.
+ - **`--quiet`**: If provided will disable status messages during the bundling process.
+ - **`--full`**: If provided will bundle the full version of ZephJS `zeph.full.js` instead of the minified version. This is useful in debugging sometimes.
 
 > There is a lot more information on the `bundle` command in our [Bundling for Distribution](./ComponentBundling.md) documentation. We highly recommend you read it if Bundling is something you are interested in doing.

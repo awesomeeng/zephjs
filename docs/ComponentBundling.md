@@ -47,7 +47,7 @@ When this example is bundled, you end up with a single file that contains ZephJS
 You can run the bundler with the ZephJS command line tool. The bundler has the following syntax:
 
 ```shell
-zeph bundle <source_filename> <target_filename>
+zeph bundle [options] <source_filename> <target_filename>
 ```
 
 The bundler will perform the following actions:
@@ -65,6 +65,14 @@ The bundled file may be included in your web page, simply by using a script tag:
 ```html
 <script src="my-bundle.js" type="module"></script>
 ```
+
+### Bundler Options
+
+The following options may be passed to the bundler on the command line:
+
+ - `--quiet` Disables output text during the bundle operation.
+
+ - `--full` Uses the un-minified version of ZephJS `zeph.full.js` in the bundle instead of the minified version. This is useful for debugging sometimes.
 
 ### Some Useful Tips
 

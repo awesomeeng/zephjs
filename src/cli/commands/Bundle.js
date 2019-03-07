@@ -31,6 +31,8 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 		super();
 
 		this.addOption("quiet","boolean",false,"Disable displaying information details during bundle operation. Defaults to false.");
+		this.addOption("full","boolean",false,"Bundle the full version of ZephJS instead of the minimized version. Defaults to false.");
+		this.addOptionShortcut("no-min","full");
 	}
 
 	get title() {
@@ -42,11 +44,12 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 	}
 
 	get usage() {
-		return "zeph bundle [--quiet] <source_filename> <target_filename>";
+		return "zeph bundle [options] <source_filename> <target_filename>";
 	}
 
 	execute(args,options) {
 		let quiet = options.quiet;
+		let full = options.full;
 
 		if (args.length===0) {
 			this.help();
@@ -62,17 +65,27 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 			target = Path.resolve(process.cwd(),target);
 			if (!target.endsWith(".js")) target += ".js";
 
-			return this.rollup(source,target,quiet);
+			return this.rollup(source,target,quiet,full);
 		}
 	}
 
-	rollup(source,target,quiet) {
-		const zeph = AwesomeUtils.Module.resolve(module,"../../Zeph.js");
+	rollup(source,target,quiet,full) {
+		const zephmin = AwesomeUtils.Module.resolve(module,"../../../zeph.min.js");
+		if (!AwesomeUtils.FS.existsSync(zephmin)) {
+			console.error("zep.min.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
+			process.exit(1);
+		}
+		const zephfull = AwesomeUtils.Module.resolve(module,"../../../zeph.full.js");
+		if (!AwesomeUtils.FS.existsSync(zephfull)) {
+			console.error("zep.full.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
+			process.exit(1);
+		}
+		const zeph = full ? zephfull : zephmin;
 
 		const resolvePlugin = {
 			name: "rollup-zephjs-resolver-plugin",
 			resolveId(source) {
-				if (source.match(/(\/|\\)[Zz]eph\.js$/)) return zeph;
+				if (source.match(/(\/|\\)[Zz]eph(\.(min|full))?\.js$/)) return zeph;
 				return null;
 			}
 		};
@@ -80,7 +93,7 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 		const inlinePlugin = {
 			name: "rollup-zephjs-inline-plugin",
 			transform(code,origin) {
-				return (origin.match(/(\/|\\)[Zz]eph\.js$/)) ? null : inlineReferences(code,origin,quiet);
+				return (origin.match(/(\/|\\)[Zz]eph(\.(min|full))?\.js$/)) ? null : inlineReferences(code,origin,quiet);
 			}
 		};
 
@@ -146,15 +159,15 @@ const inlineReferences = function inlineReferences(code,origin,quiet) {
 			if (content.type.label==="`" && following && following.type && following.type.label && following.type.label==="template") {
 				filename = following.value;
 			}
-			else if (content.type.label==="string" && following && following.type && following.type.label && following.type.label===")") {
+			else if (content.type.label==="string" && following && following.type && following.type.label && (following.type.label===")" || following.type.label===",")) {
 				filename = content.value;
 			}
 			else {
-				console.log(0,code);
-				console.log(0,tokens[i]);
-				console.log(1,tokens[i+1]);
-				console.log(2,tokens[i+2]);
-				console.log(3,tokens[i+3]);
+				// console.log(0,code);
+				// console.log(0,tokens[i]);
+				// console.log(1,tokens[i+1]);
+				// console.log(2,tokens[i+2]);
+				// console.log(3,tokens[i+3]);
 				console.error("ERROR: "+origin+": "+token.value+"() statement may only be a string literal.");
 				process.exit();
 			}

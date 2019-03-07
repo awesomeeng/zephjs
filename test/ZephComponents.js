@@ -22,7 +22,7 @@ require("./BrowserMocks");
 const assert = require("assert");
 
 const ZephComponents = require("../src/Zeph.js").ZephComponents;
-const {from,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt} = require("../src/Zeph.js");
+const {from,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt} = require("../src/Zeph.js");
 
 describe("ZephComponents",function(){
 	beforeEach(()=>{
@@ -42,6 +42,7 @@ describe("ZephComponents",function(){
 	});
 
 	it("definition methods",function(){
+		assert(from);
 		assert(html);
 		assert(css);
 		assert(attribute);
@@ -54,6 +55,7 @@ describe("ZephComponents",function(){
 		assert(onRemove);
 		assert(onAdopt);
 		assert(onAttribute);
+		assert(onProperty);
 		assert(onEvent);
 		assert(onEventAt);
 	});
@@ -98,6 +100,7 @@ describe("ZephComponents",function(){
 			onRemove(()=>{});
 			onAdopt(()=>{});
 			onAttribute("xyz",()=>{});
+			onProperty("def",()=>{});
 
 			onEvent("click",()=>{});
 			onEventAt("div","click",()=>{});
@@ -131,6 +134,16 @@ describe("ZephComponents",function(){
 		assert.equal(component.context.attributes.xyz.initialValue,123);
 		assert(component.context.attributes.def);
 		assert.equal(component.context.attributes.def.initialValue,"abc");
+
+		assert(component.context.properties);
+		assert(component.context.properties.xyz);
+		assert.equal(component.context.properties.xyz.propertyName,"xyz");
+		assert.equal(component.context.properties.xyz.initialValue,456);
+		assert.equal(component.context.properties.xyz.changes.length,0);
+		assert(component.context.properties.def);
+		assert.equal(component.context.properties.def.propertyName,"def");
+		assert.equal(component.context.properties.def.initialValue,"ghi");
+		assert.equal(component.context.properties.def.changes.length,1);
 
 		assert(component.context.bindings);
 		assert.equal(Object.keys(component.context.bindings).length,2);
@@ -204,6 +217,7 @@ describe("ZephComponents",function(){
 			onRemove(()=>{});
 			onAdopt(()=>{});
 			onAttribute("xyz",()=>{});
+			onProperty("xyz",()=>{});
 			onEvent("click",()=>{});
 			onEventAt("div","click",()=>{});
 		});
@@ -238,6 +252,9 @@ describe("ZephComponents",function(){
 		assert(component.context.attributes);
 		assert.equal(Object.keys(component.context.attributes).length,1);
 		assert(component.context.attributes.xyz);
+		assert(component.context.properties);
+		assert.equal(Object.keys(component.context.properties).length,1);
+		assert(component.context.properties.xyz);
 
 		assert(component.context.bindings);
 		assert.equal(Object.keys(component.context.bindings).length,1);

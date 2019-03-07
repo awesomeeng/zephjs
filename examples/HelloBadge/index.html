@@ -5,23 +5,20 @@
 		<title>Zeph - Examples - HelloBadge</title>
 		<script src="./awesome-hello-badge.js" type="module"></script>
 		<script>
-			document.addEventListener("zeph:loading",(event)=>{
-				console.log("zeph:loading",event.detail.toString());
-			});
-			document.addEventListener("zeph:loaded",(event)=>{
-				console.log("zeph:loaded",event.detail.toString());
-			});
-			document.addEventListener("zeph:service:registered",(event)=>{
-				console.log("zeph:service:registered",event.detail.name);
-			});
-			document.addEventListener("zeph:service:unregistered",(event)=>{
-				console.log("zeph:service:unregistered",event.detail.name);
+			document.addEventListener("zeph:component:loading",(event)=>{
+				console.log("zeph:component:loading",event.detail.toString());
 			});
 			document.addEventListener("zeph:component:defined",(event)=>{
 				console.log("zeph:component:defined",event.detail.name);
 			});
 			document.addEventListener("zeph:component:undefined",(event)=>{
 				console.log("zeph:component:undefined",event.detail.name);
+			});
+			document.addEventListener("zeph:service:registered",(event)=>{
+				console.log("zeph:service:registered",event.detail.name);
+			});
+			document.addEventListener("zeph:service:unregistered",(event)=>{
+				console.log("zeph:service:unregistered",event.detail.name);
 			});
 			document.addEventListener("zeph:ready",()=>{
 				console.log("zeph:ready");

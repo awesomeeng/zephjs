@@ -1,6 +1,6 @@
 // (c) 2018-present, The Awesome Engineering Company, https://awesomeneg.com
 
-import {ZephComponents,html,css,bind} from "../../Zeph.js";
+import {ZephComponents,html,css,bind} from "../../zeph.min.js";
 
 ZephComponents.define("cool-quote",()=>{
 	html("./cool-quote.html");

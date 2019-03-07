@@ -79,13 +79,11 @@ A custom element built with ZephJS has the following lifecycle, meaning it moves
 
 ZephJS has several events it will fire on the `document` as it performs various functions. You can tap into these events with `document.addEventListener()` like any other event.
 
- - **zeph:loading**: Fired when `ZephComponents.define()` is called, but before it is complete.  `ZephComponents.define()` can have internal definition methods that need to read data and as such returns a promise that will resolve when the definition when everything has read and is complete.
+ - **zeph:ready**: Fired after your page is loaded and there are no more `zeph:component:loading` events without a matching `zeph:component:defined` event. Essentially this is ZephJS saying it believes all of the components are defined are ready to use.
 
- - **zeph:loaded**: Fired when the promise returned by `ZephComponents.define()` has resolved and the defined component has been registered. There should always be one `zeph:loaded` event for each `zeph:loading` event.
+ - **zeph:component:loading**: Fired when `ZephComponents.define()` is called, but before it is complete.  `ZephComponents.define()` can have internal definition methods that need to read data and as such returns a promise that will resolve when the definition when everything has read and is complete.
 
- - **zeph:ready**: Fired after your page is loaded and there are no more `zeph:loading` events without a matching `zeph:loaded` event. Essentially this is ZephJS saying it believes all of the components are defined are ready to use.
-
- - **zeph:component:defined**: Fired at the same time as `zeph:loaded` and means essnetially the same thing.
+ - **zeph:component:defined**: Fired when `ZephComponents.define()` is complete and all dependent promises to define the component (such as loading html or css) have completed.
 
  - **zeph:component:undefined**: Fired when a component is actively undefined from ZephJS by way of the `ZephComponents.undefine()` method.  While a component may be undefined by ZephJS, there is currently no way to remove it from the Custom Element registry.
 

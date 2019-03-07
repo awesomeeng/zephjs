@@ -78,8 +78,8 @@ You can use other custom elements (whether created with ZephJS or not) within th
 ```
 import "./another-component.js";
 
-import {ZephComponents} from "./Zeph.js";
-import {html} from "./Zeph.js";
+import {ZephComponents} from "./zeph.min.js";
+import {html} from "./zeph.min.js";
 
 ZephComponents.define("my-component",()=>{
 	html(`

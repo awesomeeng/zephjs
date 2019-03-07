@@ -22,14 +22,14 @@
 Writing a web component with ZephJS is done with the ZephComponents library.  To use ZephComponents we must first import it into our JavaScript:
 
 ```
-import {ZephComponents} from "./Zeph.js";
+import {ZephComponents} from "./zeph.min.js";
 ```
 
 Additionally, all of the the definition methods we are going to use in our component definition need to be imported as well.  You could just wildcard this, but we prefer to call this out specifically.
 
 ```
-import {ZephComponents} from "./Zeph.js";
-import {html,css,attribute,property} from "./Zeph.js";
+import {ZephComponents} from "./zeph.min.js";
+import {html,css,attribute,property} from "./zeph.min.js";
 ```
 
 The following items can be imported from ZephJS:

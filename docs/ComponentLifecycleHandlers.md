@@ -21,7 +21,7 @@
 
 A custom element built with ZephJS has the following lifecycle, meaning it moves through the following stages at some point.  Each of these lifecylces has an associated Lifecycle Event. These events can be tapped within the component definition for you to use as needed.
 
-**Definition** &rArr; **Initialization** &rArr; **Creation** &rArr; **Addition** | **Removal** | **Adoption** | **Attribute**
+**Definition** &rArr; **Initialization** &rArr; **Creation** &rArr; **Addition** | **Removal** | **Adoption** | **Attribute** | **Property**
 
  - **Definition**: Definition happens when you define a component via the `ZephComponents.define()` call. It is where your definition methods are executed and the ComponentContext is created. This will only occur once for each custom element defined.
 
@@ -31,7 +31,9 @@ A custom element built with ZephJS has the following lifecycle, meaning it moves
 
  - **Addition** | **Removal** | **Adoption**: Each of these occurs when an element is added or removed or adopted (moved from one document to another) to the DOM. This may occur multiple times for a single element as it moves around the DOM. For example, if I move a custom element from one DOM node to another both the Removal and Addition lifecycle events will occur.
 
- - **Attribute**: Occurs when a given attribute changes. The may occur multiple times for a single custom element as the attributes changes on that element.
+ - **Attribute**: Occurs when a given attribute of the created element changes. The may occur multiple times for a single custom element as the attributes changes on that element.
+
+ - **Property**: Occurs when a given property of the created element changes. The may occur multiple times for a single custom element as the property changes on that element.
 
 ### Lifecycle Handlers
 
@@ -145,6 +147,25 @@ ZephComponents.define("my-component",()=>{
 	css("./my-component.css");
 
 	onAttribute((oldValue,newValue,element,content)=>{
+		... do something ...
+	});
+});
+```
+
+#### Property
+
+The `onProperty(propertyName,handler)` definition method is associated with the Property Lifecylce event.  `onProperty()` is good for changing an element when a given property changes.
+
+> **`onProperty(propertyName,handler)`**
+ - **propertyName** [string]: The name of the property to observe for changes. This may not be undefined or null or empty string.
+ - **handler** [Function]: The function executed when the Property Lifecycle event occurs.  The function has the signature `(propertyName,value,element,content)` where `propertyName` is the name of the property changed, `value` is the value being set, `element` is the created element, and `content` is the internal Shadow DOM based on any `html()` calls.
+
+```
+ZephComponents.define("my-component",()=>{
+	html("./my-component.html");
+	css("./my-component.css");
+
+	onProperty((propertyName,value,element,content)=>{
 		... do something ...
 	});
 });

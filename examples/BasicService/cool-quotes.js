@@ -3,7 +3,7 @@
 import "./QuoteService.js";
 
 import "./cool-quote.js";
-import {ZephComponents,ZephServices,html,css,onCreate} from "../../Zeph.js";
+import {ZephComponents,ZephServices,html,css,onCreate} from "../../zeph.min.js";
 
 ZephComponents.define("cool-quotes",()=>{
 	html("./cool-quotes.html");

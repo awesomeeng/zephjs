@@ -38,8 +38,8 @@ class Create extends AwesomeCLI.AbstractCommand {
 			let index = Path.resolve(rootdir,"index.html");
 			let html = Path.resolve(rootdir,rootname+".html");
 			let css = Path.resolve(rootdir,rootname+".css");
-			let zeph = Path.resolve(rootdir,"Zeph.js");
-			let zephsource = AwesomeUtils.Module.resolve(module,"../../Zeph.js");
+			let zeph = Path.resolve(rootdir,"zeph.min.js");
+			let zephsource = AwesomeUtils.Module.resolve(module,"../../zeph.min.js");
 
 			if (AwesomeUtils.FS.existsSync(index)) return console.error("File "+index+" already exists. Stopping to prevent overwritting.");
 			if (AwesomeUtils.FS.existsSync(js)) return console.error("File "+js+" already exists. Stopping to prevent overwritting.");
@@ -75,7 +75,7 @@ class Create extends AwesomeCLI.AbstractCommand {
 	and is released under the MIT licesne.
  */
 
-import {ZephComponents,html,css,bindAttribute,onEventAt} from "./Zeph.js";
+import {ZephComponents,html,css,bindAttribute,onEventAt} from "./zeph.min.js";
 
 ZephComponents.define("hello-world",()=>{
 	html("./hello-world.html");

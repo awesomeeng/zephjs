@@ -6,7 +6,7 @@
   "contributors": [
     "Glen R. Goodwin"
   ],
-  "main": "./src/Zeph.js",
+  "main": "./src/zeph.min.js",
   "engines": {
     "node": ">=10.5.0"
   },
@@ -24,14 +24,16 @@
     "acorn": "6.1.0",
     "jsdoc-to-markdown": "4.0.1",
     "mocha": "6.0.1",
-    "esm": "3.2.5"
+    "esm": "3.2.5",
+    "minify": "4.1.1"
   },
   "optionalDependencies": {},
   "scripts": {
     "lint": "eslint src examples test",
     "docs": "jsdoc2md src/** --separators > docs/API.md",
     "test": "mocha test",
-    "tests": "mocha test"
+    "tests": "mocha test",
+    "minify": "cp src/Zeph.js zeph.full.js && minify src/Zeph.js > zeph.min.js"
   },
   "description": "Ultra light and easy to use Web Component framework for building and distributing independant components and integrating them together for web pages and web applications.",
   "directories": {

@@ -18,8 +18,8 @@ After we look at the code we will break it down piece by piece.
 ##### my-button.js
 
 ```javascript
- 1:	import {ZephComponents} from "./Zeph.js";
- 2:	import {html,css,attribute,property,bind,onCreate,onEvent} from "./Zeph.js";
+ 1:	import {ZephComponents} from "./zeph.min.js";
+ 2:	import {html,css,attribute,property,bind,onCreate,onEvent} from "./zeph.min.js";
  3:
  4:	ZephComponents.define("my-button",()=>{
  5:		html("./my-button.html");
@@ -146,8 +146,8 @@ In this particular example we are also using:
  - and `onEvent`
 
 ```javascript
- 1:	import {ZephComponents} from "./Zeph.js";
- 2:	import {html,css,attribute,property,bind,onCreate,onEvent} from "./Zeph.js";
+ 1:	import {ZephComponents} from "./zeph.min.js";
+ 2:	import {html,css,attribute,property,bind,onCreate,onEvent} from "./zeph.min.js";
 ```
 
 > Learn More: [Importing ZephJS](./ComponentImporting.md).
@@ -305,9 +305,9 @@ It is worth noting that the initial value is only used if the property is not se
 
 A Component has a Lifecycle that it goes through:
 
-**Definition** &rArr; **Initialization** &rArr; **Creation** &rArr; **Addition** | **Removal** | **Adoption** | **Attribute**
+**Definition** &rArr; **Initialization** &rArr; **Creation** &rArr; **Addition** | **Removal** | **Adoption** | **Attribute** | **Property**
 
-Each of these stages has an associated Lifecycle Event to which our code can respond. This is done using the `onInit()`, `onCreate()`, `onAdd()`, `onRemove()`, `onAdopt()`, or `onAttribute()` definition methods. Each of these methods takes a handler function as its sole argument, and that function is executed when the named Lifecycle Event occurs. Using on of these methods is entirely optional and in most cases completely unnecessary.
+Each of these stages has an associated Lifecycle Event to which our code can respond. This is done using the `onInit()`, `onCreate()`, `onAdd()`, `onRemove()`, `onAdopt()`, `onAttribute()`, or `onProperty()` definition methods. Each of these methods takes a handler function as its sole argument, and that function is executed when the named Lifecycle Event occurs. Using on of these methods is entirely optional and in most cases completely unnecessary.
 
 In our example, we are using the `onCreate()` Lifecycle Handler to log a brief message out.
 

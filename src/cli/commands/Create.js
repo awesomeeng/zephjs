@@ -13,6 +13,9 @@ const AwesomeCLI = require("@awesomeeng/awesome-cli");
 class Create extends AwesomeCLI.AbstractCommand {
 	constructor() {
 		super();
+
+		this.addOption("nozeph","boolean",false,"Do not copy ZephJS into the local folder when creating a new component.");
+		this.addOptionShortcut("no-zeph","nozeph");
 	}
 
 	get title() {
@@ -24,10 +27,10 @@ class Create extends AwesomeCLI.AbstractCommand {
 	}
 
 	get usage() {
-		return "zeph create <name> [filename]";
+		return "zeph create [options] <name> [filename]";
 	}
 
-	execute(args/*,options*/) {
+	execute(args,options) {
 		if (args.length===0) {
 			this.help();
 		}
@@ -45,16 +48,22 @@ class Create extends AwesomeCLI.AbstractCommand {
 			let htmlpath = "./"+rootname+".html";
 			let css = Path.resolve(rootdir,rootname+".css");
 			let csspath = "./"+rootname+".css";
-			let zeph = Path.resolve(rootdir,"Zeph.js");
-			let zephsource = AwesomeUtils.Module.resolve(module,"../../Zeph.js");
+			let zephmin = Path.resolve(rootdir,"zeph.min.js");
+			let zephminsource = AwesomeUtils.Module.resolve(module,"../../../zeph.min.js");
+			let zephfull = Path.resolve(rootdir,"zeph.full.js");
+			let zephfullsource = AwesomeUtils.Module.resolve(module,"../../../zeph.full.js");
 
 			if (AwesomeUtils.FS.existsSync(js)) return console.error("File "+js+" already exists. Stopping to prevent overwritting.");
 			if (AwesomeUtils.FS.existsSync(html)) return console.error("File "+html+" already exists. Stopping to prevent overwritting.");
 			if (AwesomeUtils.FS.existsSync(css)) return console.error("File "+css+" already exists. Stopping to prevent overwritting.");
 
-			if (!AwesomeUtils.FS.existsSync(zeph)) {
-				FS.writeFileSync(zeph,FS.readFileSync(zephsource));
-				console.log("Copied Zeph.js locally.");
+			if (!options.nozeph && !AwesomeUtils.FS.existsSync(zephmin)) {
+				FS.writeFileSync(zephmin,FS.readFileSync(zephminsource));
+				console.log("Copied zeph.min.js locally.");
+			}
+			if (!options.nozeph && !AwesomeUtils.FS.existsSync(zephfull)) {
+				FS.writeFileSync(zephfull,FS.readFileSync(zephfullsource));
+				console.log("Copied zeph.full.js locally.");
 			}
 
 			let index = Path.resolve(rootdir,"index.html");
@@ -86,7 +95,7 @@ class Create extends AwesomeCLI.AbstractCommand {
 	and is released under the MIT licesne.
  */
 
-import {ZephComponents,html,css} from "./Zeph.js";
+import {ZephComponents,html,css} from "./zeph.min.js";
 
 ZephComponents.define("${name}",()=>{
 	html("${htmlpath}");
