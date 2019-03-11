@@ -198,7 +198,7 @@ class ZephComponent {
 				let from = ZephComponents.get(this.context.from);
 				if (!from) throw new Error("Component '"+this.context.from+"' not found; inheritence by '"+this.context.name+"' is not possible.");
 
-				await Promise.all(from.pending||[]);
+				await Promise.all(from.context.pending||[]);
 
 				this[$CONTEXT] = extend({},from.context,this.context);
 			}
@@ -1074,9 +1074,7 @@ const extend = function extend(target,...sources) {
 			else if (val instanceof Function) target[key] = val;
 			else if (val instanceof RegExp) target[key] = val;
 			else if (val instanceof Date) target[key] = new Date(val);
-			else if (val instanceof Array) {
-				target[key] = [].concat(tgt||[],val);
-			}
+			else if (val instanceof Array) target[key] = [].concat(tgt||[],val);
 			else if (typeof val==="object") target[key] = extend(tgt,val);
 			else target[key] = val;
 		});
