@@ -6,7 +6,7 @@ If you are interested in finding a component collection, here is a list of known
 
  - **[Mistral](https://github.com/awesomeeng/zephjs-mistral)** - Mistral is a component collection that was built as the test case for ZephJS. It is neither complete nor production ready and should be used only as an example.
 
-Also, we have released some ZephJS supported elements and examples that may be of interest:
+Also, ZephJS has released some ZephJS supported elements and examples that may be of interest:
 
  - **[zephjs-router](https://github.com/awesomeeng/zephjs-router)** - An html content router built specifically for ZephJS with support for lazy loading.
 

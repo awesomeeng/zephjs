@@ -4,7 +4,7 @@ This guide details how to build a Web Component Library using ZephJS. This invol
 
 ## Project Structure
 
-It is recommended that you create a `components` folder within your project and place all the components within that. Additionally, ZephJS recommends keep JavaScript, HTML, and CSS as separate files with the same name.  For example, if one is creating the `my-button` component, one might have the following directory structure:
+It is recommended that one create a `components` folder within the project and place all the components within that. Additionally, ZephJS recommends keeping JavaScript, HTML, and CSS as separate files with the same name.  For example, if one is creating the `my-button` component, one might have the following directory structure:
 
 ```text
 compontents
@@ -13,9 +13,9 @@ compontents
 	my-button.css
 ```
 
-This approach to organizing components keeps everything neatly together and consistently named.  Of course, this layout is merely a suggestion and other layouts are entirely feasible at the developers discretion.
+This approach to organizing components keeps everything neatly together and consistently named.  Of course, this layout is merely a suggestion and other layouts are entirely feasible at the developer's discretion.
 
-Additionally, we recommend a single file near the top of your structure that imports all of your components together. This is a requirement for the bundler described below.
+Additionally, it is recommended to have a single file near the top of your structure that imports all components together. This is a requirement for the bundler described below.
 
 ## Installation
 
@@ -23,7 +23,7 @@ In order to work with ZephJS one should first install it into their project.
 
 #### Install node.js
 
-ZephJS is built as a node.js application, so you will need nodejs installed. You can find installers at [nodejs.org](https://nodejs.org) for whatever Operating System you are using.
+ZephJS is built as a node.js application, so one will need nodejs installed. Find installers at [nodejs.org](https://nodejs.org) for whatever Operating System is being used.
 
 #### Install ZephJS from npm:
 ```
@@ -46,9 +46,9 @@ This will create the following files using the given `<component_name>`:
 <component-name>.css
 ```
 
-THese files can then be populate appropriately.
+These files can then be populated appropriately.
 
-If you are new to ZephJS it is strongly recommended you read the [Component Quick Start](./ComponentQuickStart.md) guide to learn about how to write ZephJS components.
+If one is new to ZephJS it is strongly recommended tp read the [Component Quick Start](./ComponentQuickStart.md) guide to learn about how to write ZephJS components.
 
 ## Bundling a Component Library
 

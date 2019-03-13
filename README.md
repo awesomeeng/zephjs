@@ -1,14 +1,16 @@
 # ZephJS
 
-ZephJS (commonly called just "Zeph" and pronounced "Zef") is a easy, understandable, and ultra-light framework for defining and using Web Components. It is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want all the weight of a modern JavaScript Browser framework. ZephJS simplifies the process of defining custom Web Components into a declarative highly readable structure that uses standard JavaScript, standard HTML markup, and standard CSS Styling.
+ZephJS is an easy, understandable, and ultra-light framework for defining and using Web Components. It is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want all the weight of a modern JavaScript Browser framework. ZephJS simplifies the process of defining custom Web Components into a declarative highly readable structure that uses standard JavaScript, standard HTML markup, and standard CSS Styling.
+
+ZephJS is often called just "Zeph" and pronounced "Zef".
 
 ## Justification
 
-The promise of Web Components was that we would be able to easily load a component onto our web page and use it. But to date that promise has largely not been realized. The current Web Components standards lack an implemented method for easily loading components or component libraries, and writing a web component in JavaScript is far from an easy or straight-forward task.  Couple this with the current generation of web frameworks that add an insane amount of complexity to what was promised to be a very simple activity. Writing a web component should be simple, obvious, and require no more effort than writing JavaScript/HTML/CSS does.
+The promise of Web Components was that one would be able to easily load a component onto a web page and use it. But to date that promise has largely not been realized. The current Web Components standards lack an implemented method for easily loading components or component libraries, and writing a web component in JavaScript is far from an easy or straight-forward task.  Couple this with the current generation of web frameworks that add an insane amount of complexity to what was promised to be a very simple activity. Writing a web component should be simple, obvious, and require no more effort than writing JavaScript/HTML/CSS does.
 
 ZephJS aims to bring the promised ease of web components back to the community. It does so by living up to the following principals:
 
- - Define new components simply in a readable declarative manner.
+ - Define new components simply in a readable, declarative manner.
  - Make it easy for a component or component library to be used by others.
  - Use the standards and technologies that have made the web great.
  - Never try to outwit the browser.
@@ -27,7 +29,7 @@ ZephJS has the following features...
  - Encapsulated stlyes and content do not leak;
  - Components can extend other components;
  - Value propagation via Attribute/Property/Content binding;
- - Supports building one off components;
+ - Supports building one-off components;
  - or Supports building component libraries;
  - or Supports building entire applications;
  - Included CLI for easy new component scafolding;
@@ -112,7 +114,7 @@ ZephJS ships with a set of examples for your reference.
 
 ## Browser Compatability
 
-ZephJS is built on modern browser standards and thus requires a modern browser to work.  In particular it requires the following Web Standards: Shadow DOM v1, Custom Elements v1, Mutation Observer and Fetch.
+ZephJS is built on modern browser standards and thus requires a modern browser to work.  In particular it requires the following Web Standards: Shadow DOM v1, Custom Elements v1, Mutation Observer, and Fetch.
 
 The following browser compatability chart indicates which browsers are supported and which are not. (All browser statistics taken from [caniuse.com](https://caniuse.com) and used under the conditions of thier license.)
 
@@ -139,7 +141,7 @@ The following browser compatability chart indicates which browsers are supported
 
 ## The Awesome Engineering Company
 
-ZephJS is written and maintained by The Awesome Engineering Company. We believe in building clean, configurable, creative software for engineers and architects and customers.
+ZephJS is written and maintained by The Awesome Engineering Company. The Awesome Engineering Company believes in building clean, configurable, creative software for engineers and architects and customers.
 
 To learn more about The Awesome Engineering Company and our suite of products, visit us on the web at https://awesomeeng.com.
 

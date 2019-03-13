@@ -1,10 +1,10 @@
 # [ZephJS](../README.md) > Get Started > Building a Web Application using ZephJS
 
-This guide details how to build a Web Application using ZephJS. There are some specific consideration for building an application, and this document will attempt to guide one around these issue.
+This guide details how to build a Web Application using ZephJS. There are some specific consideration for building an application and this document will attempt to guide one around these issue.
 
 ## Project Structure
 
-It is recommended that you create a `components` folder within your project and place all the custom components within that. Additionally, ZephJS recommends keep JavaScript, HTML, and CSS as separate files with the same name.  For example, if one is creating the `my-button` component, one might have the following directory structure:
+It is recommended that one create a `components` folder within the project and place all the custom components within that. Additionally, ZephJS recommends keeping JavaScript, HTML, and CSS as separate files with the same name.  For example, if one is creating the `my-button` component, one might have the following directory structure:
 
 ```text
 compontents
@@ -21,7 +21,7 @@ In order to work with ZephJS one should first install it into their project.
 
 #### Install node.js
 
-ZephJS is built as a node.js application, so you will need nodejs installed. You can find installers at [nodejs.org](https://nodejs.org) for whatever Operating System you are using.
+ZephJS is built as a node.js application, so one will need nodejs installed. You can find installers at [nodejs.org](https://nodejs.org) for whatever Operating System is being used.
 
 #### Install ZephJS from npm:
 ```
@@ -33,12 +33,15 @@ npm -g install zephjs
 Create an entry point for the application, usually `index.html`.  Within this file include the following:
 
 ```html
-<script type="module">
-	import "./components/main-component.js";
-</script>
+<body>
+	<script type="module">
+		import "./components/main-component.js";
+	</script>
+	<main-component></main-component>
+</body>
 ```
 
-Where `main-component` is the name of the main component of your application.  This component defines your application layout and all its sub-components.
+Where `main-component` is the name of the main component of the application.  This component defines the structure, layout and content of the application and all its sub-components.
 
 ## Main Component
 
@@ -58,11 +61,11 @@ ZephComponents.define("main-component",()=>{
 
 ```
 
-The three `import` statements at the top of the example, illustrate the need to import any sub components you may included in your main component. Likewise, any sub-sub-components used by `sub-component-one`, for eample, would need to be imported by `sub-component-one`.
+The three `import` statements at the top of the example illustrate the need to import any sub components to include in the main component. Likewise, any sub-sub-components used by `sub-component-one`, for eample, would need to be imported by `sub-component-one`.
 
 ## Creating a Component
 
-For each component in your project one should create a separate component definition file.  Fortunately ZephJS makes this super easy with its Command Line Tool:
+For each component in a project one should create a separate component definition file.  Fortunately ZephJS makes this super easy with its Command Line Tool:
 
 ```shell
 zeph create <component_name>
@@ -76,23 +79,23 @@ This will create the following files using the given `<component_name>`:
 <component-name>.css
 ```
 
-THese files can then be populate appropriately.
+These files can then be populate appropriately.
 
-If you are new to ZephJS it is strongly recommended you read the [Component Quick Start](./ComponentQuickStart.md) guide to learn about how to write ZephJS components.
+If one is new to ZephJS, it is strongly recommended to read the [Component Quick Start](./ComponentQuickStart.md) guide to learn about how to write ZephJS components.
 
 ## Routing
 
-Web Applications often need to deal with client side routing; that is displaying different versions of the application based ont he url or other factors.  ZephJS can support routing by building custom elements that display their internal content differently depending on route.  Additionally, the ZephJS project also provides [zephjs-router](https://github.com/awesomeeng/zephjs-router) a simple routing element to get your started.
+Web Applications often need to deal with client side routing; that is displaying different versions of the application based on the url or other factors.  ZephJS can support routing by building custom elements that display their internal content differently depending on route.  Additionally, the ZephJS project also provides [zephjs-router](https://github.com/awesomeeng/zephjs-router) a simple routing element to get your started.
 
 ## Styling Considerations
 
-Styling in ZephJS is handled via providing styling details with the `css()` definition method. The content of the `css()` definition method is inserted into the shadow down of the custom element using a new style tag.  This means that the CSS provided will not leak out of the custom element at all.
+Styling in ZephJS is handled via providing styling details with the `css()` definition method. The content of the `css()` definition method is inserted into the shadow DOM of the custom element using a new style tag.  This means that the CSS provided will not leak out of the custom element at all.
 
-Unfortunately, this also means that styling INTO the custom element is equally hard. CSS currently does not provide method to easy style into custom elements.  Some approaches solve this problem with [CSS Vairables](https://developer.mozilla.org/en-US/docs/Web/CSS/--*). However, this approach has its own limitations.
+Unfortunately, this also means that styling *INTO* the custom element is equally hard. CSS currently does not provide a method to easy style into custom elements.  Some approaches solve this problem with [CSS Vairables](https://developer.mozilla.org/en-US/docs/Web/CSS/--*). However, this approach has its own limitations.
 
-Currently a new proposal called `::part` and `::theme` exists to alievitate some of these probles.  You can read more about it in Monica Dinculescu's execellent primer at [https://meowni.ca/posts/part-theme-explainer/](https://meowni.ca/posts/part-theme-explainer/).
+Currently a new proposal called `::part` and `::theme` exists to alievitate some of these probles.  Read more about it in Monica Dinculescu's execellent primer at [https://meowni.ca/posts/part-theme-explainer/](https://meowni.ca/posts/part-theme-explainer/).
 
-For now, ZephJS recommend that if one wants to create a custom style for say, a button, one would create a custom element, `my-button` for example, and include the specific styling in that.  Then within the HTML reuse the `<my-button>` element where ever one would use `<button>`.
+For now, ZephJS recommends that if one wants to create a custom style for say, a button, one would create a custom element, `my-button` for example, and include the specific styling in that.  Then within the HTML reuse the `<my-button>` element where ever one would use `<button>`.
 
 ## Additional Topics
 
