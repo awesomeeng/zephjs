@@ -2,9 +2,9 @@
 
 "use strict";
 
-import {ZephService,ZephServices} from "../../zeph.min.js";
+import {ZephService} from "../../zeph.min.js";
 
-class QuoteServices extends ZephService {
+class QuoteService extends ZephService {
 	getQuotes() {
 		return new Promise(async (resolve,reject)=>{
 			try {
@@ -19,4 +19,5 @@ class QuoteServices extends ZephService {
 	}
 }
 
-ZephServices.register("quotes",new QuoteServices());
+const instance = new QuoteService();
+export {instance as QuoteService};

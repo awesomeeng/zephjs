@@ -1121,7 +1121,6 @@ export {from,alias,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd
 
 window.Zeph = {
 	ZephComponents,
-	ZephServices,
 	ZephService,
 	ZephUtils: utils
 };

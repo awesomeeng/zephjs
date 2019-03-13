@@ -1,9 +1,8 @@
 // (c) 2018-present, The Awesome Engineering Company, https://awesomeneg.com
 
-import "./QuoteService.js";
-
 import "./cool-quote.js";
-import {ZephComponents,ZephServices,html,css,onCreate} from "../../zeph.min.js";
+import {ZephComponents,html,css,onCreate} from "../../zeph.min.js";
+import {QuoteService} from "./QuoteService.js";
 
 ZephComponents.define("cool-quotes",()=>{
 	html("./cool-quotes.html");
@@ -15,7 +14,7 @@ ZephComponents.define("cool-quotes",()=>{
 		});
 
 		try {
-			let quotes = await ZephServices.services.quotes.getQuotes();
+			let quotes = await QuoteService.getQuotes();
 			quotes.forEach((entry)=>{
 				let e = document.createElement("cool-quote");
 				e.setAttribute("quote",entry.quote);

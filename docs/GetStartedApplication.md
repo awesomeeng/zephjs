@@ -126,7 +126,6 @@ Web Application authors may be interested in the additional specific topics:
 
 **APIs**
  - [ZephComponents API](./ZephComponents.md)
- - [ZephServices API](./ZephServices.md)
 
 **Bundling**
   - [Bundling for Distribution](./ComponentBundling.md)

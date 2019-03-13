@@ -1,7 +1,6 @@
 // (c) 2018-present, The Awesome Engineering Company, https://awesomeneg.com
 
 const $COMPONENTS = Symbol("components");
-const $SERVICES = Symbol("services");
 const $CONTEXT = Symbol("context");
 const $CODE = Symbol("code");
 const $ELEMENT = Symbol("element");
@@ -198,13 +197,21 @@ class ZephComponent {
 				let from = ZephComponents.get(this.context.from);
 				if (!from) throw new Error("Component '"+this.context.from+"' not found; inheritence by '"+this.context.name+"' is not possible.");
 
-				await Promise.all(from.pending||[]);
+				await Promise.all(from.context.pending||[]);
 
 				this[$CONTEXT] = extend({},from.context,this.context);
 			}
 
 			this[$ELEMENT] = ZephElementClass.generateClass(this.context);
 			customElements.define(this.name,this[$ELEMENT]);
+			(this.context.aliases||[]).forEach((aliasName)=>{
+				const aliasClass = (class AliasClass extends this[$ELEMENT]{
+					constructor() {
+						super();
+					}
+				});
+				customElements.define(aliasName,aliasClass);
+			});
 
 			fire(this.context && this.context.lifecycle && this.context.lifecycle.init || [],this.name,this);
 
@@ -244,6 +251,13 @@ class ZephComponentExecution {
 		this.context.pending.push(ZephComponents.waitFor(fromTagName));
 
 		this.context.from = fromTagName;
+	}
+
+	alias(aliasName) {
+		check.posstr(aliasName,"aliasName");
+
+		this.context.aliases = this.context.aliases || new Set();
+		this.context.aliases.add(aliasName);
 	}
 
 	html(content,options={}) {
@@ -982,71 +996,6 @@ class ZephService {
 	}
 }
 
-class ZephServicesClass {
-	constructor() {
-		this[$SERVICES] = {};
-		this[$PROXY] = new Proxy(this[$SERVICES],{
-			has: (target,key)=>{
-				return !!target[key];
-			},
-			get: (target,key)=>{
-				return target[key] || undefined;
-			},
-			ownKeys: (target)=>{
-				return Object.keys(target);
-			}
-		});
-	}
-
-	get services() {
-		return this[$PROXY];
-	}
-
-	get names() {
-		return Object.keys(this[$SERVICES]);
-	}
-
-	has(name) {
-		check.posstr(name,"name");
-
-		return !!this[$SERVICES][name];
-	}
-
-	get(name) {
-		check.posstr(name,"name");
-
-		return this[$SERVICES][name];
-	}
-
-	register(name,service) {
-		check.posstr(name,"name");
-
-		check.not.uon(service,"service");
-		if (!(service instanceof ZephService)) throw new Error("Invalid service; must be an instance of ZephService.");
-
-		if (this[$SERVICES][name]) throw new Error("Service already registered.");
-
-		this[$SERVICES][name] = service;
-
-		document.dispatchEvent(new CustomEvent("zeph:service:registered",{
-			bubbles: false,
-			detail: {name,service}
-		}));
-	}
-
-	unregister(name) {
-		let service = this.get(name);
-		if (service) {
-			delete this[$SERVICES][name];
-
-			document.dispatchEvent(new CustomEvent("zeph:service:unregistered",{
-				bubbles: false,
-				detail: {name}
-			}));
-		}
-	}
-}
-
 const extend = function extend(target,...sources) {
 	if (target===undefined || target===null) target = {};
 	sources.forEach((source)=>{
@@ -1059,9 +1008,7 @@ const extend = function extend(target,...sources) {
 			else if (val instanceof Function) target[key] = val;
 			else if (val instanceof RegExp) target[key] = val;
 			else if (val instanceof Date) target[key] = new Date(val);
-			else if (val instanceof Array) {
-				target[key] = [].concat(tgt||[],val);
-			}
+			else if (val instanceof Array) target[key] = [].concat(tgt||[],val);
 			else if (typeof val==="object") target[key] = extend(tgt,val);
 			else target[key] = val;
 		});
@@ -1150,6 +1097,7 @@ const contextCall = function(name) {
 };
 
 const from = contextCall("from");
+const alias = contextCall("alias");
 const html = contextCall("html");
 const css = contextCall("css");
 const attribute = contextCall("attribute");
@@ -1167,14 +1115,12 @@ const onEvent = contextCall("onEvent");
 const onEventAt = contextCall("onEventAt");
 
 const ZephComponents = new ZephComponentsClass();
-const ZephServices = new ZephServicesClass();
 
-export {ZephComponents,ZephService,ZephServices,utils as ZephUtils};
-export {from,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
+export {ZephComponents,ZephService,utils as ZephUtils};
+export {from,alias,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
 
 window.Zeph = {
 	ZephComponents,
-	ZephServices,
 	ZephService,
 	ZephUtils: utils
 };

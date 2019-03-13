@@ -73,7 +73,6 @@ ZephJS Provides a ton of documentation to help you use it...
 
 **APIs**
  - [ZephComponents API](./docs/ZephComponents.md)
- - [ZephServices API](./docs/ZephServices.md)
 
 **Bundling**
   - [Bundling for Distribution](./docs/ComponentBundling.md)
