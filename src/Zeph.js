@@ -1,5 +1,25 @@
 // (c) 2018-present, The Awesome Engineering Company, https://awesomeneg.com
 
+/*
+	ZephJS is an easy, understandable, and ultra-light framework for
+	defining and using Web Components. It is perfect for people writing
+	component libraries, teams building applications or sites that just
+	require a few custom components, or projects building whole applications
+	that do not want all the weight of a modern JavaScript Browser framework.
+	ZephJS simplifies the process of defining custom Web Components into a
+	declarative highly readable structure that uses standard JavaScript,
+	standard HTML markup, and standard CSS Styling.
+
+	ZephJS is often called just "Zeph" and pronounced "Zef".
+
+	ZephJS is copyright 2018-present by The Awesome Engineering Company.
+	It is publically available under the MIT licenese as described
+	in the LICENSE file.
+*/
+
+// Define Symbols for usage on various objects below
+// Sometimes we reuse these symbols on different objects
+// for different purposes, but always of a similar nature.
 const $COMPONENTS = Symbol("components");
 const $CONTEXT = Symbol("context");
 const $CODE = Symbol("code");
@@ -9,58 +29,96 @@ const $OBSERVER = Symbol("observer");
 const $LISTENERS = Symbol("listeners");
 const $PROXY = Symbol("proxy");
 
+// Top level variables used by ZephJS but not exposed
 let CODE_CONTEXT = null;
 let PENDING = {};
 let FIREREADY = null;
 let READY = false;
 
+// An identity function which returns exactly what is passed to it.
 const IDENTITY_FUNCTION = (x)=>{ return x; };
 
+// The check methods are quick usage functions for testing
+// if certain type conditions are met and throwing an exception
+// if not.  For example check.not.uon(x) will throw an exception
+// if x is undefined or null.
 const check = {
 	not: {
+		// throw an exception if arg is undefined.
 		undefined: (arg,name)=>{
 			if (arg===undefined) throw new Error("Undefined "+name+".");
 		},
+		// throw an exception if arg is null.
 		null: (arg,name)=>{
 			if (arg===null) throw new Error("Null "+name+".");
 		},
+		// throw an exception if arg is undefined or null.
 		uon: (arg,name)=>{
 			check.not.undefined(arg,name);
 			check.not.null(arg,name);
 		},
+		// throw an exception if arg is a string and it is empty.
 		empty: (arg,name)=>{
 			if (typeof arg==="string" && arg==="") throw new Error("Empty "+name+".");
 		}
 	},
+	// throw an exception if arg is not of the given type (via typeof).
 	type: (arg,type,name)=>{
 		if (typeof arg!==type) throw new Error("Invalid "+name+"; must be a "+type+".");
 	},
+	// throw an exception if arg is not a string.
 	string: (arg,name)=>{
 		check.type(arg,"string",name);
 	},
+	// throw an exception if arg is undefined or null, not a string, or empty.
 	posstr: (arg,name)=>{
 		check.not.uon(arg,name);
 		check.string(arg,name);
 		check.not.empty(arg,name);
 	},
+	// throw an exception if arg is not a number.
 	number: (arg,name)=>{
 		check.type(arg,"number",name);
 	},
+	// throw an exception if arg is not a boolean.
 	boolean: (arg,name)=>{
 		check.type(arg,"string",name);
 	},
+	// throw an exception if arg is not a function.
 	function: (arg,type,name)=>{
 		if (!(arg instanceof Function)) throw new Error("Invalid "+name+"; must be a Function.");
 	},
+	// throw an exception if arg is not an array.
 	array: (arg,type,name)=>{
 		if (!(arg instanceof Array)) throw new Error("Invalid "+name+"; must be an Array.");
 	}
 };
 
+/**
+ * Common utilities for working with ZephJS.
+ *
+ * @type {Object}
+ */
 const utils = {
+	/**
+	 * Returns true if ZephJS is in the "ready" state. ZephJS is in the "ready"
+	 * state if ZephJS is loaded and all ZephComponents.define() methods are
+	 * believed to be complete.
+	 *
+	 * @return {[type]} [description]
+	 */
 	ready: ()=>{
 		return READY;
 	},
+
+	/**
+	 * A utility function to execute the given function f in the context of a
+	 * nice clean try/catch block. This really is here just to save a bunch of
+	 * characters in ZephJS when minimized.
+	 *
+	 * @param  {[type]} f [description]
+	 * @return {[type]}   [description]
+	 */
 	tryprom: (f)=>{
 		check.not.uon(f,"argument");
 		check.function(f,"argument");
@@ -74,6 +132,14 @@ const utils = {
 			}
 		});
 	},
+
+	/**
+	 * Performs a HEAD fetch request to determine if a given URL "exists". Returns
+	 * a promise that will resolve to true or false depending on the result.
+	 *
+	 * @param  {[type]} url [description]
+	 * @return {[type]}     [description]
+	 */
 	exists: (url)=>{
 		if (url===undefined || url===null || url==="") return Promise.resolve(false);
 
@@ -85,6 +151,13 @@ const utils = {
 			else resolve(false);
 		});
 	},
+
+	/**
+	 * A simplified fetch wrapper.
+	 *
+	 * @param  {[type]} url [description]
+	 * @return {[type]}     [description]
+	 */
 	fetch: (url)=>{
 		check.not.uon(url,"url");
 		check.not.empty(url,"url");
@@ -95,6 +168,14 @@ const utils = {
 			resolve(undefined);
 		});
 	},
+
+	/**
+	 * Fetch but also resolves the content as plaintext. Useful for reading
+	 * HTML and CSS files.
+	 *
+	 * @param  {[type]} url [description]
+	 * @return {[type]}     [description]
+	 */
 	fetchText: (url)=>{
 		check.not.uon(url,"url");
 		check.not.empty(url,"url");
@@ -107,6 +188,14 @@ const utils = {
 			resolve(text);
 		});
 	},
+
+	/**
+	 * Given some URL resolves it against a base url to ensure correct pathing.
+	 *
+	 * @param  {[type]} url                 [description]
+	 * @param  {[type]} [base=document.URL] [description]
+	 * @return {[type]}                     [description]
+	 */
 	resolve: (url,base=document.URL)=>{
 		check.not.uon(url,"url");
 		check.not.empty(url,"url");
@@ -121,6 +210,19 @@ const utils = {
 			return null;
 		}
 	},
+
+	/**
+	 * Given a simple name, resolve it against a base URL and then
+	 * find out if it exists or not.  ZephJS uses this to determine where
+	 * something are located.  This can produce upwards of four separate
+	 * network requests.  However, ZephJS only tries that if absolutely
+	 * necessary.
+	 *
+	 * @param  {[type]} url                 [description]
+	 * @param  {[type]} [base=document.URL] [description]
+	 * @param  {String} [extension=".js"]   [description]
+	 * @return {[type]}                     [description]
+	 */
 	resolveName(url,base=document.URL,extension=".js") {
 		let urlstr = ""+url;
 		if (!urlstr.match(/^http:\/\/|^https:\/\/|^ftp:\/\/|^\.\/|^\.\.\//)) return Promise.resolve(undefined);
@@ -144,6 +246,17 @@ const utils = {
 	}
 };
 
+/**
+ * ZephJS's representation of a component and all its descriptive metadata.
+ * This include the component name, its origin, the definition code, and the
+ * context produce by executing the definition code.
+ *
+ * It should be noted that this is not the same as the Element that
+ * using a component as an HTML tag or from document.createElement().
+ *
+ * ZephCompoonent is returned when you ask ZephComponents to get the
+ * component.
+ */
 class ZephComponent {
 	constructor(name,origin,code) {
 		check.posstr(name,"name");
