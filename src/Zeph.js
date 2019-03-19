@@ -1,21 +1,21 @@
 // (c) 2018-present, The Awesome Engineering Company, https://awesomeneg.com
 
-/*
-	ZephJS is an easy, understandable, and ultra-light framework for
-	defining and using Web Components. It is perfect for people writing
-	component libraries, teams building applications or sites that just
-	require a few custom components, or projects building whole applications
-	that do not want all the weight of a modern JavaScript Browser framework.
-	ZephJS simplifies the process of defining custom Web Components into a
-	declarative highly readable structure that uses standard JavaScript,
-	standard HTML markup, and standard CSS Styling.
-
-	ZephJS is often called just "Zeph" and pronounced "Zef".
-
-	ZephJS is copyright 2018-present by The Awesome Engineering Company.
-	It is publically available under the MIT licenese as described
-	in the LICENSE file.
-*/
+/**
+ * ZephJS is an easy, understandable, and ultra-light framework for
+ * defining and using Web Components. It is perfect for people writing
+ * component libraries, teams building applications or sites that just
+ * require a few custom components, or projects building whole applications
+ * that do not want all the weight of a modern JavaScript Browser framework.
+ * ZephJS simplifies the process of defining custom Web Components into a
+ * declarative highly readable structure that uses standard JavaScript,
+ * standard HTML markup, and standard CSS Styling.
+ *
+ * ZephJS is often called just "Zeph" and pronounced "Zef".
+ *
+ * ZephJS is copyright 2018-present by The Awesome Engineering Company.
+ * It is publically available under the MIT licenese as described
+ * in the LICENSE file.
+ */
 
 // Define Symbols for usage on various objects below
 // Sometimes we reuse these symbols on different objects
@@ -97,7 +97,7 @@ const check = {
 /**
  * Common utilities for working with ZephJS.
  *
- * @type {Object}
+ * @alias ZephUtils
  */
 const utils = {
 	/**
@@ -105,7 +105,7 @@ const utils = {
 	 * state if ZephJS is loaded and all ZephComponents.define() methods are
 	 * believed to be complete.
 	 *
-	 * @return {[type]} [description]
+	 * @return {boolean}
 	 */
 	ready: ()=>{
 		return READY;
@@ -116,8 +116,8 @@ const utils = {
 	 * nice clean try/catch block. This really is here just to save a bunch of
 	 * characters in ZephJS when minimized.
 	 *
-	 * @param  {[type]} f [description]
-	 * @return {[type]}   [description]
+	 * @param  {Function} f
+	 * @return {Promise}
 	 */
 	tryprom: (f)=>{
 		check.not.uon(f,"argument");
@@ -137,8 +137,8 @@ const utils = {
 	 * Performs a HEAD fetch request to determine if a given URL "exists". Returns
 	 * a promise that will resolve to true or false depending on the result.
 	 *
-	 * @param  {[type]} url [description]
-	 * @return {[type]}     [description]
+	 * @param  {URL} url
+	 * @return {Promise}
 	 */
 	exists: (url)=>{
 		if (url===undefined || url===null || url==="") return Promise.resolve(false);
@@ -155,8 +155,8 @@ const utils = {
 	/**
 	 * A simplified fetch wrapper.
 	 *
-	 * @param  {[type]} url [description]
-	 * @return {[type]}     [description]
+	 * @param  {URL} url
+	 * @return {Promise}
 	 */
 	fetch: (url)=>{
 		check.not.uon(url,"url");
@@ -173,8 +173,8 @@ const utils = {
 	 * Fetch but also resolves the content as plaintext. Useful for reading
 	 * HTML and CSS files.
 	 *
-	 * @param  {[type]} url [description]
-	 * @return {[type]}     [description]
+	 * @param  {URL} url
+	 * @return {Promise}
 	 */
 	fetchText: (url)=>{
 		check.not.uon(url,"url");
@@ -192,9 +192,9 @@ const utils = {
 	/**
 	 * Given some URL resolves it against a base url to ensure correct pathing.
 	 *
-	 * @param  {[type]} url                 [description]
-	 * @param  {[type]} [base=document.URL] [description]
-	 * @return {[type]}                     [description]
+	 * @param  {URL} url
+	 * @param  {URL} [base=document.URL]
+	 * @return {URL}
 	 */
 	resolve: (url,base=document.URL)=>{
 		check.not.uon(url,"url");
@@ -218,10 +218,10 @@ const utils = {
 	 * network requests.  However, ZephJS only tries that if absolutely
 	 * necessary.
 	 *
-	 * @param  {[type]} url                 [description]
-	 * @param  {[type]} [base=document.URL] [description]
-	 * @param  {String} [extension=".js"]   [description]
-	 * @return {[type]}                     [description]
+	 * @param  {URL} url
+	 * @param  {URL} [base=document.URL]
+	 * @param  {String} [extension=".js"]
+	 * @return {Promise}
 	 */
 	resolveName(url,base=document.URL,extension=".js") {
 		let urlstr = ""+url;
@@ -249,10 +249,13 @@ const utils = {
 /**
  * ZephJS's representation of a component and all its descriptive metadata.
  * This include the component name, its origin, the definition code, and the
- * context produce by executing the definition code.
+ * context produce by executing the definition code. All of these items
+ * are used to generate a unique Class which is used in by the
+ * Custom Elements registry.
  *
- * It should be noted that this is not the same as the Element that
+ * It should be noted that this is not the same as the Element produced when
  * using a component as an HTML tag or from document.createElement().
+ * ZephComponent is the definition of that element, not the element itself.
  *
  * ZephCompoonent is returned when you ask ZephComponents to get the
  * component.
@@ -273,30 +276,85 @@ class ZephComponent {
 		this[$ELEMENT] = null;
 	}
 
+	/**
+	 * The context object that was built by executing the component definition.
+	 * Depending on when this member is examined, the context might be
+	 * very simple or very complex; it depends on whether or not the
+	 * ZephComponent has been "defined".  Prior to being "defined" the
+	 * definition code has not yet been executed and thus the context will
+	 * have very little in it.  Once "defined" the code will have been
+	 * executed and the resulting context populated.
+	 *
+	 * This is an object with a number of highly specialized fields that
+	 * are used when the element is created.  As such, changing it
+	 * is not allowed.
+	 *
+	 * @return {Object}
+	 */
 	get context() {
-		return this[$CONTEXT];
+		return extend({},this[$CONTEXT]);
 	}
 
+	/**
+	 * The name of the component, which is also the tag-name used in HTML for
+	 * the component.
+	 *
+	 * @return {String}
+	 */
 	get name() {
 		return this.context.name;
 	}
 
+	/**
+	 * The origin, in string form, of where the component was defined,
+	 * or the best guess as to where that is.  Origin is not always
+	 * going to be super accurate, but its tries its best.
+	 *
+	 * @return {String}
+	 */
 	get origin() {
 		return this.context.origin;
 	}
 
+	/**
+	 * The code that is to be or was executed for this component when defined.  This
+	 * will either be a string or a Function, depending on what was passed
+	 * to the define method.
+	 *
+	 * @return {String|Function}
+	 */
 	get code() {
 		return this[$CODE];
 	}
 
+	/**
+	 * Returns true if the ZephComponent was "defined" and has a registered
+	 * custom element class.
+	 *
+	 * @return {boolean}
+	 */
 	get defined() {
 		return !!this[$ELEMENT];
 	}
 
+	/**
+	 * Returns the custom element class that was used to register the
+	 * component with the CustomElements registry.
+	 *
+	 * @return {ZephElementClass}
+	 */
 	get customElementClass() {
 		return this[$ELEMENT];
 	}
 
+	/**
+	 * Executes the code, which in turn builds the context, which is
+	 * given to ZephElementClass.generateClass() to generate a unique
+	 * class representation for this component.  This class is then
+	 * used along with the name, to register the custom element.
+	 *
+	 * @return {Promise}
+	 */
 	define() {
 		return utils.tryprom(async (resolve)=>{
 			let execution = new ZephComponentExecution(this.context,this.code);
@@ -333,7 +391,20 @@ class ZephComponent {
 	}
 }
 
+/**
+ * @private
+ *
+ * A container class for all of the exposed methods that are
+ * used in component definition.  These are called on the given CODE_CONTEXT
+ * when the definition code is executed.
+ */
 class ZephComponentExecution {
+	/**
+	 * Takes the starting context and the code to be executed.
+	 *
+	 * @param {Object} context
+	 * @param {String|Function} code
+	 */
 	constructor(context,code) {
 		check.not.uon(context,"context");
 		check.not.uon(code,"code");
@@ -343,6 +414,12 @@ class ZephComponentExecution {
 		this[$CODE] = code;
 	}
 
+	/**
+	 * Executes the code for the component, which in turn builds out
+	 * the context by calling the definition methods.
+	 *
+	 * @return {Promise}
+	 */
 	run() {
 		return utils.tryprom(async (resolve)=>{
 			CODE_CONTEXT = this;
@@ -353,10 +430,24 @@ class ZephComponentExecution {
 		});
 	}
 
+	/**
+	 * Returns the context.
+	 *
+	 * @return {Object}
+	 */
 	get context() {
 		return this[$CONTEXT];
 	}
 
+	/**
+	 * Definition Method used for inheriting from another ZephComponent.  Inheritence
+	 * works by cloning the inherited components Context, and then appending the
+	 * new components context on top of that.  Inheritence does not actually
+	 * inherit in the classic object oriented approach.
+	 *
+	 * @param  {String} fromTagName
+	 * @return {void}
+	 */
 	from(fromTagName) {
 		check.posstr(fromTagName,"fromTagName");
 
@@ -366,6 +457,18 @@ class ZephComponentExecution {
 		this.context.from = fromTagName;
 	}
 
+	/**
+	 * Definition Method used to provide one or more alias names for a componet.  In
+	 * essence, when the component is registered with the Custome Element registry,
+	 * if there are any aliases, those names are also registered at the same time
+	 * using a clone of the original method.
+	 *
+	 * Aliases are useful if you need a component to have multiple tag names or
+	 * shortcut names.
+	 *
+	 * @param  {String} aliasName
+	 * @return {void}
+	 */
 	alias(aliasName) {
 		check.posstr(aliasName,"aliasName");
 
@@ -373,6 +476,36 @@ class ZephComponentExecution {
 		this.context.aliases.add(aliasName);
 	}
 
+	/**
+	 * Definition Method to provide HTML content to a component when it is
+	 * created.  The HTML provided becomes the content of the new element's
+	 * Shadow DOM (and is refered to through this documentation as "the
+	 * content").
+	 *
+	 * The html() Definition Method can take either a url or relative filename
+	 * or the actual HTML as string content. if a url or relative filename
+	 * is given, ZephJS will download that url content, if possible, and use
+	 * that as the content.  This allows developers to separate thier HTML
+	 * from the Component Definition JavaScript.
+	 *
+	 * Each call to the html() Definition Method will be appended together
+	 * to form a single block of HTML content.  However, you may specify the
+	 * option "overwrite" in the options object as "true" and the html()
+	 * definition methods, to that point, will be overwritten by the given
+	 * content.  (It should be noted that subsequent html() calls after
+	 * and overwrite are appended to the overwrite content.)
+	 *
+	 * Another option "noRemote" if set to true, will prevent ZephJS
+	 * from downloading the html() content if it is a valid url or relative
+	 * filename and just treat it like a literal content string.  This
+	 * can be useful as sometimes ZephJS does not always know the difference
+	 * between referenced content and literal content and may try
+	 * to guess and load things that dont exist.
+	 *
+	 * @param  {string} content
+	 * @param  {Object} [options={}]
+	 * @return {void}
+	 */
 	html(content,options={}) {
 		options = Object.assign({
 			overwrite: false,
@@ -395,6 +528,35 @@ class ZephComponentExecution {
 		this.context.pending.push(prom);
 	}
 
+	/**
+	 * Definition Method to provide CSS content to a component when it is
+	 * created.  The CSS provided becomes a <style></style> element within
+	 * the new element's Shadow DOM.
+	 *
+	 * The css() Definition Method can take either a url or relative filename
+	 * or the actual CSS as string content. if a url or relative filename
+	 * is given, ZephJS will download that url content, if possible, and use
+	 * that as the content.  This allows developers to separate thier CSS
+	 * from the Component Definition JavaScript.
+	 *
+	 * Each call to the css() Definition Method will be appended together
+	 * to form a single block of CSS content.  However, you may specify the
+	 * option "overwrite" in the options object as "true" and the css()
+	 * definition methods, to that point, will be overwritten by the given
+	 * content.  (It should be noted that subsequent css() calls after
+	 * and overwrite are appended to the overwrite content.)
+	 *
+	 * Another option "noRemote" if set to true, will prevent ZephJS
+	 * from downloading the css() content if it is a valid url or relative
+	 * filename and just treat it like a literal content string.  This
+	 * can be useful as sometimes ZephJS does not always know the difference
+	 * between referenced content and literal content and may try
+	 * to guess and load things that dont exist.
+	 *
+	 * @param  {string} content
+	 * @param  {Object} [options={}]
+	 * @return {void}
+	 */
 	css(content,options={}) {
 		options = Object.assign({
 			overwrite: false,
@@ -417,6 +579,27 @@ class ZephComponentExecution {
 		this.context.pending.push(prom);
 	}
 
+	/**
+	 * Definition Method to define an attribute on the new element. This
+	 * method takes the attribute name and an initial value (or "undefined"
+	 * if no value specified.)
+	 *
+	 * Using this method to define an attribute is strictly optional, but it will
+	 * save having to buildout an onCreate() method and set attributes there.
+	 *
+	 * The initial value passed in is set ONLY IF the element does not already
+	 * have a value set for the attribute.  Setting an initial value of "undefined"
+	 * means that the attribute is actively removed from the element. Also,
+	 * please note that attribute values are strings and any non-string passed
+	 * in will be converted to a string.  If you are trying to set a boolean
+	 * attribute value like "disabled" which is present or not, but has no
+	 * actual value, set it to an empty string ("") for true, and remove it (
+	 * by setting it to "undefined" for false.)
+	 *
+	 * @param  {string} attributeName
+	 * @param  {*} initialValue
+	 * @return {void}
+	 */
 	attribute(attributeName,initialValue) {
 		check.not.uon(attributeName,"attributeName");
 		check.string(attributeName);
@@ -429,6 +612,28 @@ class ZephComponentExecution {
 		};
 	}
 
+	/**
+	 * Definition Method to create a new property on the element object. This
+	 * method takes the property name, an initial value, and an optional
+	 * transform function.
+	 *
+	 * Using this method to define a property is strictly optional, but it will
+	 * save having to buildout an onCreate() method and set properties there.
+	 *
+	 * The initial value passed in is set ONLY IF the element does not already
+	 * have a value set for the property.
+	 *
+	 * The transform function, if given, will be executed any time the
+	 * property is changed.  It takes a single argument, x, which is the new
+	 * value. Whatever it returns, will be what is set on the property. You can
+	 * also through an exception in the transform function which would prevent
+	 * the set from occuring; this can be useful in validation.
+	 *
+	 * @param  {string} propertyName
+	 * @param  {*} initialValue
+	 * @param  {Function} transformFunction
+	 * @return {void}
+	 */
 	property(propertyName,initialValue,transformFunction) {
 		check.not.uon(propertyName,"propertyName");
 		check.string(propertyName);
@@ -443,10 +648,158 @@ class ZephComponentExecution {
 		});
 	}
 
+	/**
+	 * Definition Method to bind one part of the new element or its content
+	 * to some other part of the new element or its content. Bindings are a
+	 * useful way to avoid having to write a lot of custom code to do
+	 * some very common actions in custom elements.  They are highly
+	 * recommended over custom code.
+	 *
+	 * Bindings work thusly:
+	 *
+	 * I want to bind changes to X on element Y to modify A on element B.
+	 *
+	 * X can be an attribute, property, or the content of element Y.
+	 * Y can be the custom element itself or any part of its internal content.
+	 *
+	 * A can be an attribute, property, or the content of element B.
+	 * B can be the custom element itself or any part of its internal content.
+	 *
+	 * With the bind() definition method, Y is always the custom element itself.
+	 * With the bindAt() definition method, Y is specified by a CSS selector.
+	 *
+	 * You specify X and A using a special syntax to tell ZephJS whether
+	 * it is an attribute, a property, or the content that you are watching
+	 * or modifying.
+	 *
+	 *   Attributes have the form "@<attribute-name>" like this:
+	 *
+	 *     "@value"
+	 *
+	 *   Properties have the form ".<property-name>" like this:
+	 *
+	 *     ".value"
+	 *
+	 *   Content has the form "$" and has nothing more to it:
+	 *
+	 *     "$"
+	 *
+	 * You specify Y and B using a CSS Query Selector string.  If you specify
+	 * "." as the entirety of the CSS Query Selector string, ZephJS will return
+	 * the custom element itself.  Also, note that if the CSS Query Selector
+	 * string matches multiple elements, all elements will be bound.
+	 *
+	 * The bind() method has the following signature:
+	 *
+	 *   bind(sourceName,targetElement,targetName,transformFunction)
+	 *
+	 * sourceName is the X from above; it identifies the attribute, property,
+	 * or content you want to watch for changes.  When the given attribute,
+	 * property, or content changes, the binding will propagate the change
+	 * to the target (A and B).
+	 *
+	 * targetElement is the B from above an is a CSS Query Selector string.
+	 * It may match multiple elements and if so, each becomes a target.  If
+	 * the string "." is used the target is the custom element itself.
+	 *
+	 * targetName is the X from above; it identifies the attribute, property,
+	 * or content you want to modify when a change occurs. targetName is
+	 * optional and if left out the sourceName will also be used as the
+	 * targetName, saving a little typing.
+	 *
+	 * transformFunction is an optional function that if given will be
+	 * executed when the change is triggered.  It recieves the value being
+	 * set and whatever it returns is set instead.  Also, an exception
+	 * thrown in the transformFunction will cause the binding to not
+	 * set and thus prevent it.
+	 *
+	 * @param  {string} sourceName
+	 * @param  {string} targetElement
+	 * @param  {string} targetName
+	 * @param  {Function} transformFunction
+	 * @return {void}
+	 */
 	binding(sourceName,targetElement,targetName,transformFunction) {
 		return this.bindingAt(".",sourceName,targetElement,targetName,transformFunction);
 	}
 
+	/**
+	 * Definition Method to bind one part of the new element or its content
+	 * to some other part of the new element or its content. Bindings are a
+	 * useful way to avoid having to write a lot of custom code to do
+	 * some very common actions in custom elements.  They are highly
+	 * recommended over custom code.
+	 *
+	 * Bindings work thusly:
+	 *
+	 * I want to bind changes to X on element Y to modify A on element B.
+	 *
+	 * X can be an attribute, property, or the content of element Y.
+	 * Y can be the custom element itself or any part of its internal content.
+	 *
+	 * A can be an attribute, property, or the content of element B.
+	 * B can be the custom element itself or any part of its internal content.
+	 *
+	 * With the bind() definition method, Y is always the custom element itself.
+	 * With the bindAt() definition method, Y is specified by a CSS selector.
+	 *
+	 * You specify X and A using a special syntax to tell ZephJS whether
+	 * it is an attribute, a property, or the content that you are watching
+	 * or modifying.
+	 *
+	 *   Attributes have the form "@<attribute-name>" like this:
+	 *
+	 *     "@value"
+	 *
+	 *   Properties have the form ".<property-name>" like this:
+	 *
+	 *     ".value"
+	 *
+	 *   Content has the form "$" and has nothing more to it:
+	 *
+	 *     "$"
+	 *
+	 * You specify Y and B using a CSS Query Selector string.  If you specify
+	 * "." as the entirety of the CSS Query Selector string, ZephJS will return
+	 * the custom element itself.  Also, note that if the CSS Query Selector
+	 * string matches multiple elements, all elements will be bound.
+	 *
+	 * The bindAt() method has the following signature:
+	 *
+	 *   bindAt(sourceElement,sourceName,targetElement,targetName,transformFunction)
+	 *
+	 * sourceElement is the Y from above; it identifies the custom element or
+	 * some element in the internal content to be watched. sourceElement is a
+	 * CSS Query Selector string. If multiple elements match, each is bound
+	 * as described.If the string "." is used the source is the custom element
+	 * itself.
+	 *
+	 * sourceName is the X from above; it identifies the attribute, property,
+	 * or content you want to watch for changes.  When the given attribute,
+	 * property, or content changes, the binding will propagate the change
+	 * to the target (A and B).
+	 *
+	 * targetElement is the B from above an is a CSS Query Selector string.
+	 * It may match multiple elements and if so, each becomes a target.  If
+	 * the string "." is used the target is the custom element itself.
+	 *
+	 * targetName is the X from above; it identifies the attribute, property,
+	 * or content you want to modify when a change occurs. targetName is
+	 * optional and if left out the sourceName will also be used as the
+	 * targetName, saving a little typing.
+	 *
+	 * transformFunction is an optional function that if given will be
+	 * executed when the change is triggered.  It recieves the value being
+	 * set and whatever it returns is set instead.  Also, an exception
+	 * thrown in the transformFunction will cause the binding to not
+	 * set and thus prevent it.
+	 * @param  {string} sourceElement
+	 * @param  {string} sourceName
+	 * @param  {string} targetElement
+	 * @param  {string} targetName
+	 * @param  {Function} transformFunction
+	 * @return {void}
+	 */
 	bindingAt(sourceElement,sourceName,targetElement,targetName,transformFunction) {
 		if (sourceElement && sourceName && targetElement && targetName===undefined) targetName = sourceName;
 
@@ -484,6 +837,26 @@ class ZephComponentExecution {
 		};
 	}
 
+	/**
+	 * Definition Method to register a function to execute on the Initialized
+	 * Lifecycle event.  If multiple onInit() methods are called, each
+	 * will execute in order.
+	 *
+	 * The Initialized Lifecycle event occurs after a component is registered
+	 * with the Custom Element Registry, but before any instances of the
+	 * components have been created.  As such, the onInit() method
+	 * does not have access to the element or its content.
+	 *
+	 * The function passed to onInit() is executed with the signature
+	 *
+	 *   (name,component)
+	 *
+	 * - name is the component name,
+	 * - componet is the ZephComponent instance describing the component.
+	 *
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	onInit(listener) {
 		check.not.uon(listener,"listener");
 		check.function(listener,"listener");
@@ -492,6 +865,24 @@ class ZephComponentExecution {
 		this.context.lifecycle.init.push(listener);
 	}
 
+	/**
+	 * Definition Method to register a function to execute on the Created
+	 * Lifecycle event.  If multiple onCreate() methods are called, each
+	 * will execute in order.
+	 *
+	 * The Created Lifecycle event occurs after an element of the component
+	 * is created via document.createElement() or through tag usage.
+	 *
+	 * The function passed to onCreate() is executed with the signature
+	 *
+	 *   (element,content)
+	 *
+	 * - element is the custom element.
+	 * - content is the Document Fragment of the internal content.
+ 	 *
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	onCreate(listener) {
 		check.not.uon(listener,"listener");
 		check.function(listener,"listener");
@@ -500,6 +891,24 @@ class ZephComponentExecution {
 		this.context.lifecycle.create.push(listener);
 	}
 
+	/**
+	 * Definition Method to register a function to execute on the Add
+	 * Lifecycle event.  If multiple onAdd() methods are called, each
+	 * will execute in order.
+	 *
+	 * The Add Lifecycle event occurs when an element of the component
+	 * is add to a document or document fragment.
+	 *
+	 * The function passed to onAdd() is executed with the signature
+	 *
+	 *   (element,content)
+	 *
+	 * - element is the custom element.
+	 * - content is the Document Fragment of the internal content.
+	 *
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	onAdd(listener) {
 		check.not.uon(listener,"listener");
 		check.function(listener,"listener");
@@ -508,6 +917,24 @@ class ZephComponentExecution {
 		this.context.lifecycle.add.push(listener);
 	}
 
+	/**
+	 * Definition Method to register a function to execute on the Remove
+	 * Lifecycle event.  If multiple onRemove() methods are called, each
+	 * will execute in order.
+	 *
+	 * The Remove Lifecycle event occurs when an element of the component
+	 * is remove from a document or document fragment.
+	 *
+	 * The function passed to onRemove() is executed with the signature
+	 *
+	 *   (element,content)
+	 *
+	 * - element is the custom element.
+	 * - content is the Document Fragment of the internal content.
+	 *
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	onRemove(listener) {
 		check.not.uon(listener,"listener");
 		check.function(listener,"listener");
@@ -516,6 +943,25 @@ class ZephComponentExecution {
 		this.context.lifecycle.remove.push(listener);
 	}
 
+	/**
+	 * Definition Method to register a function to execute on the Adopt
+	 * Lifecycle event.  If multiple onAdopt() methods are called, each
+	 * will execute in order.
+	 *
+	 * The Adopt Lifecycle event occurs when an element of the component
+	 * is adopted by a new document or document fragment. It is very
+	 * rarely needed.
+	 *
+	 * The function passed to onAdopt() is executed with the signature
+	 *
+	 *   (element,content)
+	 *
+	 * - element is the custom element.
+	 * - content is the Document Fragment of the internal content.
+	 *
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	onAdopt(listener) {
 		check.not.uon(listener,"listener");
 		check.function(listener,"listener");
@@ -524,6 +970,27 @@ class ZephComponentExecution {
 		this.context.lifecycle.adopt.push(listener);
 	}
 
+	/**
+	 * Definition Method to register a function to execute on the Attribute
+	 * Lifecycle event.  If multiple onAttribute() methods are called, each
+	 * will execute in order.
+	 *
+	 * The Attribute Lifecycle event occurs when an element of the component
+	 * has an attribute that is changed.
+	 *
+	 * The function passed to onAttribute() is executed with the signature
+	 *
+	 *   (attributeName,value,element,content)
+	 *
+	 * - attributeName is the name of the changed attribute.
+	 * - value is the new value being changed to.
+	 * - element is the custom element.
+	 * - content is the Document Fragment of the internal content.
+	 *
+	 * @param  {String} attributeName
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	onAttribute(attributeName,listener) {
 		check.not.uon(attributeName,"attribute");
 		check.string(attributeName,"attribute");
@@ -539,6 +1006,27 @@ class ZephComponentExecution {
 		this.context.lifecycle.attributes[attributeName].push(listener);
 	}
 
+	/**
+	 * Definition Method to register a function to execute on the Property
+	 * Lifecycle event.  If multiple onProperty() methods are called, each
+	 * will execute in order.
+	 *
+	 * The Property Lifecycle event occurs when an element of the component
+	 * has an property that is changed.
+	 *
+	 * The function passed to onProperty() is executed with the signature
+	 *
+	 *   (propertyName,value,element,content)
+	 *
+	 * - propertyName is the name of the changed attribute.
+	 * - value is the new value being changed to.
+	 * - element is the custom element.
+	 * - content is the Document Fragment of the internal content.
+	 *
+	 * @param  {String} propertyName
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	onProperty(propertyName,listener) {
 		check.not.uon(propertyName,"attribute");
 		check.string(propertyName,"attribute");
@@ -550,6 +1038,32 @@ class ZephComponentExecution {
 		this.context.properties[propertyName].changes.push(listener);
 	}
 
+	/**
+	 * Definition Method to register an event handler to execute on some event.
+	 * Events are just as you would expect them, but onEvent() and onEventAt()
+	 * allows you to define the handlers without needing to write complicated
+	 * onCreate() functions to deal with it.
+	 *
+	 * onEvent() attaches an event handler for the given event name to the
+	 * custom element itself. For example:
+	 *
+	 *   onEvent("click",myClickHandler);
+	 *
+	 * Would execute myClickHandler when the custom element receives a click
+	 * event.
+	 *
+	 * The given listener executes with the following signature:
+	 *
+	 *   (event,element,content)
+	 *
+	 * - event is the event object.
+	 * - element is the custom element.
+	 * - content is the Document Fragment of the internal content.
+	 *
+	 * @param  {String} eventName
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	onEvent(eventName,listener) {
 		check.not.uon(eventName,"eventName");
 		check.string(eventName,"eventName");
@@ -559,6 +1073,35 @@ class ZephComponentExecution {
 		this.context.events.push({eventName,listener});
 	}
 
+	/**
+	* Definition Method to register an event handler to execute on some event.
+	* Events are just as you would expect them, but onEvent() and onEventAt()
+	* allows you to define the handlers without needing to write complicated
+	* onCreate() functions to deal with it.
+	*
+	* onEventAt() attaches an event handler for the given event name to the
+	* all elements that match a given CSS Query Selector. For example:
+	*
+	*   onEventAt("div > button.active","click",myClickHandler);
+	*
+	* Would execute myClickHandler when any matching internal content element
+	* receives a click event. If the selector matches more than one element
+	* each element gets the event handler attach to it, so be careful.
+	*
+	* The given listener executes with the following signature:
+	*
+	*   (event,selected,element,content)
+	*
+	* - event is the event object.
+	* - selected it the element that matched the selector.
+	* - element is the custom element.
+	* - content is the Document Fragment of the internal content.
+	*
+	 * @param  {String} selector
+	 * @param  {String} eventName
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	onEventAt(selector,eventName,listener) {
 		check.not.uon(eventName,"eventName");
 		check.string(eventName,"eventName");
@@ -569,28 +1112,66 @@ class ZephComponentExecution {
 	}
 }
 
+/**
+ * @private
+ *
+ * The ZephElementClass is the static factory class for build the unique
+ * custom element class that is used to register the custom element you
+ * defined.  The Custom Elements Registry requires a class be passed
+ * to it that is instantiated when the element is created.  This class
+ * is what builds those classes.
+ *
+ * It is worth noting that within this produced class is all the code
+ * that translates a context into an actual component.
+ */
 class ZephElementClass {
+	/**
+	 * Given a context, return a class that implements that
+	 * context to build a new element of our custom variety.
+	 *
+	 * @param  {Object} context
+	 * @return {Class}
+	 */
 	static generateClass(context) {
 		const clazz = (class ZephCustomElement extends HTMLElement {
+			/**
+			 * Used by the Custom Elements Registry to know which attributes
+			 * should cause attribute events.
+			 *
+			 * @return {Array}
+			 */
 			static get observedAttributes() {
 				return context && context.observed || [];
 			}
 
+			/**
+			 * Construct a new element from our context. Never called
+			 * directly, but instead called when a new element is created
+			 * of the given name.
+			 */
 			constructor() {
 				super();
 
+				// create and store our element
 				let element = this;
 				this[$ELEMENT] = element;
 
+				// create and store out element internal content.
 				let shadow = this.shadowRoot || this.attachShadow({
 					mode:"open"
 				});
 				this[$SHADOW] = shadow;
 
+				// Get any existing CSS that might already exist for
+				// for some reason.
 				let css = shadow.querySelector("style");
 				if (css) css = css.textContent;
 				else css = "";
 
+				// Take our context.html and add it as our
+				// internal content. If some pre-existing
+				// style did exist (see above) then this would
+				// destroy it.
 				let html = shadow.innerHTML;
 				(context.html||[]).forEach((markup)=>{
 					let content = markup.content;
@@ -601,6 +1182,7 @@ class ZephElementClass {
 				});
 				shadow.innerHTML = html;
 
+				// Now, a new style tag and populate it with our CSS.
 				(context.css||[]).forEach((style)=>{
 					let content = style.content;
 					let options = style.options;
@@ -621,6 +1203,7 @@ class ZephElementClass {
 				//
 				// so, we do this as a timeout.
 				setTimeout(()=>{
+					// Add our attributes
 					if (context.attributes) {
 						Object.values(context.attributes).forEach((attr)=>{
 							let value = element.hasAttribute(attr.attributeName) ? element.getAttribute(attr.attributeName) : attr.initialValue;
@@ -630,6 +1213,7 @@ class ZephElementClass {
 						});
 					}
 
+					// Add our properties
 					if (context.properties) {
 						Object.values(context.properties).forEach((prop)=>{
 							let value = element[prop.propertyName]!==undefined ? element[prop.propertyName] : prop.initialValue;
@@ -659,6 +1243,7 @@ class ZephElementClass {
 					// before we go off and register bindings and events.
 					fireImmediately(context && context.lifecycle && context.lifecycle.create || [],this,this.shadowRoot);
 
+					// register our bindings
 					if (context.bindings) {
 						Object.keys(context.bindings).forEach((name)=>{
 							let binding = context.bindings[name];
@@ -811,26 +1396,62 @@ class ZephElementClass {
 				},0);
 			}
 
+			/**
+			 * Return the element for this component.
+			 *
+			 * @return {HTMLElement}
+			 */
 			get element() {
 				return this[$ELEMENT];
 			}
 
+			/**
+			 * Return the internal content Shadow DOM node.
+			 * @return {DocumentFragment}
+			 */
 			get content() {
 				return this[$SHADOW];
 			}
 
+			/**
+			 * Called by the Custom Element API when the element is
+			 * added to a document or document fragment.
+			 *
+			 * @return {void}
+			 */
 			connectedCallback() {
 				fire(context && context.lifecycle && context.lifecycle.add || [],this,this.shadowRoot);
 			}
 
+			/**
+			 * Called by the Custom Element API when the element is
+			 * removed from a document or document fragment.
+			 *
+			 * @return {void}
+			 */
 			disconnectedCallback() {
 				fire(context && context.lifecycle && context.lifecycle.remove || [],this,this.shadowRoot);
 			}
 
+			/**
+			 * Called by the Custom Element API when the element is
+			 * adopted by a document or document fragment.
+			 *
+			 * @return {void}
+			 */
 			adoptedCallback() {
 				fire(context && context.lifecycle && context.lifecycle.adopt || [],this,this.shadowRoot);
 			}
 
+			/**
+			 * Called by the Custom Element API when the element has
+			 * and attribute that is being observed change.
+			 *
+			 * @param  {String} attributeName
+			 * @param  {*} oldValue
+			 * @param  {*} newValue
+			 * @return {void}
+			 */
 			attributeChangedCallback(attributeName,oldValue,newValue) {
 				fire(context && context.lifecycle && context.lifecycle.attributes && context.lifecycle.attributes[attributeName] || [],oldValue,newValue,this,this.shadowRoot);
 			}
@@ -840,7 +1461,19 @@ class ZephElementClass {
 	}
 }
 
+/**
+ * Utility wrapper class for observing an element for changes.  This
+ * uses the MutationObserver API internally and is largely just a
+ * shell for it.
+ */
 class ZephElementObserver {
+	/**
+	 * Create an Element Observer for a given element. This does not
+	 * actually start the observation, just sets it up. You must call
+	 * start() to begin the observation.
+	 *
+	 * @param {HTMLElement} element
+	 */
 	constructor(element) {
 		if (!element) throw new Error("Missing element.");
 		if (!(element instanceof HTMLElement)) throw new Error("Invalid element; must be an instance of HTMLElement.");
@@ -851,6 +1484,13 @@ class ZephElementObserver {
 		this.observer = new MutationObserver(this.handleMutation.bind(this));
 	}
 
+	/**
+	 * Adds a handler to fire on an attribute change.
+	 *
+	 * @param {string} attribute
+	 * @param {Function} handler
+	 * @return {void}
+	 */
 	addAttributeObserver(attribute,handler) {
 		check.not.uon(attribute,"attribute");
 		check.string(attribute,"attribute");
@@ -861,6 +1501,13 @@ class ZephElementObserver {
 		this.attributes[attribute].push(handler);
 	}
 
+	/**
+	 * Removes a specific attribute handler.
+	 *
+	 * @param  {String} attribute
+	 * @param  {Function} handler
+	 * @return {void}
+	 */
 	removeAttributeObserver(attribute,handler) {
 		check.not.uon(attribute,"attribute");
 		check.string(attribute,"attribute");
@@ -874,12 +1521,24 @@ class ZephElementObserver {
 		if (this.attributes[attribute].length<1) delete this.attributes[attribute];
 	}
 
+	/**
+	 * Removes all attribute handlers.
+	 *
+	 * @param  {String} attribute
+	 * @return {void}
+	 */
 	removeAllAttributeObservers(attribute) {
 		if (attribute && typeof attribute!=="string") throw new Error("Invalid attribute; must be a string.");
 		if (!attribute) this.attributes = {};
 		else delete this.attributes[attribute];
 	}
 
+	/**
+	 * Adds a handler to fire on any content change.
+	 *
+	 * @param {Function} handler
+	 * @return {void}
+	 */
 	addContentObserver(handler) {
 		check.not.uon(handler,"handler");
 		check.function(handler,"handler");
@@ -887,6 +1546,12 @@ class ZephElementObserver {
 		this.content.push(handler);
 	}
 
+	/**
+	 * Removes a specific content handler.
+	 *
+	 * @param  {Function} handler
+	 * @return {void}
+	 */
 	removeContentObserver(handler) {
 		check.not.uon(handler,"handler");
 		check.function(handler,"handler");
@@ -896,10 +1561,20 @@ class ZephElementObserver {
 		});
 	}
 
+	/**
+	 * Remove all content handlers.
+	 *
+	 * @return {void}
+	 */
 	removeAllContentObservers() {
 		this.content = [];
 	}
 
+	/**
+	 * Start the observer watching the element.
+	 *
+	 * @return {void}
+	 */
 	start() {
 		this.observer.observe(this.element,{
 			attributes: true,
@@ -908,10 +1583,22 @@ class ZephElementObserver {
 		});
 	}
 
+	/**
+	 * Stop the observer watching the element.
+	 *
+	 * @return {void}
+	 */
 	stop() {
 		this.observer.disconnect();
 	}
 
+	/**
+	 * Function to read the mutation event and parcel it
+	 * out to the correct handlers.
+	 *
+	 * @param  {Array} records
+	 * @return {void}
+	 */
 	handleMutation(records) {
 		records.forEach((record)=>{
 			if (record.type==="attributes") this.handleAttributeMutation(record);
@@ -919,6 +1606,12 @@ class ZephElementObserver {
 		});
 	}
 
+	/**
+	 * Executes the apropriate attribute handlers.
+	 *
+	 * @param  {Object} record
+	 * @return {void}
+	 */
 	handleAttributeMutation(record) {
 		let name = record.attributeName;
 		if (!this.attributes[name] || this.attributes[name].length<1) return;
@@ -929,6 +1622,12 @@ class ZephElementObserver {
 		});
 	}
 
+	/**
+	 * Executes the appropriate content handlers.
+	 *
+	 * @param  {Object} record
+	 * @return {void}
+	 */
 	handleContentMutation(/*record*/) {
 		if (this.content.length<1) return;
 		let value = this.element.textContent;
@@ -939,7 +1638,17 @@ class ZephElementObserver {
 	}
 }
 
+/**
+ * Define the ZephComponents singleton which is our exposed
+ * API for defining new components.
+ *
+ * @constant
+ * @alias ZephComponents
+ */
 class ZephComponentsClass {
+	/**
+	 * Singleton instantiated by ZephJS.
+	 */
 	constructor() {
 		this[$COMPONENTS] = {};
 		this[$PROXY] = new Proxy(this[$COMPONENTS],{
@@ -956,26 +1665,58 @@ class ZephComponentsClass {
 		this[$OBSERVER] = [];
 	}
 
+	/**
+	 * Returns an array of all components defined with ZephJS.
+	 *
+	 * @return {Array}
+	 */
 	get components() {
 		return this[$PROXY];
 	}
 
+	/**
+	 * Returns an array of all component names defined with ZephJS.
+	 * @return {Array}
+	 */
 	get names() {
 		return Object.keys(this[$COMPONENTS]);
 	}
 
+	/**
+	 * Returns true if a component of a given name is already defined or
+	 * in the process of being defined.
+	 *
+	 * @param  {String}  name
+	 * @return {Boolean}
+	 */
 	has(name) {
 		check.posstr(name,"name");
 
 		return !!this[$COMPONENTS][name];
 	}
 
+	/**
+	 * Returns the ZephComponent for a component of the given name, if
+	 * the component has been registered.
+	 * @param  {String} name
+	 * @return {ZephComponent}
+	 */
 	get(name) {
 		check.posstr(name,"name");
 
 		return this[$COMPONENTS][name];
 	}
 
+	/**
+	 * Returns a promise that resolve when the component of the given name
+	 * completes its definition and registration process.  This is useful
+	 * to ensure that component XYZ exists and is avialable before going
+	 * off and doing something.  Most of the time this is unneceessary
+	 * and ZephJS will take care of it.
+	 *
+	 * @param  {String} name
+	 * @return {Promise}
+	 */
 	waitFor(name) {
 		check.posstr(name,"name");
 
@@ -986,6 +1727,25 @@ class ZephComponentsClass {
 		});
 	}
 
+	/**
+	 * Used to define a new ZephJS component of the given name with
+	 * the given definition.
+	 *
+	 * Component names must be strings and must have at least one
+	 * dash character within them.
+	 *
+	 * The code argument represents a function that within it defines
+	 * the component through the use of one or more definition methods.
+	 *
+	 * This returns a promise that will resolve when all of the definition
+	 * and registration is complete.  In most cases waiting for the
+	 * promise to resolve is unnecessary, but it is provided in case
+	 * you need to block until it is complete.
+	 *
+	 * @param  {String} name
+	 * @param  {String|Function} code
+	 * @return {Promise}
+	 */
 	define(name,code) {
 		check.posstr(name,"name");
 
@@ -1042,6 +1802,15 @@ class ZephComponentsClass {
 		});
 	}
 
+	/**
+	 * Removes a ZephJS component.  It is very important to note here that
+	 * the Custom Elements API does not provide a facility to unregister
+	 * a component once it has been registered.  This function then does
+	 * not actually remove the component, only ZephJS's awareness of it.
+	 *
+	 * @param  {String} name
+	 * @return {void}
+	 */
 	undefine(name) {
 		check.posstr(name,"name");
 
@@ -1057,7 +1826,14 @@ class ZephComponentsClass {
 	}
 }
 
+/**
+ * ZephService is a utility class you can inherit from to build
+ * an eventable service, that is a service that can fire events.
+ */
 class ZephService {
+	/**
+	 * Create a new service.
+	 */
 	constructor() {
 		this[$LISTENERS] = new Map();
 
@@ -1070,6 +1846,13 @@ class ZephService {
 		};
 	}
 
+	/**
+	 * Fire a specific event.
+	 *
+	 * @param  {String} event
+	 * @param  {*} args  
+	 * @return {void}
+	 */
 	fire(event,...args) {
 		let listeners = this[$LISTENERS].get(event);
 		(listeners||[]).forEach((listener)=>{
@@ -1079,12 +1862,25 @@ class ZephService {
 		});
 	}
 
+	/**
+	 * Register a listener for a specific event.
+	 *
+	 * @param {String} event
+	 * @param {Function} listener
+	 */
 	addEventListener(event,listener) {
 		let listeners = this[$LISTENERS].get(event) || [];
 		listeners.push(listener);
 		this[$LISTENERS].set(event,listeners);
 	}
 
+	/**
+	 * Remove a listener for a specific event.
+	 *
+	 * @param  {String} event
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	removeEventListener(event,listener) {
 		let listeners = this[$LISTENERS].get(event) || [];
 		listeners = listeners.filter((l)=>{
@@ -1093,10 +1889,23 @@ class ZephService {
 		this[$LISTENERS].set(event,listeners);
 	}
 
+	/**
+	 * Register a listener for a specific event. Same as addEventListener.
+	 *
+	 * @param  {String} event
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	on(event,listener) {
 		return this.addEventListener(event,listener);
 	}
 
+	/**
+	 * Registers a one time listener for a specific event.
+	 * @param  {String} event
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	once(event,listener) {
 		return this.addEventListner(event,(event,...args)=>{
 			this.removeEventListener(event,listener);
@@ -1104,11 +1913,26 @@ class ZephService {
 		});
 	}
 
+	/**
+	 * Remove a listener for a specific event. Same as removeEventListener.
+	 * @param  {String} event
+	 * @param  {Function} listener
+	 * @return {void}
+	 */
 	off(event,listener) {
 		return this.removeEventListener(event,listener);
 	}
 }
 
+/**
+ * @private
+ *
+ * Internal function for extending an element.
+ *
+ * @param  {Object} target
+ * @param  {Object} sources
+ * @return {Object}
+ */
 const extend = function extend(target,...sources) {
 	if (target===undefined || target===null) target = {};
 	sources.forEach((source)=>{
@@ -1129,6 +1953,15 @@ const extend = function extend(target,...sources) {
 	return target;
 };
 
+/**
+ * @private
+ *
+ * Internal function for firing an event.
+ *
+ * @param  {Array} listeners
+ * @param  {*} args
+ * @return {void}
+ */
 const fire = function fire(listeners,...args) {
 	listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
 	listeners.forEach((listener)=>{
@@ -1138,6 +1971,16 @@ const fire = function fire(listeners,...args) {
 	});
 };
 
+/**
+ * @private
+ *
+ * Internal function for firing an event but doing it inline instead
+ * of in a timeout.
+ *
+ * @param  {Array} listeners
+ * @param  {*} args
+ * @return {void}
+ */
 const fireImmediately = function fireImmediately(listeners,...args) {
 	listeners = listeners && !(listeners instanceof Array) && [listeners] || listeners || [];
 	listeners.forEach((listener)=>{
@@ -1145,6 +1988,13 @@ const fireImmediately = function fireImmediately(listeners,...args) {
 	});
 };
 
+/**
+ * @private
+ *
+ * Internal function for firing the zeph:ready event.
+ *
+ * @return {void}
+ */
 const fireZephReady = function fireZephReady() {
 	if (FIREREADY) clearTimeout(FIREREADY);
 	FIREREADY = setTimeout(()=>{
@@ -1157,6 +2007,16 @@ const fireZephReady = function fireZephReady() {
 	},10);
 };
 
+/**
+ * @private
+ *
+ * Internal function for getting a given property descriptor on a given
+ * object or any of its prototypes.
+ *
+ * @param  {Object} object
+ * @param  {String} propertyName
+ * @return {Object}
+ */
 const getPropertyDescriptor = function getPropertyDescriptor(object,propertyName) {
 	while (true) {
 		if (object===null) return null;
@@ -1168,6 +2028,17 @@ const getPropertyDescriptor = function getPropertyDescriptor(object,propertyName
 	}
 };
 
+/**
+ * @private
+ *
+ * Internal function that will turn an existing property into
+ * something we can listen for changes on.
+ *
+ * @param  {Object} object
+ * @param  {String} propertyName
+ * @param  {Object} descriptor
+ * @return {Object}
+ */
 const propetize = function propetize(object,propertyName,descriptor) {
 	check.not.uon(object,"object");
 	check.not.uon(propertyName,"propertyName");
@@ -1198,6 +2069,15 @@ const propetize = function propetize(object,propertyName,descriptor) {
 	return newDesc;
 };
 
+/**
+ * @private
+ *
+ * Internal function for calling the Definition Methods around
+ * a specific context when used.
+ *
+ * @param  {String} name
+ * @return {Function}
+ */
 const contextCall = function(name) {
 	check.posstr(name,"name");
 
@@ -1209,6 +2089,7 @@ const contextCall = function(name) {
 	return f;
 };
 
+// Our Definition Methods
 const from = contextCall("from");
 const alias = contextCall("alias");
 const html = contextCall("html");
@@ -1227,13 +2108,17 @@ const onProperty = contextCall("onProperty");
 const onEvent = contextCall("onEvent");
 const onEventAt = contextCall("onEventAt");
 
+// Our ZephComponents singleton.
 const ZephComponents = new ZephComponentsClass();
 
-export {ZephComponents,ZephService,utils as ZephUtils};
+// Exports
+export {ZephComponents,ZephElementObserver,ZephService,utils as ZephUtils};
 export {from,alias,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
 
+// Bind window.Zeph to our libs as well.
 window.Zeph = {
 	ZephComponents,
+	ZephElementObserver,
 	ZephService,
 	ZephUtils: utils
 };
