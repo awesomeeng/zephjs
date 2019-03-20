@@ -300,7 +300,7 @@ class ZephComponent {
 	 * @return {Object}
 	 */
 	get context() {
-		return extend({},this[$CONTEXT]);
+		return this[$CONTEXT];
 	}
 
 	/**
