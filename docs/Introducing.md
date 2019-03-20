@@ -1,6 +1,6 @@
 # Introducing ZephJS
 
-We are pleased to announce the release of [ZephJS](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements): the extremely easy to use, simple to understand, ultra-light framework for defining and using Web Components. ZephJS is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want all the weight of a modern JavaScript browser framework. ZephJS simplifies the process of defining custom Web Components into a declarative highly readable structure that uses standard JavaScript, standard HTML markup, and standard CSS Styling. And ZephJS weighs in at less than 20k minified!
+We are pleased to announce the release of [ZephJS](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements): the extremely easy to use, simple to understand, ultra-light framework for defining and using Web Components. ZephJS is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want all the weight of a modern JavaScript browser framework. ZephJS simplifies the process of defining custom Web Components into a declarative highly readable structure that uses standard JavaScript, standard HTML markup, and standard CSS styling. And ZephJS weighs in at less than 20k minified!
 
 Here's an example of using ZephJS to build a customized button:
 
@@ -43,8 +43,6 @@ ZephComponents.define("my-button",()=>{
 
 ZephJS uses modern, standard JavaScript to make writing Web Components super easy to do. There is no mucking about with Shadow DOM or figuring out how to add encapsualted styles; Zeph handles all of that for you. Want to add an attribute to your Web Component? Zeph has you covered with its `attribute()` declaration.  Want that attribute to update a component in your Web Components internal content? Zeph has you covered with support for Attribute/Property/Content binding. Want to handle a click event on a button nested in your Web Component's internal content? Zeph makes it easy to do so. Zeph provides all the tools you need to define and use modern Web Components.
 
-ZephJS is built upon four modern JavaScript APIs and requires them to work: the [Custom Elements API](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), the [Shadow DOM API](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM), the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API), and the [Mutation Observer API](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver). Otherwise it is all entirely standard JavaScript, standard HTML, and standard CSS.
-
 ## How ZephJS Works
 
 At the heart of ZephJS is the `ZephComponents.define()` method to which you provide the name of your component and the definition of that component.  The definition is a standard JavaScript function within which you call a number of declarative definition methods to describe the content, style, and interactions of your Web Component.
@@ -77,11 +75,11 @@ There are a few other definition methods, but these are the key ones. If you wan
 
 #### Inline vs Separated Content
 
-With both the `html()` and `css()` definition methods you may either provide the content inline as a string, or you may provide a URL or relative filename.  If the latter, ZephJS will go out and load the relative filename and use that as the content for the call.
+With both the `html()` and `css()` definition methods you may either provide the content inline as a string, or you may provide a URL or relative filename.  If the latter, ZephJS will go out and load the URL or relative filename and use that as the content for the call.
 
-ZephJS highly recomends you use the filename approach.  This allows you to separate your code, content, and style information cleanly.
+ZephJS highly recomends you use the relative filename approach.  This allows you to separate your code, content, and style information cleanly.
 
-Additionally, ZephJS provides a [bundler tool](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentBundling.md) that will read your component(s) and all of the associated `html()` and `css()` file references and bundle them into a single usable JavaScript file.
+Additionally, ZephJS provides a [bundler tool](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentBundling.md) that will read your component(s) and all of the associated `html()` and `css()` file references and bundle them into a single usable JavaScript file for production systems or distribution. This means keeping your code clean and separated can be done without impacting your external performance.
 
 #### Bindings
 
@@ -115,11 +113,11 @@ Bindings use a special notation to determine if you are refering to an Attribute
  - A Property is prefixed by the "." character as in ".value".
  - The content of an element is specified by the entire string "$".
 
-Bindings are a really simple, but highly useful way to move information around in your Web Component.
+Bindings are a really simple, but highly useful way to move information around in your Web Component without having to worry about all the boilerplate details to do so.  It is yet another example of how ZephJS tries to simplify the heavy lifting for you.
 
 #### Events
 
-Wehn you are defining a Web Component you are defining the details about an element that will be created later.  As such, adding events around those elements is normally non-trivial.  ZephJS, however, make it super easy with the `onEvent()` and `onEventAt()` definition methods.
+When you are defining a Web Component you are defining the details about an element that will be created later.  As such, adding events around those elements is normally non-trivial.  ZephJS, however, makes it super easy with the `onEvent()` and `onEventAt()` definition methods.
 
 First, you tell ZephJS what element you want to watch for events: the `onEvent()` method watches the custom element itself, while the `onEventAt()` method takes a CSS Query Selector string as its first argument and matches it against any element within its internal content.
 
@@ -129,7 +127,7 @@ Finally, you provide a callback function to execute when the event occurs.  This
 
 ## Getting Started
 
-So that is the basics of ZephJS the extremely easy to use, simple to understand, ultra-light framework for defining and using Web Components. We have covered all the key features ot ZephJS, but there is, of course, lots more.  Fortunately ZephJS has provided a ton of documentation to read and learn about all the in's and out's of building Web Components.
+So that is the basics of ZephJS the extremely easy to use, simple to understand, ultra-light framework for defining and using Web Components. We have covered all the key features of ZephJS, but there is, of course, lots more.  Fortunately ZephJS has provided a ton of documentation to read and learn about all the in's and out's of building Web Components.
 
 We recommend you get started here, with our Quick Start Guide:
 
@@ -161,32 +159,7 @@ But if you are more interested in a specific area...
 
 Naturally though, there is no better way to learn ZephJS then to roll up the proverbial sleves and try it out...
 
-#### Install node.js
-
-ZephJS is built as a node.js application, so one will need nodejs installed. You can find installers at [nodejs.org](https://nodejs.org) for whatever Operating System is being used.
-
-#### Install ZephJS from npm:
-```
-npm -g install zephjs
-```
-
-#### Creating a Component
-
-For each component in the project one should create a separate component definition file.  Fortunately ZephJS makes this super easy with its Command Line Tool:
-
-```shell
-zeph create <component_name>
-```
-
-This will create the following files using the given `<component_name>`:
-
-```text
-<component-name>.js
-<component-name>.html
-<component-name>.css
-```
-
-These files can then be populated appropriately.
+You can start by checking out the [ZephJS repository](https://github.com/awesomeeng/zephjs).  From there you can learn all about the details of ZephJS including how to install it and get started using it.
 
 ## Reaching Out
 
