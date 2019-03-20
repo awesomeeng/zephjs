@@ -1402,7 +1402,7 @@ class ZephElementClass {
 								}
 
 								if (!srcele[$OBSERVER]) {
-									srcele[$OBSERVER] = new ZephElementObserver(srcele);
+									srcele[$OBSERVER] = new ZephObserver(srcele);
 									srcele[$OBSERVER].start();
 								}
 
@@ -1566,7 +1566,7 @@ class ZephElementClass {
  *
  * @class
  */
-class ZephElementObserver {
+class ZephObserver {
 	/**
 	 * Create an Element Observer for a given element. This does not
 	 * actually start the observation, just sets it up. You must call
@@ -2221,13 +2221,13 @@ const onEventAt = contextCall("onEventAt");
 const ZephComponents = new ZephComponentsClass();
 
 // Exports
-export {ZephComponents,ZephElementObserver,ZephService,utils as ZephUtils};
+export {ZephComponents,ZephObserver,ZephService,utils as ZephUtils};
 export {from,alias,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
 
 // Bind window.Zeph to our libs as well.
 window.Zeph = {
 	ZephComponents,
-	ZephElementObserver,
+	ZephObserver,
 	ZephService,
 	ZephUtils: utils
 };

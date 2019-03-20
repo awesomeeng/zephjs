@@ -3,7 +3,7 @@
 <dl>
 <dt><a href="#ZephComponent">ZephComponent</a></dt>
 <dd></dd>
-<dt><a href="#ZephElementObserver">ZephElementObserver</a></dt>
+<dt><a href="#ZephObserver">ZephObserver</a></dt>
 <dd></dd>
 <dt><a href="#ZephService">ZephService</a></dt>
 <dd></dd>
@@ -169,34 +169,34 @@ used along with the name, to register the custom element.
 
 * * *
 
-<a name="ZephElementObserver"></a>
+<a name="ZephObserver"></a>
 
-## ZephElementObserver
+## ZephObserver
 **Kind**: global class  
 **Summary**: Utility wrapper class for observing an element for changes.  This
 uses the MutationObserver API internally and is largely just a
 shell for it.  
 
-* [ZephElementObserver](#ZephElementObserver)
-    * [new ZephElementObserver(element)](#new_ZephElementObserver_new)
-    * [.addAttributeObserver(attribute, handler)](#ZephElementObserver+addAttributeObserver) ⇒ <code>void</code>
-    * [.removeAttributeObserver(attribute, handler)](#ZephElementObserver+removeAttributeObserver) ⇒ <code>void</code>
-    * [.removeAllAttributeObservers(attribute)](#ZephElementObserver+removeAllAttributeObservers) ⇒ <code>void</code>
-    * [.addContentObserver(handler)](#ZephElementObserver+addContentObserver) ⇒ <code>void</code>
-    * [.removeContentObserver(handler)](#ZephElementObserver+removeContentObserver) ⇒ <code>void</code>
-    * [.removeAllContentObservers()](#ZephElementObserver+removeAllContentObservers) ⇒ <code>void</code>
-    * [.start()](#ZephElementObserver+start) ⇒ <code>void</code>
-    * [.stop()](#ZephElementObserver+stop) ⇒ <code>void</code>
-    * [.handleMutation(records)](#ZephElementObserver+handleMutation) ⇒ <code>void</code>
-    * [.handleAttributeMutation(record)](#ZephElementObserver+handleAttributeMutation) ⇒ <code>void</code>
-    * [.handleContentMutation(record)](#ZephElementObserver+handleContentMutation) ⇒ <code>void</code>
+* [ZephObserver](#ZephObserver)
+    * [new ZephObserver(element)](#new_ZephObserver_new)
+    * [.addAttributeObserver(attribute, handler)](#ZephObserver+addAttributeObserver) ⇒ <code>void</code>
+    * [.removeAttributeObserver(attribute, handler)](#ZephObserver+removeAttributeObserver) ⇒ <code>void</code>
+    * [.removeAllAttributeObservers(attribute)](#ZephObserver+removeAllAttributeObservers) ⇒ <code>void</code>
+    * [.addContentObserver(handler)](#ZephObserver+addContentObserver) ⇒ <code>void</code>
+    * [.removeContentObserver(handler)](#ZephObserver+removeContentObserver) ⇒ <code>void</code>
+    * [.removeAllContentObservers()](#ZephObserver+removeAllContentObservers) ⇒ <code>void</code>
+    * [.start()](#ZephObserver+start) ⇒ <code>void</code>
+    * [.stop()](#ZephObserver+stop) ⇒ <code>void</code>
+    * [.handleMutation(records)](#ZephObserver+handleMutation) ⇒ <code>void</code>
+    * [.handleAttributeMutation(record)](#ZephObserver+handleAttributeMutation) ⇒ <code>void</code>
+    * [.handleContentMutation(record)](#ZephObserver+handleContentMutation) ⇒ <code>void</code>
 
 
 * * *
 
-<a name="new_ZephElementObserver_new"></a>
+<a name="new_ZephObserver_new"></a>
 
-### new ZephElementObserver(element)
+### new ZephObserver(element)
 Create an Element Observer for a given element. This does not
 actually start the observation, just sets it up. You must call
 start() to begin the observation.
@@ -209,12 +209,12 @@ start() to begin the observation.
 
 * * *
 
-<a name="ZephElementObserver+addAttributeObserver"></a>
+<a name="ZephObserver+addAttributeObserver"></a>
 
-### zephElementObserver.addAttributeObserver(attribute, handler) ⇒ <code>void</code>
+### zephObserver.addAttributeObserver(attribute, handler) ⇒ <code>void</code>
 Adds a handler to fire on an attribute change.
 
-**Kind**: instance method of [<code>ZephElementObserver</code>](#ZephElementObserver)  
+**Kind**: instance method of [<code>ZephObserver</code>](#ZephObserver)  
 
 | Param | Type |
 | --- | --- |
@@ -224,12 +224,12 @@ Adds a handler to fire on an attribute change.
 
 * * *
 
-<a name="ZephElementObserver+removeAttributeObserver"></a>
+<a name="ZephObserver+removeAttributeObserver"></a>
 
-### zephElementObserver.removeAttributeObserver(attribute, handler) ⇒ <code>void</code>
+### zephObserver.removeAttributeObserver(attribute, handler) ⇒ <code>void</code>
 Removes a specific attribute handler.
 
-**Kind**: instance method of [<code>ZephElementObserver</code>](#ZephElementObserver)  
+**Kind**: instance method of [<code>ZephObserver</code>](#ZephObserver)  
 
 | Param | Type |
 | --- | --- |
@@ -239,12 +239,12 @@ Removes a specific attribute handler.
 
 * * *
 
-<a name="ZephElementObserver+removeAllAttributeObservers"></a>
+<a name="ZephObserver+removeAllAttributeObservers"></a>
 
-### zephElementObserver.removeAllAttributeObservers(attribute) ⇒ <code>void</code>
+### zephObserver.removeAllAttributeObservers(attribute) ⇒ <code>void</code>
 Removes all attribute handlers.
 
-**Kind**: instance method of [<code>ZephElementObserver</code>](#ZephElementObserver)  
+**Kind**: instance method of [<code>ZephObserver</code>](#ZephObserver)  
 
 | Param | Type |
 | --- | --- |
@@ -253,12 +253,12 @@ Removes all attribute handlers.
 
 * * *
 
-<a name="ZephElementObserver+addContentObserver"></a>
+<a name="ZephObserver+addContentObserver"></a>
 
-### zephElementObserver.addContentObserver(handler) ⇒ <code>void</code>
+### zephObserver.addContentObserver(handler) ⇒ <code>void</code>
 Adds a handler to fire on any content change.
 
-**Kind**: instance method of [<code>ZephElementObserver</code>](#ZephElementObserver)  
+**Kind**: instance method of [<code>ZephObserver</code>](#ZephObserver)  
 
 | Param | Type |
 | --- | --- |
@@ -267,12 +267,12 @@ Adds a handler to fire on any content change.
 
 * * *
 
-<a name="ZephElementObserver+removeContentObserver"></a>
+<a name="ZephObserver+removeContentObserver"></a>
 
-### zephElementObserver.removeContentObserver(handler) ⇒ <code>void</code>
+### zephObserver.removeContentObserver(handler) ⇒ <code>void</code>
 Removes a specific content handler.
 
-**Kind**: instance method of [<code>ZephElementObserver</code>](#ZephElementObserver)  
+**Kind**: instance method of [<code>ZephObserver</code>](#ZephObserver)  
 
 | Param | Type |
 | --- | --- |
@@ -281,40 +281,40 @@ Removes a specific content handler.
 
 * * *
 
-<a name="ZephElementObserver+removeAllContentObservers"></a>
+<a name="ZephObserver+removeAllContentObservers"></a>
 
-### zephElementObserver.removeAllContentObservers() ⇒ <code>void</code>
+### zephObserver.removeAllContentObservers() ⇒ <code>void</code>
 Remove all content handlers.
 
-**Kind**: instance method of [<code>ZephElementObserver</code>](#ZephElementObserver)  
+**Kind**: instance method of [<code>ZephObserver</code>](#ZephObserver)  
 
 * * *
 
-<a name="ZephElementObserver+start"></a>
+<a name="ZephObserver+start"></a>
 
-### zephElementObserver.start() ⇒ <code>void</code>
+### zephObserver.start() ⇒ <code>void</code>
 Start the observer watching the element.
 
-**Kind**: instance method of [<code>ZephElementObserver</code>](#ZephElementObserver)  
+**Kind**: instance method of [<code>ZephObserver</code>](#ZephObserver)  
 
 * * *
 
-<a name="ZephElementObserver+stop"></a>
+<a name="ZephObserver+stop"></a>
 
-### zephElementObserver.stop() ⇒ <code>void</code>
+### zephObserver.stop() ⇒ <code>void</code>
 Stop the observer watching the element.
 
-**Kind**: instance method of [<code>ZephElementObserver</code>](#ZephElementObserver)  
+**Kind**: instance method of [<code>ZephObserver</code>](#ZephObserver)  
 
 * * *
 
-<a name="ZephElementObserver+handleMutation"></a>
+<a name="ZephObserver+handleMutation"></a>
 
-### zephElementObserver.handleMutation(records) ⇒ <code>void</code>
+### zephObserver.handleMutation(records) ⇒ <code>void</code>
 Function to read the mutation event and parcel it
 out to the correct handlers.
 
-**Kind**: instance method of [<code>ZephElementObserver</code>](#ZephElementObserver)  
+**Kind**: instance method of [<code>ZephObserver</code>](#ZephObserver)  
 
 | Param | Type |
 | --- | --- |
@@ -323,12 +323,12 @@ out to the correct handlers.
 
 * * *
 
-<a name="ZephElementObserver+handleAttributeMutation"></a>
+<a name="ZephObserver+handleAttributeMutation"></a>
 
-### zephElementObserver.handleAttributeMutation(record) ⇒ <code>void</code>
+### zephObserver.handleAttributeMutation(record) ⇒ <code>void</code>
 Executes the apropriate attribute handlers.
 
-**Kind**: instance method of [<code>ZephElementObserver</code>](#ZephElementObserver)  
+**Kind**: instance method of [<code>ZephObserver</code>](#ZephObserver)  
 
 | Param | Type |
 | --- | --- |
@@ -337,12 +337,12 @@ Executes the apropriate attribute handlers.
 
 * * *
 
-<a name="ZephElementObserver+handleContentMutation"></a>
+<a name="ZephObserver+handleContentMutation"></a>
 
-### zephElementObserver.handleContentMutation(record) ⇒ <code>void</code>
+### zephObserver.handleContentMutation(record) ⇒ <code>void</code>
 Executes the appropriate content handlers.
 
-**Kind**: instance method of [<code>ZephElementObserver</code>](#ZephElementObserver)  
+**Kind**: instance method of [<code>ZephObserver</code>](#ZephObserver)  
 
 | Param | Type |
 | --- | --- |
