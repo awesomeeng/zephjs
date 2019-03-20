@@ -22,10 +22,10 @@
     "acorn": "6.1.0"
   },
   "devDependencies": {
-    "jsdoc-to-markdown": "4.0.1",
-    "mocha": "6.0.1",
     "esm": "3.2.5",
-    "minify": "4.1.1"
+    "jsdoc-to-markdown": "4.0.1",
+    "minify": "4.1.1",
+    "mocha": "6.0.1"
   },
   "optionalDependencies": {},
   "scripts": {

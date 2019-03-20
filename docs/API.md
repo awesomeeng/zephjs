@@ -2,43 +2,66 @@
 
 <dl>
 <dt><a href="#ZephComponent">ZephComponent</a></dt>
-<dd><p>ZephJS&#39;s representation of a component and all its descriptive metadata.
-This include the component name, its origin, the definition code, and the
-context produce by executing the definition code. All of these items
-are used to generate a unique Class which is used in by the
-Custom Elements registry.</p>
-<p>It should be noted that this is not the same as the Element produced when
-using a component as an HTML tag or from document.createElement().
-ZephComponent is the definition of that element, not the element itself.</p>
-<p>ZephCompoonent is returned when you ask ZephComponents to get the
-component.</p>
-</dd>
+<dd></dd>
 <dt><a href="#ZephElementObserver">ZephElementObserver</a></dt>
-<dd><p>Utility wrapper class for observing an element for changes.  This
-uses the MutationObserver API internally and is largely just a
-shell for it.</p>
-</dd>
+<dd></dd>
 <dt><a href="#ZephService">ZephService</a></dt>
-<dd><p>ZephService is a utility class you can inherit from to build
-an eventable service, that is a service that can fire events.</p>
-</dd>
+<dd></dd>
 </dl>
 
-## Constants
+## Objects
 
 <dl>
-<dt><a href="#ZephUtils">ZephUtils</a></dt>
-<dd><p>Common utilities for working with ZephJS.</p>
-</dd>
-<dt><a href="#ZephComponents">ZephComponents</a></dt>
-<dd><p>Singleton instantiated by ZephJS.</p>
-</dd>
+<dt><a href="#ZephUtils">ZephUtils</a> : <code>object</code></dt>
+<dd></dd>
+<dt><a href="#ZephComponents">ZephComponents</a> : <code>object</code></dt>
+<dd></dd>
+</dl>
+
+## Functions
+
+<dl>
+<dt><a href="#from">from(fromTagName)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#alias">alias(aliasName)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#html">html(content, [options])</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#css">css(content, [options])</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#attribute">attribute(attributeName, initialValue)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#property">property(propertyName, initialValue, transformFunction)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#binding">binding(sourceName, targetElement, targetName, transformFunction)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#bindingAt">bindingAt(sourceElement, sourceName, targetElement, targetName, transformFunction)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#onInit">onInit(listener)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#onCreate">onCreate(listener)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#onAdd">onAdd(listener)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#onRemove">onRemove(listener)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#onAdopt">onAdopt(listener)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#onAttribute">onAttribute(attributeName, listener)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#onProperty">onProperty(propertyName, listener)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#onEvent">onEvent(eventName, listener)</a> ⇒ <code>void</code></dt>
+<dd></dd>
+<dt><a href="#onEventAt">onEventAt(selector, eventName, listener)</a> ⇒ <code>void</code></dt>
+<dd></dd>
 </dl>
 
 <a name="ZephComponent"></a>
 
 ## ZephComponent
-ZephJS's representation of a component and all its descriptive metadata.
+**Kind**: global class  
+**Summary**: ZephJS's representation of a component and all its descriptive metadata.
 This include the component name, its origin, the definition code, and the
 context produce by executing the definition code. All of these items
 are used to generate a unique Class which is used in by the
@@ -49,9 +72,7 @@ using a component as an HTML tag or from document.createElement().
 ZephComponent is the definition of that element, not the element itself.
 
 ZephCompoonent is returned when you ask ZephComponents to get the
-component.
-
-**Kind**: global class  
+component.  
 
 * [ZephComponent](#ZephComponent)
     * [.context](#ZephComponent+context) ⇒ <code>Object</code>
@@ -151,11 +172,10 @@ used along with the name, to register the custom element.
 <a name="ZephElementObserver"></a>
 
 ## ZephElementObserver
-Utility wrapper class for observing an element for changes.  This
-uses the MutationObserver API internally and is largely just a
-shell for it.
-
 **Kind**: global class  
+**Summary**: Utility wrapper class for observing an element for changes.  This
+uses the MutationObserver API internally and is largely just a
+shell for it.  
 
 * [ZephElementObserver](#ZephElementObserver)
     * [new ZephElementObserver(element)](#new_ZephElementObserver_new)
@@ -333,27 +353,26 @@ Executes the appropriate content handlers.
 
 <a name="ZephService"></a>
 
-## ZephService
-ZephService is a utility class you can inherit from to build
-an eventable service, that is a service that can fire events.
+## *ZephService*
+**Kind**: global abstract class  
+**Summary**: ZephService is a utility class you can inherit from to build
+an eventable service, that is a service that can fire events.  
 
-**Kind**: global class  
-
-* [ZephService](#ZephService)
-    * [new ZephService()](#new_ZephService_new)
-    * [.fire(event, ...args)](#ZephService+fire) ⇒ <code>void</code>
-    * [.addEventListener(event, listener)](#ZephService+addEventListener)
-    * [.removeEventListener(event, listener)](#ZephService+removeEventListener) ⇒ <code>void</code>
-    * [.on(event, listener)](#ZephService+on) ⇒ <code>void</code>
-    * [.once(event, listener)](#ZephService+once) ⇒ <code>void</code>
-    * [.off(event, listener)](#ZephService+off) ⇒ <code>void</code>
+* *[ZephService](#ZephService)*
+    * *[new ZephService()](#new_ZephService_new)*
+    * *[.fire(event, ...args)](#ZephService+fire) ⇒ <code>void</code>*
+    * *[.addEventListener(event, listener)](#ZephService+addEventListener)*
+    * *[.removeEventListener(event, listener)](#ZephService+removeEventListener) ⇒ <code>void</code>*
+    * *[.on(event, listener)](#ZephService+on) ⇒ <code>void</code>*
+    * *[.once(event, listener)](#ZephService+once) ⇒ <code>void</code>*
+    * *[.off(event, listener)](#ZephService+off) ⇒ <code>void</code>*
 
 
 * * *
 
 <a name="new_ZephService_new"></a>
 
-### new ZephService()
+### *new ZephService()*
 Create a new service.
 
 
@@ -361,7 +380,7 @@ Create a new service.
 
 <a name="ZephService+fire"></a>
 
-### zephService.fire(event, ...args) ⇒ <code>void</code>
+### *zephService.fire(event, ...args) ⇒ <code>void</code>*
 Fire a specific event.
 
 **Kind**: instance method of [<code>ZephService</code>](#ZephService)  
@@ -376,7 +395,7 @@ Fire a specific event.
 
 <a name="ZephService+addEventListener"></a>
 
-### zephService.addEventListener(event, listener)
+### *zephService.addEventListener(event, listener)*
 Register a listener for a specific event.
 
 **Kind**: instance method of [<code>ZephService</code>](#ZephService)  
@@ -391,7 +410,7 @@ Register a listener for a specific event.
 
 <a name="ZephService+removeEventListener"></a>
 
-### zephService.removeEventListener(event, listener) ⇒ <code>void</code>
+### *zephService.removeEventListener(event, listener) ⇒ <code>void</code>*
 Remove a listener for a specific event.
 
 **Kind**: instance method of [<code>ZephService</code>](#ZephService)  
@@ -406,7 +425,7 @@ Remove a listener for a specific event.
 
 <a name="ZephService+on"></a>
 
-### zephService.on(event, listener) ⇒ <code>void</code>
+### *zephService.on(event, listener) ⇒ <code>void</code>*
 Register a listener for a specific event. Same as addEventListener.
 
 **Kind**: instance method of [<code>ZephService</code>](#ZephService)  
@@ -421,7 +440,7 @@ Register a listener for a specific event. Same as addEventListener.
 
 <a name="ZephService+once"></a>
 
-### zephService.once(event, listener) ⇒ <code>void</code>
+### *zephService.once(event, listener) ⇒ <code>void</code>*
 Registers a one time listener for a specific event.
 
 **Kind**: instance method of [<code>ZephService</code>](#ZephService)  
@@ -436,7 +455,7 @@ Registers a one time listener for a specific event.
 
 <a name="ZephService+off"></a>
 
-### zephService.off(event, listener) ⇒ <code>void</code>
+### *zephService.off(event, listener) ⇒ <code>void</code>*
 Remove a listener for a specific event. Same as removeEventListener.
 
 **Kind**: instance method of [<code>ZephService</code>](#ZephService)  
@@ -451,12 +470,11 @@ Remove a listener for a specific event. Same as removeEventListener.
 
 <a name="ZephUtils"></a>
 
-## ZephUtils
-Common utilities for working with ZephJS.
+## ZephUtils : <code>object</code>
+**Kind**: global namespace  
+**Summary**: Common utilities for working with ZephJS.  
 
-**Kind**: global constant  
-
-* [ZephUtils](#ZephUtils)
+* [ZephUtils](#ZephUtils) : <code>object</code>
     * [.ready()](#ZephUtils.ready) ⇒ <code>boolean</code>
     * [.tryprom(f)](#ZephUtils.tryprom) ⇒ <code>Promise</code>
     * [.exists(url)](#ZephUtils.exists) ⇒ <code>Promise</code>
@@ -576,12 +594,12 @@ necessary.
 
 <a name="ZephComponents"></a>
 
-## ZephComponents
-Singleton instantiated by ZephJS.
+## ZephComponents : <code>object</code>
+**Kind**: global namespace  
+**Summary**: Define the ZephComponents singleton which is our exposed
+API for defining new components.  
 
-**Kind**: global constant  
-
-* [ZephComponents](#ZephComponents)
+* [ZephComponents](#ZephComponents) : <code>object</code>
     * [.components](#ZephComponents+components) ⇒ <code>Array</code>
     * [.names](#ZephComponents+names) ⇒ <code>Array</code>
     * [.has(name)](#ZephComponents+has) ⇒ <code>Boolean</code>
@@ -699,6 +717,591 @@ not actually remove the component, only ZephJS's awareness of it.
 | Param | Type |
 | --- | --- |
 | name | <code>String</code> | 
+
+
+* * *
+
+<a name="from"></a>
+
+## from(fromTagName) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method used for inheriting from another ZephComponent.  Inheritence
+works by cloning the inherited components Context, and then appending the
+new components context on top of that.  Inheritence does not actually
+inherit in the classic object oriented approach.  
+
+| Param | Type |
+| --- | --- |
+| fromTagName | <code>String</code> | 
+
+
+* * *
+
+<a name="alias"></a>
+
+## alias(aliasName) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method used to provide one or more alias names for a componet.  In
+essence, when the component is registered with the Custome Element registry,
+if there are any aliases, those names are also registered at the same time
+using a clone of the original method.
+
+Aliases are useful if you need a component to have multiple tag names or
+shortcut names.  
+
+| Param | Type |
+| --- | --- |
+| aliasName | <code>String</code> | 
+
+
+* * *
+
+<a name="html"></a>
+
+## html(content, [options]) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to provide HTML content to a component when it is
+created.  The HTML provided becomes the content of the new element's
+Shadow DOM (and is refered to through this documentation as "the
+content").
+
+The html() Definition Method can take either a url or relative filename
+or the actual HTML as string content. if a url or relative filename
+is given, ZephJS will download that url content, if possible, and use
+that as the content.  This allows developers to separate thier HTML
+from the Component Definition JavaScript.
+
+Each call to the html() Definition Method will be appended together
+to form a single block of HTML content.  However, you may specify the
+option "overwrite" in the options object as "true" and the html()
+definition methods, to that point, will be overwritten by the given
+content.  (It should be noted that subsequent html() calls after
+and overwrite are appended to the overwrite content.)
+
+Another option "noRemote" if set to true, will prevent ZephJS
+from downloading the html() content if it is a valid url or relative
+filename and just treat it like a literal content string.  This
+can be useful as sometimes ZephJS does not always know the difference
+between referenced content and literal content and may try
+to guess and load things that dont exist.  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| content | <code>string</code> |  | 
+| [options] | <code>Object</code> | <code>{}</code> | 
+| [options.overwrite] | <code>boolean</code> | <code>false</code> | 
+| [options.noRemote] | <code>boolean</code> | <code>false</code> | 
+
+
+* * *
+
+<a name="css"></a>
+
+## css(content, [options]) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to provide CSS content to a component when it is
+created.  The CSS provided becomes a <style></style> element within
+the new element's Shadow DOM.
+
+The css() Definition Method can take either a url or relative filename
+or the actual CSS as string content. if a url or relative filename
+is given, ZephJS will download that url content, if possible, and use
+that as the content.  This allows developers to separate thier CSS
+from the Component Definition JavaScript.
+
+Each call to the css() Definition Method will be appended together
+to form a single block of CSS content.  However, you may specify the
+option "overwrite" in the options object as "true" and the css()
+definition methods, to that point, will be overwritten by the given
+content.  (It should be noted that subsequent css() calls after
+and overwrite are appended to the overwrite content.)
+
+Another option "noRemote" if set to true, will prevent ZephJS
+from downloading the css() content if it is a valid url or relative
+filename and just treat it like a literal content string.  This
+can be useful as sometimes ZephJS does not always know the difference
+between referenced content and literal content and may try
+to guess and load things that dont exist.  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| content | <code>string</code> |  | 
+| [options] | <code>Object</code> | <code>{}</code> | 
+| [options.overwrite] | <code>boolean</code> | <code>false</code> | 
+| [options.noRemote] | <code>boolean</code> | <code>false</code> | 
+
+
+* * *
+
+<a name="attribute"></a>
+
+## attribute(attributeName, initialValue) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to define an attribute on the new element. This
+method takes the attribute name and an initial value (or "undefined"
+if no value specified.)
+
+Using this method to define an attribute is strictly optional, but it will
+save having to buildout an onCreate() method and set attributes there.
+
+The initial value passed in is set ONLY IF the element does not already
+have a value set for the attribute.  Setting an initial value of "undefined"
+means that the attribute is actively removed from the element. Also,
+please note that attribute values are strings and any non-string passed
+in will be converted to a string.  If you are trying to set a boolean
+attribute value like "disabled" which is present or not, but has no
+actual value, set it to an empty string ("") for true, and remove it (
+by setting it to "undefined" for false.)  
+
+| Param | Type |
+| --- | --- |
+| attributeName | <code>string</code> | 
+| initialValue | <code>\*</code> | 
+
+
+* * *
+
+<a name="property"></a>
+
+## property(propertyName, initialValue, transformFunction) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to create a new property on the element object. This
+method takes the property name, an initial value, and an optional
+transform function.
+
+Using this method to define a property is strictly optional, but it will
+save having to buildout an onCreate() method and set properties there.
+
+The initial value passed in is set ONLY IF the element does not already
+have a value set for the property.
+
+The transform function, if given, will be executed any time the
+property is changed.  It takes a single argument, x, which is the new
+value. Whatever it returns, will be what is set on the property. You can
+also through an exception in the transform function which would prevent
+the set from occuring; this can be useful in validation.  
+
+| Param | Type |
+| --- | --- |
+| propertyName | <code>string</code> | 
+| initialValue | <code>\*</code> | 
+| transformFunction | <code>function</code> | 
+
+
+* * *
+
+<a name="binding"></a>
+
+## binding(sourceName, targetElement, targetName, transformFunction) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to bind one part of the new element or its content
+to some other part of the new element or its content. Bindings are a
+useful way to avoid having to write a lot of custom code to do
+some very common actions in custom elements.  They are highly
+recommended over custom code.
+
+Bindings work thusly:
+
+I want to bind changes to X on element Y to modify A on element B.
+
+X can be an attribute, property, or the content of element Y.
+Y can be the custom element itself or any part of its internal content.
+
+A can be an attribute, property, or the content of element B.
+B can be the custom element itself or any part of its internal content.
+
+With the bind() definition method, Y is always the custom element itself.
+With the bindAt() definition method, Y is specified by a CSS selector.
+
+You specify X and A using a special syntax to tell ZephJS whether
+it is an attribute, a property, or the content that you are watching
+or modifying.
+
+  Attributes have the form "@<attribute-name>" like this:
+
+    "@value"
+
+  Properties have the form ".<property-name>" like this:
+
+    ".value"
+
+  Content has the form "$" and has nothing more to it:
+
+    "$"
+
+You specify Y and B using a CSS Query Selector string.  If you specify
+"." as the entirety of the CSS Query Selector string, ZephJS will return
+the custom element itself.  Also, note that if the CSS Query Selector
+string matches multiple elements, all elements will be bound.
+
+The bind() method has the following signature:
+
+  bind(sourceName,targetElement,targetName,transformFunction)
+
+sourceName is the X from above; it identifies the attribute, property,
+or content you want to watch for changes.  When the given attribute,
+property, or content changes, the binding will propagate the change
+to the target (A and B).
+
+targetElement is the B from above an is a CSS Query Selector string.
+It may match multiple elements and if so, each becomes a target.  If
+the string "." is used the target is the custom element itself.
+
+targetName is the X from above; it identifies the attribute, property,
+or content you want to modify when a change occurs. targetName is
+optional and if left out the sourceName will also be used as the
+targetName, saving a little typing.
+
+transformFunction is an optional function that if given will be
+executed when the change is triggered.  It recieves the value being
+set and whatever it returns is set instead.  Also, an exception
+thrown in the transformFunction will cause the binding to not
+set and thus prevent it.  
+
+| Param | Type |
+| --- | --- |
+| sourceName | <code>string</code> | 
+| targetElement | <code>string</code> | 
+| targetName | <code>string</code> | 
+| transformFunction | <code>function</code> | 
+
+
+* * *
+
+<a name="bindingAt"></a>
+
+## bindingAt(sourceElement, sourceName, targetElement, targetName, transformFunction) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to bind one part of the new element or its content
+to some other part of the new element or its content. Bindings are a
+useful way to avoid having to write a lot of custom code to do
+some very common actions in custom elements.  They are highly
+recommended over custom code.
+
+Bindings work thusly:
+
+I want to bind changes to X on element Y to modify A on element B.
+
+X can be an attribute, property, or the content of element Y.
+Y can be the custom element itself or any part of its internal content.
+
+A can be an attribute, property, or the content of element B.
+B can be the custom element itself or any part of its internal content.
+
+With the bind() definition method, Y is always the custom element itself.
+With the bindAt() definition method, Y is specified by a CSS selector.
+
+You specify X and A using a special syntax to tell ZephJS whether
+it is an attribute, a property, or the content that you are watching
+or modifying.
+
+  Attributes have the form "@<attribute-name>" like this:
+
+    "@value"
+
+  Properties have the form ".<property-name>" like this:
+
+    ".value"
+
+  Content has the form "$" and has nothing more to it:
+
+    "$"
+
+You specify Y and B using a CSS Query Selector string.  If you specify
+"." as the entirety of the CSS Query Selector string, ZephJS will return
+the custom element itself.  Also, note that if the CSS Query Selector
+string matches multiple elements, all elements will be bound.
+
+The bindAt() method has the following signature:
+
+  bindAt(sourceElement,sourceName,targetElement,targetName,transformFunction)
+
+sourceElement is the Y from above; it identifies the custom element or
+some element in the internal content to be watched. sourceElement is a
+CSS Query Selector string. If multiple elements match, each is bound
+as described.If the string "." is used the source is the custom element
+itself.
+
+sourceName is the X from above; it identifies the attribute, property,
+or content you want to watch for changes.  When the given attribute,
+property, or content changes, the binding will propagate the change
+to the target (A and B).
+
+targetElement is the B from above an is a CSS Query Selector string.
+It may match multiple elements and if so, each becomes a target.  If
+the string "." is used the target is the custom element itself.
+
+targetName is the X from above; it identifies the attribute, property,
+or content you want to modify when a change occurs. targetName is
+optional and if left out the sourceName will also be used as the
+targetName, saving a little typing.
+
+transformFunction is an optional function that if given will be
+executed when the change is triggered.  It recieves the value being
+set and whatever it returns is set instead.  Also, an exception
+thrown in the transformFunction will cause the binding to not
+set and thus prevent it.  
+
+| Param | Type |
+| --- | --- |
+| sourceElement | <code>string</code> | 
+| sourceName | <code>string</code> | 
+| targetElement | <code>string</code> | 
+| targetName | <code>string</code> | 
+| transformFunction | <code>function</code> | 
+
+
+* * *
+
+<a name="onInit"></a>
+
+## onInit(listener) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to register a function to execute on the Initialized
+Lifecycle event.  If multiple onInit() methods are called, each
+will execute in order.
+
+The Initialized Lifecycle event occurs after a component is registered
+with the Custom Element Registry, but before any instances of the
+components have been created.  As such, the onInit() method
+does not have access to the element or its content.
+
+The function passed to onInit() is executed with the signature
+
+  (name,component)
+
+- name is the component name,
+- componet is the ZephComponent instance describing the component.  
+
+| Param | Type |
+| --- | --- |
+| listener | <code>function</code> | 
+
+
+* * *
+
+<a name="onCreate"></a>
+
+## onCreate(listener) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to register a function to execute on the Created
+Lifecycle event.  If multiple onCreate() methods are called, each
+will execute in order.
+
+The Created Lifecycle event occurs after an element of the component
+is created via document.createElement() or through tag usage.
+
+The function passed to onCreate() is executed with the signature
+
+  (element,content)
+
+- element is the custom element.
+- content is the Document Fragment of the internal content.  
+
+| Param | Type |
+| --- | --- |
+| listener | <code>function</code> | 
+
+
+* * *
+
+<a name="onAdd"></a>
+
+## onAdd(listener) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to register a function to execute on the Add
+Lifecycle event.  If multiple onAdd() methods are called, each
+will execute in order.
+
+The Add Lifecycle event occurs when an element of the component
+is add to a document or document fragment.
+
+The function passed to onAdd() is executed with the signature
+
+  (element,content)
+
+- element is the custom element.
+- content is the Document Fragment of the internal content.  
+
+| Param | Type |
+| --- | --- |
+| listener | <code>function</code> | 
+
+
+* * *
+
+<a name="onRemove"></a>
+
+## onRemove(listener) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to register a function to execute on the Remove
+Lifecycle event.  If multiple onRemove() methods are called, each
+will execute in order.
+
+The Remove Lifecycle event occurs when an element of the component
+is remove from a document or document fragment.
+
+The function passed to onRemove() is executed with the signature
+
+  (element,content)
+
+- element is the custom element.
+- content is the Document Fragment of the internal content.  
+
+| Param | Type |
+| --- | --- |
+| listener | <code>function</code> | 
+
+
+* * *
+
+<a name="onAdopt"></a>
+
+## onAdopt(listener) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to register a function to execute on the Adopt
+Lifecycle event.  If multiple onAdopt() methods are called, each
+will execute in order.
+
+The Adopt Lifecycle event occurs when an element of the component
+is adopted by a new document or document fragment. It is very
+rarely needed.
+
+The function passed to onAdopt() is executed with the signature
+
+  (element,content)
+
+- element is the custom element.
+- content is the Document Fragment of the internal content.  
+
+| Param | Type |
+| --- | --- |
+| listener | <code>function</code> | 
+
+
+* * *
+
+<a name="onAttribute"></a>
+
+## onAttribute(attributeName, listener) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to register a function to execute on the Attribute
+Lifecycle event.  If multiple onAttribute() methods are called, each
+will execute in order.
+
+The Attribute Lifecycle event occurs when an element of the component
+has an attribute that is changed.
+
+The function passed to onAttribute() is executed with the signature
+
+  (attributeName,value,element,content)
+
+- attributeName is the name of the changed attribute.
+- value is the new value being changed to.
+- element is the custom element.
+- content is the Document Fragment of the internal content.  
+
+| Param | Type |
+| --- | --- |
+| attributeName | <code>String</code> | 
+| listener | <code>function</code> | 
+
+
+* * *
+
+<a name="onProperty"></a>
+
+## onProperty(propertyName, listener) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to register a function to execute on the Property
+Lifecycle event.  If multiple onProperty() methods are called, each
+will execute in order.
+
+The Property Lifecycle event occurs when an element of the component
+has an property that is changed.
+
+The function passed to onProperty() is executed with the signature
+
+  (propertyName,value,element,content)
+
+- propertyName is the name of the changed attribute.
+- value is the new value being changed to.
+- element is the custom element.
+- content is the Document Fragment of the internal content.  
+
+| Param | Type |
+| --- | --- |
+| propertyName | <code>String</code> | 
+| listener | <code>function</code> | 
+
+
+* * *
+
+<a name="onEvent"></a>
+
+## onEvent(eventName, listener) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to register an event handler to execute on some event.
+Events are just as you would expect them, but onEvent() and onEventAt()
+allows you to define the handlers without needing to write complicated
+onCreate() functions to deal with it.
+
+onEvent() attaches an event handler for the given event name to the
+custom element itself. For example:
+
+  onEvent("click",myClickHandler);
+
+Would execute myClickHandler when the custom element receives a click
+event.
+
+The given listener executes with the following signature:
+
+  (event,element,content)
+
+- event is the event object.
+- element is the custom element.
+- content is the Document Fragment of the internal content.  
+
+| Param | Type |
+| --- | --- |
+| eventName | <code>String</code> | 
+| listener | <code>function</code> | 
+
+
+* * *
+
+<a name="onEventAt"></a>
+
+## onEventAt(selector, eventName, listener) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to register an event handler to execute on some event.
+Events are just as you would expect them, but onEvent() and onEventAt()
+allows you to define the handlers without needing to write complicated
+onCreate() functions to deal with it.
+
+onEventAt() attaches an event handler for the given event name to the
+all elements that match a given CSS Query Selector. For example:
+
+  onEventAt("div > button.active","click",myClickHandler);
+
+Would execute myClickHandler when any matching internal content element
+receives a click event. If the selector matches more than one element
+each element gets the event handler attach to it, so be careful.
+
+The given listener executes with the following signature:
+
+  (event,selected,element,content)
+
+- event is the event object.
+- selected it the element that matched the selector.
+- element is the custom element.
+- content is the Document Fragment of the internal content.  
+
+| Param | Type |
+| --- | --- |
+| selector | <code>String</code> | 
+| eventName | <code>String</code> | 
+| listener | <code>function</code> | 
 
 
 * * *

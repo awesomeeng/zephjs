@@ -95,9 +95,13 @@ const check = {
 };
 
 /**
+ * @summary
+ *
  * Common utilities for working with ZephJS.
  *
  * @alias ZephUtils
+ * @namespace
+ *
  */
 const utils = {
 	/**
@@ -247,6 +251,8 @@ const utils = {
 };
 
 /**
+ * @summary
+ *
  * ZephJS's representation of a component and all its descriptive metadata.
  * This include the component name, its origin, the definition code, and the
  * context produce by executing the definition code. All of these items
@@ -259,6 +265,8 @@ const utils = {
  *
  * ZephCompoonent is returned when you ask ZephComponents to get the
  * component.
+ *
+ * @class
  */
 class ZephComponent {
 	constructor(name,origin,code) {
@@ -440,6 +448,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method used for inheriting from another ZephComponent.  Inheritence
 	 * works by cloning the inherited components Context, and then appending the
 	 * new components context on top of that.  Inheritence does not actually
@@ -447,6 +457,8 @@ class ZephComponentExecution {
 	 *
 	 * @param  {String} fromTagName
 	 * @return {void}
+	 * @exports from
+	 * @kind function
 	 */
 	from(fromTagName) {
 		check.posstr(fromTagName,"fromTagName");
@@ -458,6 +470,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+ 	 * @summary
+ 	 *
 	 * Definition Method used to provide one or more alias names for a componet.  In
 	 * essence, when the component is registered with the Custome Element registry,
 	 * if there are any aliases, those names are also registered at the same time
@@ -468,6 +482,9 @@ class ZephComponentExecution {
 	 *
 	 * @param  {String} aliasName
 	 * @return {void}
+	 *
+	 * @exports alias
+	 * @kind function
 	 */
 	alias(aliasName) {
 		check.posstr(aliasName,"aliasName");
@@ -477,6 +494,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to provide HTML content to a component when it is
 	 * created.  The HTML provided becomes the content of the new element's
 	 * Shadow DOM (and is refered to through this documentation as "the
@@ -504,7 +523,12 @@ class ZephComponentExecution {
 	 *
 	 * @param  {string} content
 	 * @param  {Object} [options={}]
+	 * @param  [options.overwrite=false] {boolean}
+	 * @param  [options.noRemote=false] {boolean}
 	 * @return {void}
+	 *
+	 * @exports html
+	 * @kind function
 	 */
 	html(content,options={}) {
 		options = Object.assign({
@@ -529,6 +553,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to provide CSS content to a component when it is
 	 * created.  The CSS provided becomes a <style></style> element within
 	 * the new element's Shadow DOM.
@@ -555,7 +581,12 @@ class ZephComponentExecution {
 	 *
 	 * @param  {string} content
 	 * @param  {Object} [options={}]
+	 * @param  [options.overwrite=false] {boolean}
+	 * @param  [options.noRemote=false] {boolean}
 	 * @return {void}
+	 *
+	 * @exports css
+	 * @kind function
 	 */
 	css(content,options={}) {
 		options = Object.assign({
@@ -580,6 +611,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to define an attribute on the new element. This
 	 * method takes the attribute name and an initial value (or "undefined"
 	 * if no value specified.)
@@ -599,6 +632,9 @@ class ZephComponentExecution {
 	 * @param  {string} attributeName
 	 * @param  {*} initialValue
 	 * @return {void}
+	 *
+	 * @exports attribute
+	 * @kind function
 	 */
 	attribute(attributeName,initialValue) {
 		check.not.uon(attributeName,"attributeName");
@@ -613,6 +649,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to create a new property on the element object. This
 	 * method takes the property name, an initial value, and an optional
 	 * transform function.
@@ -633,6 +671,9 @@ class ZephComponentExecution {
 	 * @param  {*} initialValue
 	 * @param  {Function} transformFunction
 	 * @return {void}
+	 *
+	 * @exports property
+	 * @kind function
 	 */
 	property(propertyName,initialValue,transformFunction) {
 		check.not.uon(propertyName,"propertyName");
@@ -649,6 +690,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to bind one part of the new element or its content
 	 * to some other part of the new element or its content. Bindings are a
 	 * useful way to avoid having to write a lot of custom code to do
@@ -718,12 +761,17 @@ class ZephComponentExecution {
 	 * @param  {string} targetName
 	 * @param  {Function} transformFunction
 	 * @return {void}
+	 *
+	 * @exports binding
+	 * @kind function
 	 */
 	binding(sourceName,targetElement,targetName,transformFunction) {
 		return this.bindingAt(".",sourceName,targetElement,targetName,transformFunction);
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to bind one part of the new element or its content
 	 * to some other part of the new element or its content. Bindings are a
 	 * useful way to avoid having to write a lot of custom code to do
@@ -799,6 +847,9 @@ class ZephComponentExecution {
 	 * @param  {string} targetName
 	 * @param  {Function} transformFunction
 	 * @return {void}
+	 *
+	 * @exports bindingAt
+	 * @kind function
 	 */
 	bindingAt(sourceElement,sourceName,targetElement,targetName,transformFunction) {
 		if (sourceElement && sourceName && targetElement && targetName===undefined) targetName = sourceName;
@@ -838,6 +889,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to register a function to execute on the Initialized
 	 * Lifecycle event.  If multiple onInit() methods are called, each
 	 * will execute in order.
@@ -856,6 +909,9 @@ class ZephComponentExecution {
 	 *
 	 * @param  {Function} listener
 	 * @return {void}
+	 *
+	 * @exports onInit
+	 * @kind function
 	 */
 	onInit(listener) {
 		check.not.uon(listener,"listener");
@@ -866,6 +922,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to register a function to execute on the Created
 	 * Lifecycle event.  If multiple onCreate() methods are called, each
 	 * will execute in order.
@@ -882,6 +940,9 @@ class ZephComponentExecution {
  	 *
 	 * @param  {Function} listener
 	 * @return {void}
+	 *
+	 * @exports onCreate
+	 * @kind function
 	 */
 	onCreate(listener) {
 		check.not.uon(listener,"listener");
@@ -892,6 +953,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to register a function to execute on the Add
 	 * Lifecycle event.  If multiple onAdd() methods are called, each
 	 * will execute in order.
@@ -908,6 +971,9 @@ class ZephComponentExecution {
 	 *
 	 * @param  {Function} listener
 	 * @return {void}
+	 *
+	 * @exports onAdd
+	 * @kind function
 	 */
 	onAdd(listener) {
 		check.not.uon(listener,"listener");
@@ -918,6 +984,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to register a function to execute on the Remove
 	 * Lifecycle event.  If multiple onRemove() methods are called, each
 	 * will execute in order.
@@ -934,6 +1002,9 @@ class ZephComponentExecution {
 	 *
 	 * @param  {Function} listener
 	 * @return {void}
+	 *
+	 * @exports onRemove
+	 * @kind function
 	 */
 	onRemove(listener) {
 		check.not.uon(listener,"listener");
@@ -944,6 +1015,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to register a function to execute on the Adopt
 	 * Lifecycle event.  If multiple onAdopt() methods are called, each
 	 * will execute in order.
@@ -961,6 +1034,9 @@ class ZephComponentExecution {
 	 *
 	 * @param  {Function} listener
 	 * @return {void}
+	 *
+	 * @exports onAdopt
+	 * @kind function
 	 */
 	onAdopt(listener) {
 		check.not.uon(listener,"listener");
@@ -971,6 +1047,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to register a function to execute on the Attribute
 	 * Lifecycle event.  If multiple onAttribute() methods are called, each
 	 * will execute in order.
@@ -990,6 +1068,9 @@ class ZephComponentExecution {
 	 * @param  {String} attributeName
 	 * @param  {Function} listener
 	 * @return {void}
+	 *
+	 * @exports onAttribute
+	 * @kind function
 	 */
 	onAttribute(attributeName,listener) {
 		check.not.uon(attributeName,"attribute");
@@ -1007,6 +1088,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to register a function to execute on the Property
 	 * Lifecycle event.  If multiple onProperty() methods are called, each
 	 * will execute in order.
@@ -1026,6 +1109,9 @@ class ZephComponentExecution {
 	 * @param  {String} propertyName
 	 * @param  {Function} listener
 	 * @return {void}
+	 *
+	 * @exports onProperty
+	 * @kind function
 	 */
 	onProperty(propertyName,listener) {
 		check.not.uon(propertyName,"attribute");
@@ -1039,6 +1125,8 @@ class ZephComponentExecution {
 	}
 
 	/**
+	 * @summary
+	 *
 	 * Definition Method to register an event handler to execute on some event.
 	 * Events are just as you would expect them, but onEvent() and onEventAt()
 	 * allows you to define the handlers without needing to write complicated
@@ -1063,6 +1151,9 @@ class ZephComponentExecution {
 	 * @param  {String} eventName
 	 * @param  {Function} listener
 	 * @return {void}
+	 *
+	 * @exports onEvent
+	 * @kind function
 	 */
 	onEvent(eventName,listener) {
 		check.not.uon(eventName,"eventName");
@@ -1074,34 +1165,39 @@ class ZephComponentExecution {
 	}
 
 	/**
-	* Definition Method to register an event handler to execute on some event.
-	* Events are just as you would expect them, but onEvent() and onEventAt()
-	* allows you to define the handlers without needing to write complicated
-	* onCreate() functions to deal with it.
-	*
-	* onEventAt() attaches an event handler for the given event name to the
-	* all elements that match a given CSS Query Selector. For example:
-	*
-	*   onEventAt("div > button.active","click",myClickHandler);
-	*
-	* Would execute myClickHandler when any matching internal content element
-	* receives a click event. If the selector matches more than one element
-	* each element gets the event handler attach to it, so be careful.
-	*
-	* The given listener executes with the following signature:
-	*
-	*   (event,selected,element,content)
-	*
-	* - event is the event object.
-	* - selected it the element that matched the selector.
-	* - element is the custom element.
-	* - content is the Document Fragment of the internal content.
-	*
+	 * @summary
+	 *
+	 * Definition Method to register an event handler to execute on some event.
+	 * Events are just as you would expect them, but onEvent() and onEventAt()
+	 * allows you to define the handlers without needing to write complicated
+	 * onCreate() functions to deal with it.
+	 *
+	 * onEventAt() attaches an event handler for the given event name to the
+	 * all elements that match a given CSS Query Selector. For example:
+	 *
+	 *   onEventAt("div > button.active","click",myClickHandler);
+	 *
+	 * Would execute myClickHandler when any matching internal content element
+	 * receives a click event. If the selector matches more than one element
+	 * each element gets the event handler attach to it, so be careful.
+	 *
+	 * The given listener executes with the following signature:
+	 *
+	 *   (event,selected,element,content)
+	 *
+	 * - event is the event object.
+	 * - selected it the element that matched the selector.
+	 * - element is the custom element.
+	 * - content is the Document Fragment of the internal content.
+	 *
 	 * @param  {String} selector
 	 * @param  {String} eventName
 	 * @param  {Function} listener
 	 * @return {void}
-	 */
+	 *
+	 * @exports onEventAt
+	 * @kind function
+ 	 */
 	onEventAt(selector,eventName,listener) {
 		check.not.uon(eventName,"eventName");
 		check.string(eventName,"eventName");
@@ -1462,9 +1558,13 @@ class ZephElementClass {
 }
 
 /**
+ * @summary
+ *
  * Utility wrapper class for observing an element for changes.  This
  * uses the MutationObserver API internally and is largely just a
  * shell for it.
+ *
+ * @class
  */
 class ZephElementObserver {
 	/**
@@ -1639,14 +1739,18 @@ class ZephElementObserver {
 }
 
 /**
+ * @summary
+ *
  * Define the ZephComponents singleton which is our exposed
  * API for defining new components.
  *
- * @constant
  * @alias ZephComponents
+ * @namespace
  */
 class ZephComponentsClass {
 	/**
+	 * @private
+	 *
 	 * Singleton instantiated by ZephJS.
 	 */
 	constructor() {
@@ -1827,8 +1931,13 @@ class ZephComponentsClass {
 }
 
 /**
+ * @summary
+ *
  * ZephService is a utility class you can inherit from to build
  * an eventable service, that is a service that can fire events.
+ *
+ * @class
+ * @abstract
  */
 class ZephService {
 	/**
@@ -1850,7 +1959,7 @@ class ZephService {
 	 * Fire a specific event.
 	 *
 	 * @param  {String} event
-	 * @param  {*} args  
+	 * @param  {*} args
 	 * @return {void}
 	 */
 	fire(event,...args) {
