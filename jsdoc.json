@@ -16,12 +16,16 @@
                 ]
             },
             "templates": {
-                "monospaceLinks": false,
-                "cleverLinks": false,
+                "monospaceLinks": true,
+                "cleverLinks": true,
                 "default": {
                     "outputSourceFiles": true
                 }
-            }
+            },
+			"opts": {
+				"encoding": "utf8",
+				"recurse": true
+			}
         }
     }
 }
