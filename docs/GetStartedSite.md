@@ -44,7 +44,7 @@ This will create the following files using the given `<component_name>`:
 <component-name>.css
 ```
 
-THese files can then be populate appropriately.
+These files can then be populate appropriately.
 
 If one is new to ZephJS it is strongly recommended to read the [Component Quick Start](./ComponentQuickStart.md) guide to learn about how to write ZephJS components.
 
