@@ -1,5 +1,37 @@
 # AwesomeComponenets Release Notes
 
+#### **Version 1.0.0**
+
+ - Documentation Editing
+
+ - Adds API documentation.
+
+ - Adds JSDOC to Zeph.js source code.
+
+ - Fixes broken documentation links.
+
+ - ZephService documentation.
+
+ - Fixes a bug which might cause events on ZephServices to emit twice.
+
+ - Renames ZephElementObserver to ZephObserver.
+
+ - Fixes broken regression test.
+
+#### **Version 0.5.0**
+
+ - Updates to documentation to make ZephJS more user focused.
+
+ - Remove ZephServices.
+
+ - Adds minor log information to serve cli command.
+
+ - Fixes inheritance bug with inherited context not being copied correctly.
+
+ - Adds alias() definition method.
+
+ - serve cli command now will serve Zeph.js from src.
+
 #### **Version 0.4.2**
 
  - Moved Rollup and Acorn into dependencies for devDependencies.
