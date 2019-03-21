@@ -37,7 +37,7 @@ Throughout the ZephJS documentation we are going to use terms like Component, El
 
  - **Component Context**: The Component Context is a descriptive object of the Component that is used when the Component is instantiated. During this instantiation, ZephJS goes through the Component Context and does various things based on the Component Definition.  For example, the the `html()` Definition Method was called in the Component Definition, during instantiation the contents of that `html()` call are append into the ShadowRoot of our new element.
 
- - **Element**: When we use Element we mean any instance of an HTML element, including any Custom Element defines with ZephJS.  In many cases we use `element` in ZephJS handlers (Lifecylce Handlers, Event Handlers) to refer to the custom element itself.
+ - **Element**: When we use Element we mean any instance of an HTML element, including any Custom Element defines with ZephJS.  In many cases we use `element` in ZephJS handlers (Lifecycle Handlers, Event Handlers) to refer to the custom element itself.
 
  - **Custom Element**: In ZephJS nomenclature Custom Element always refers to a custom element defined with ZephJS.
 
@@ -53,7 +53,7 @@ Throughout the ZephJS documentation we are going to use terms like Component, El
 
  - **ShadowRoot**: See [Shadow DOM](#shadow-dom) below.
 
- - **Lifecycle**: A Component goes through a series of lifecycle events as it is defined, initialized, created, etc.  Please read [Component Lifecylce](#component-lifecycle) below.
+ - **Lifecycle**: A Component goes through a series of lifecycle events as it is defined, initialized, created, etc.  Please read [Component Lifecycle](#component-lifecycle) below.
 
  - **Event**: An event occurs when some outside system or force (the user for example) interacts with a Component.  A left mouse click, for example, is an Event.
 
@@ -61,9 +61,9 @@ Throughout the ZephJS documentation we are going to use terms like Component, El
 
 #### Component Lifecycle
 
-A custom element built with ZephJS has the following lifecycle, meaning it moves through the following stages at some point.  Each of these lifecylces has an associated Lifecycle Event. These events can be tapped within the component definition for you to use as needed.
+A custom element built with ZephJS has the following lifecycle, meaning it moves through the following stages at some point.  Each of these lifecycles has an associated Lifecycle Event. These events can be tapped within the component definition for you to use as needed.
 
-**Definition** &rArr; **Initialization** &rArr; **Creation** &rArr; **Addition** | **Removal** | **Adoption** | **Attribute**
+**Definition** &rArr; **Initialization** &rArr; **Creation** &rArr; **Addition** | **Removal** | **Adoption** | **Attribute** | **Property**
 
  - **Definition**: Definition happens when you define a component via the `ZephComponents.define()` call. It is where your definition methods are executed and the ComponentContext is created. This will only occur once for each custom element defined.
 
@@ -74,6 +74,8 @@ A custom element built with ZephJS has the following lifecycle, meaning it moves
  - **Addition** | **Removal** | **Adoption**: Each of these occurs when an element is added or removed or adopted (moved from one document to another) to the DOM. This may occur multiple times for a single element as it moves around the DOM. For example, if I move a custom element from one DOM node to another both the Removal and Addition lifecycle events will occur.
 
  - **Attribute**: Occurs when a given attribute changes. The may occur multiple times for a single custom element as the attributes changes on that element.
+
+ - **Property**: Occurs when a ZephJS defined property of the element changes. This may occur multipel times for a single cust element as the property changes over time.
 
 #### ZephJS Events
 
