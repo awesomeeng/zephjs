@@ -1945,14 +1945,6 @@ class ZephService {
 	 */
 	constructor() {
 		this[$LISTENERS] = new Map();
-
-		this.on = this.addEventListener;
-		this.once = (eventName,listener)=>{
-			this.addEventListner(eventName,(eventName,...args)=>{
-				this.removeEventListener(eventName,listener);
-				listener.apply(listener,args);
-			});
-		};
 	}
 
 	/**
