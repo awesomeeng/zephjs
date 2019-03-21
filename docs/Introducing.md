@@ -1,6 +1,6 @@
 # Introducing ZephJS
 
-We are pleased to announce the release of [ZephJS](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements): the extremely easy to use, simple to understand, ultra-light framework for defining and using Web Components. ZephJS is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want all the weight of a modern JavaScript browser framework. ZephJS simplifies the process of defining custom Web Components into a declarative highly readable structure that uses standard JavaScript, standard HTML markup, and standard CSS styling. And ZephJS weighs in at less than 20k minified!
+We are pleased to announce the release of [ZephJS](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)! ZephJS is an extremely easy to use, simple to understand, ultra-light framework for defining and using Web Components. ZephJS is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want the gigantic weight of a modern JavaScript browser framework. ZephJS simplifies the process of defining custom Web Components into a highly readable declarative structure that uses standard JavaScript, standard HTML markup, and standard CSS styling. And ZephJS weighs in at less than 20k minified!
 
 Here's an example of using ZephJS to build a customized button:
 
@@ -41,23 +41,23 @@ ZephComponents.define("my-button",()=>{
 });
 ```
 
-ZephJS uses modern, standard JavaScript to make writing Web Components super easy to do. There is no mucking about with Shadow DOM or figuring out how to add encapsualted styles; Zeph handles all of that for you. Want to add an attribute to your Web Component? Zeph has you covered with its `attribute()` declaration.  Want that attribute to update a component in your Web Components internal content? Zeph has you covered with support for Attribute/Property/Content binding. Want to handle a click event on a button nested in your Web Component's internal content? Zeph makes it easy to do so. Zeph provides all the tools you need to define and use modern Web Components.
+ZephJS uses modern, standard JavaScript to make writing Web Components super easy to do. There is no mucking about with Shadow DOM or figuring out how to add encapsualted styles; Zeph handles all of that for you. Want to add an attribute to your Web Component? Zeph has you covered with its `attribute()` declaration.  Want that attribute to update a component in your Web Component's internal content? Zeph has you covered with support for Attribute/Property/Content binding. Want to handle a click event on a button nested in your Web Component's internal content? Zeph makes it easy to do so. Zeph provides all the tools you need to define and use modern Web Components.
 
 ## How ZephJS Works
 
 At the heart of ZephJS is the `ZephComponents.define()` method to which you provide the name of your component and the definition of that component.  The definition is a standard JavaScript function within which you call a number of declarative definition methods to describe the content, style, and interactions of your Web Component.
 
-The definition methods you call build what ZephJS calls a "context" that describes the Web Component.  It uses this context to create a unique class which is used with the [Custom Elements API](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) to register the Web Component for usage in your HTML.  When the registered component is created (via tag usage or `document.createElement()`) the constructed class constructor is called and ZephJS populates the component as described in the context.
+The definition methods you call builds what ZephJS calls a "context" that describes the Web Component.  It uses this context to create a unique class which is used with the [Custom Elements API](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) to register the Web Component for usage in your HTML.  When the registered component is created (via tag usage or `document.createElement()`) the constructed class constructor is called and ZephJS populates the component as described in the context.
 
 #### Definition Methods
 
 There are currently seventeen different definition methods for you to describe your Web Component with ranging from providing HTML and CSS to handling events. Here are the some of the most useful...
 
-> **html()** is used to add the internal content of your Web Component, that is all the HTML that makes up the inner working of your component.
+> **html()** is used to add the internal content of your Web Component, that is all the HTML that makes up the inner workings of your component.
 
 > **css()** is used to associate a set of internal CSS style rules to your content. These rules can target the internal content (provided by `html()` above) or the created element itself (with the `:host` and `:host()` psuedo-selectors.)
 
-> **attribute()** adds an attribute to your custom element and assoicates an initial value with that attribute.
+> **attribute()** adds an attribute to your custom element and associates an initial value with that attribute.
 
 > **property()** adds a property to your custom element and associates an initial value with that property.
 
@@ -69,9 +69,9 @@ There are currently seventeen different definition methods for you to describe y
 
 > **onProperty()** is likewise used to execute a callback if a given property of the element is changed.
 
-> **onEvent()** and **onEventAt()** are used to execute some callback handler when a given event (like a mouse click or a keystroke) occur.
+> **onEvent()** and **onEventAt()** are used to execute some callback handler when a given event (like a mouse click or a keystroke) occurs.
 
-There are a few other definition methods, but these are the key ones. If you want to know more, check out the [ZephJS Quick Start guide]() or the [ZephJS API documentation]
+There are a few other definition methods, but these are the key ones. If you want to know more, check out the [ZephJS Quick Start guide](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentQuickStart.md) or the [ZephJS API documentation](https://github.com/awesomeeng/zephjs/blob/master/docs/API.md)
 
 #### Inline vs Separated Content
 
@@ -163,4 +163,4 @@ You can start by checking out the [ZephJS repository](https://github.com/awesome
 
 ## Reaching Out
 
-We are super excited about ZephJS and really want to hear from you.  Feel free to drop us a line, file a bug, submit a PR, whatever.  We would love to hear what you are doing with ZephJS and all the multitude of ways you find it easy and cool.
+We are super excited about ZephJS and really want to hear from you.  Feel free to drop us a line, file a bug, submit a PR, whatever.  We would love to hear what you are doing with ZephJS and all the multitude of ways you find it cool.
