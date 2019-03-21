@@ -109,7 +109,7 @@ ZephJS ships with a set of examples for your reference.
 
  - [ExampleCollection](./examples/ExampleCollection): An example of grouping several components together into a single file, called a collection.
 
- - [BasicService](./examples/BasicService): An example of using the ZephServices service registry.
+ - [ExampleService](./examples/ExampleService): An example of using the ZephService class to build a re-usable service.
 
 ## Browser Compatability
 

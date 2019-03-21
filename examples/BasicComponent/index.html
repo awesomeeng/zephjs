@@ -15,12 +15,6 @@
 			document.addEventListener("zeph:component:undefined",(event)=>{
 				console.log("zeph:component:undefined",event.detail.name);
 			});
-			document.addEventListener("zeph:service:registered",(event)=>{
-				console.log("zeph:service:registered",event.detail.name);
-			});
-			document.addEventListener("zeph:service:unregistered",(event)=>{
-				console.log("zeph:service:unregistered",event.detail.name);
-			});
 			document.addEventListener("zeph:ready",()=>{
 				console.log("zeph:ready");
 			});

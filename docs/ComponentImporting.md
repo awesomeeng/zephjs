@@ -35,10 +35,15 @@ import {html,css,attribute,property} from "./zeph.min.js";
 The following items can be imported from ZephJS:
 
  - ZephComponents
- - ZephServices
  - ZephService
+ - ZephObservable
+ - ZephUtils
 
 The following definition methods can be imported from ZephJS:
+
+ - **from**: Used to make a ZephJS component inherit from another ZephJS component.
+
+ - **alias**: Used to create alternative or shortcut name for a given component.
 
  - **html**: Sets the HTML content of the element we are defining.
 

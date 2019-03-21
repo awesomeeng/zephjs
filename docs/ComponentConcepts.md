@@ -87,10 +87,6 @@ ZephJS has several events it will fire on the `document` as it performs various 
 
  - **zeph:component:undefined**: Fired when a component is actively undefined from ZephJS by way of the `ZephComponents.undefine()` method.  While a component may be undefined by ZephJS, there is currently no way to remove it from the Custom Element registry.
 
- - **zeph:service:registered**: Fired when a service is registered with ZephJS by way of the `ZephServices.register()` method.
-
- - **zeph:service:unregistered**: Fired when a service is unregistered with ZephJS by way of the `ZephServices.unregister()` method.
-
 #### ZephJS Conventions
 
 ZephJS does not enforce any specific conventions to how you layout your code, however, we do make the following recommendations:
