@@ -153,7 +153,7 @@ But if you are more interested in a specific area...
  - Services
    - [Services](https://github.com/awesomeeng/zephjs/blob/master/docs/Services.md)
  - API
-   - [API Documentation](https://github.com/awesomeeng/zephjs/blob/master/docs/ZephComponents.md)
+   - [API Documentation](https://github.com/awesomeeng/zephjs/blob/master/docs/API.md)
  - Bundling
    - [Bundling for Distribution](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentBundling.md)
  - Command Line Tool
