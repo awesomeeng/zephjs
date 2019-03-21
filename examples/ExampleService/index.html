@@ -2,8 +2,8 @@
 <html lang="en" dir="ltr">
 	<head>
 		<meta charset="utf-8">
-		<title>Zeph - Examples - BasicService</title>
-		<script src="./cool-quotes.js" type="module"></script>
+		<title>Zeph - Examples - ExampleService</title>
+		<script src="./example-clock.js" type="module"></script>
 		<script>
 			document.addEventListener("zeph:component:loading",(event)=>{
 				console.log("zeph:component:loading",event.detail.toString());
@@ -14,18 +14,12 @@
 			document.addEventListener("zeph:component:undefined",(event)=>{
 				console.log("zeph:component:undefined",event.detail.name);
 			});
-			document.addEventListener("zeph:service:registered",(event)=>{
-				console.log("zeph:service:registered",event.detail.name);
-			});
-			document.addEventListener("zeph:service:unregistered",(event)=>{
-				console.log("zeph:service:unregistered",event.detail.name);
-			});
 			document.addEventListener("zeph:ready",()=>{
 				console.log("zeph:ready");
 			});
 		</script>
 	</head>
 	<body>
-		<cool-quotes>Homer</cool-quotes>
+		<example-clock></example-clock>
 	</body>
 </html>
