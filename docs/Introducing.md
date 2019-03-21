@@ -1,6 +1,6 @@
 # Introducing ZephJS
 
-We are pleased to announce the release of [ZephJS](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)!
+We are pleased to announce the release of [ZephJS](https://github.com/awesomeeng/zephjs)!
 
 ZephJS is an extremely easy to use, simple to understand, ultra-light framework for defining and using Web Components. ZephJS is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want the gigantic weight of a modern JavaScript browser framework. ZephJS simplifies the process of defining custom Web Components into a highly readable declarative structure that uses standard JavaScript, standard HTML markup, and standard CSS styling. And ZephJS weighs in at less than 20k minified!
 
