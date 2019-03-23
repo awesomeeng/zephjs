@@ -1,5 +1,11 @@
 # AwesomeComponenets Release Notes
 
+#### **Version 1.1.0**
+
+ - Adds the optional ability to use a destructured object in your definition function to expose the definition methods instead of using `import`.
+
+ - Minor documentation edits for Component Concepts.
+
 #### **Version 1.0.0**
 
  - Documentation Editing

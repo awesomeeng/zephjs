@@ -689,6 +689,28 @@ dash character within them.
 The code argument represents a function that within it defines
 the component through the use of one or more definition methods.
 
+The code argument has the signature
+
+		`(methods) => {}`
+
+where `methods` is an object which contains all of the definition
+methods one can use within a definition function. This is provided
+for developers who would prefer to access the definition methods
+via destructuring in the definition argument rather than importing
+each with an import statement. Either approach is valid and both
+can be used interchangable:
+
+	```javascript
+	import {ZephComponents} from "./zeph.min.js";
+
+	ZephComponents.define("my-button",({html,css,attribute})=>{
+		html("./my-button.html");
+		css("./my-button.css");
+
+		attribute("icon","");
+	});
+	```
+
 This returns a promise that will resolve when all of the definition
 and registration is complete.  In most cases waiting for the
 promise to resolve is unnecessary, but it is provided in case

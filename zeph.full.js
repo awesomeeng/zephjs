@@ -31,6 +31,7 @@ const $PROXY = Symbol("proxy");
 
 // Top level variables used by ZephJS but not exposed
 let CODE_CONTEXT = null;
+let DEFINITION_METHODS = null;
 let PENDING = {};
 let FIREREADY = null;
 let READY = false;
@@ -431,7 +432,7 @@ class ZephComponentExecution {
 	run() {
 		return utils.tryprom(async (resolve)=>{
 			CODE_CONTEXT = this;
-			await this[$CODE].bind(this)();
+			await this[$CODE].bind(this)(DEFINITION_METHODS);
 			CODE_CONTEXT = null;
 
 			resolve();
@@ -1841,6 +1842,28 @@ class ZephComponentsClass {
 	 * The code argument represents a function that within it defines
 	 * the component through the use of one or more definition methods.
 	 *
+	 * The code argument has the signature
+	 *
+	 * 		`(methods) => {}`
+	 *
+	 * where `methods` is an object which contains all of the definition
+	 * methods one can use within a definition function. This is provided
+	 * for developers who would prefer to access the definition methods
+	 * via destructuring in the definition argument rather than importing
+	 * each with an import statement. Either approach is valid and both
+	 * can be used interchangable:
+	 *
+	 * 	```javascript
+	 * 	import {ZephComponents} from "./zeph.min.js";
+	 *
+	 * 	ZephComponents.define("my-button",({html,css,attribute})=>{
+	 * 		html("./my-button.html");
+	 * 		css("./my-button.css");
+	 *
+	 * 		attribute("icon","");
+	 * 	});
+	 * 	```
+	 *
 	 * This returns a promise that will resolve when all of the definition
 	 * and registration is complete.  In most cases waiting for the
 	 * promise to resolve is unnecessary, but it is provided in case
@@ -2222,4 +2245,10 @@ window.Zeph = {
 	ZephObserver,
 	ZephService,
 	ZephUtils: utils
+};
+
+// build our DEFINITION_METHODS object that gets used
+// to pass methods into define
+DEFINITION_METHODS = {
+	from,alias,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt
 };
