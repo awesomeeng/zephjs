@@ -22,9 +22,8 @@ require("./BrowserMocks");
 const assert = require("assert");
 
 const ZephComponents = require("../src/Zeph.js").ZephComponents;
-const {from,alias,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt} = require("../src/Zeph.js");
 
-describe("ZephComponents",function(){
+describe("ZephComponents without Importing Defintion Methods",function(){
 	beforeEach(()=>{
 		ZephComponents.names.forEach((name)=>{
 			ZephComponents.undefine(name);
@@ -41,24 +40,26 @@ describe("ZephComponents",function(){
 		assert(ZephComponents.undefine);
 	});
 
-	it("definition methods",function(){
-		assert(from);
-		assert(alias);
-		assert(html);
-		assert(css);
-		assert(attribute);
-		assert(property);
-		assert(bind);
-		assert(bindAt);
-		assert(onInit);
-		assert(onCreate);
-		assert(onAdd);
-		assert(onRemove);
-		assert(onAdopt);
-		assert(onAttribute);
-		assert(onProperty);
-		assert(onEvent);
-		assert(onEventAt);
+	it("definition methods",async function(){
+		await ZephComponents.define("text-component0",({from,alias,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt})=>{
+			assert(from);
+			assert(alias);
+			assert(html);
+			assert(css);
+			assert(attribute);
+			assert(property);
+			assert(bind);
+			assert(bindAt);
+			assert(onInit);
+			assert(onCreate);
+			assert(onAdd);
+			assert(onRemove);
+			assert(onAdopt);
+			assert(onAttribute);
+			assert(onProperty);
+			assert(onEvent);
+			assert(onEventAt);
+		});
 	});
 
 	it("define/undefine",async function(){
@@ -78,7 +79,7 @@ describe("ZephComponents",function(){
 	});
 
 	it("context",async function(){
-		let component = await ZephComponents.define("test-component2",()=>{
+		let component = await ZephComponents.define("test-component2",({html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt})=>{
 			html("<div></div>",{
 				noRemote: true
 			});
@@ -182,7 +183,7 @@ describe("ZephComponents",function(){
 	});
 
 	it("inheritance",async function(){
-		await ZephComponents.define("test-parent3",()=>{
+		await ZephComponents.define("test-parent3",({html,css,attribute,property,bind,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt})=>{
 			html("<div>parent</div>",{
 				noRemote: true
 			});
@@ -201,7 +202,7 @@ describe("ZephComponents",function(){
 			onEvent("click",()=>{});
 			onEventAt("div","click",()=>{});
 		});
-		let component = await ZephComponents.define("test-component3",()=>{
+		let component = await ZephComponents.define("test-component3",({from,html,css,attribute,property,bind,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt})=>{
 			from("test-parent3");
 			html("<div>child</div>",{
 				noRemote: true

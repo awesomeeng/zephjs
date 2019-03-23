@@ -72,3 +72,47 @@ The following definition methods can be imported from ZephJS:
  - **onEvent**: Handle an event that occurs on the element we are defining.
 
  - **onEventAt**: Handle an event that occurs on the internal content of an element we are defining.
+
+### Definition Method without Importing
+
+Some users of ZephJS can find the need to `import` all of the definition methods a little confusion or not to thier taste and thus Zeph supports an alternate approach for using Definition Methods. (Note that you will still need to import ZephComponents.)
+
+```javascript
+import {ZephComponents} from "./zeph.min.js";
+
+ZephComponents.define("my-button",({html,css,attribute,onCreate})=>{
+	html("./my-button.html");
+	css("./my-button.css");
+
+	attribute("icon","");
+
+	onCreate(()=>{
+		...
+	});
+});
+```
+
+In this case instead of using `import` to get the definition methods, we are using destructuring on the definition function to get the definition methods. ZephJS will hand an object containing all of the definition methods to the definiction function you provide to `ZephComponents.define()`.
+
+Both `import` or the destructuring approach work identically, so this is purely a style descision for you the developer. ZephJS even allows you to mixed both approaches if you wanted.
+
+### Wildcard Importing
+
+A third approach to importing is the use of a wildcard character with your `import` statement.  For example:
+
+```javascript
+import * as Zeph from "./zeph.min.js";
+
+Zeph.ZephComponents.define("my-button",()=>{
+	Zeph.html("./my-button.html");
+	Zeph.css("./my-button.css");
+
+	Zeph.attribute("icon","");
+
+	Zeph.onCreate(()=>{
+		...
+	});
+});
+```
+
+This is an alternative, although it may make the code slightly more cumbersome to read.
