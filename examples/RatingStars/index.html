@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>Zeph - Examples - HelloBadge</title>
+		<script src="./rating-stars.js" type="module"></script>
+		<style>
+			.rate {
+				display: grid;
+				grid-template-columns: auto 100%;
+				grid-column-gap: 25px;
+				grid-row-gap: 25px;
+				align-items: center;
+			}
+		</style>
+	</head>
+	<body>
+		<h4>Rate the Bob's Burgers Characters!</h4>
+		<div class="rate">
+			<rating-stars name="bob_belcher" value="2"></rating-stars>
+			<label>Bob Belcher</label>
+			<rating-stars name="linda_belcher" value="0"></rating-stars>
+			<label>Linda Belcher</label>
+			<rating-stars name="tina_belcher" value="0"></rating-stars>
+			<label>Tina Belcher</label>
+			<rating-stars name="gene_belcher" value="0"></rating-stars>
+			<label>Gene Belcher</label>
+			<rating-stars name="louise_belcher" value="0"></rating-stars>
+			<label>Louise Belcher</label>
+		</div>
+	</body>
+</html>

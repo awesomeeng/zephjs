@@ -1346,8 +1346,6 @@ class ZephElementClass {
 							let binding = context.bindings[name];
 							if (!binding) return;
 
-							if (binding.target.element===".") binding.target.element = element;
-
 							let srcele = binding.source.element;
 							if (srcele===".") srcele = [element];
 							else if (typeof srcele==="string") srcele = [...shadow.querySelectorAll(srcele)];
@@ -1359,7 +1357,7 @@ class ZephElementClass {
 									handler = (value)=>{
 										let name = binding.target.name.slice(1);
 										value = binding.transform(value);
-										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+										let targets = binding.target.element==="." && [element] || binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
 										targets.forEach((target)=>{
 											if (value===undefined) {
 												target.removeAttribute(name);
@@ -1374,7 +1372,7 @@ class ZephElementClass {
 									handler = (value)=>{
 										let name = binding.target.name.slice(1);
 										value = binding.transform(value);
-										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+										let targets = binding.target.element==="." && [element] || binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
 										targets.forEach((target)=>{
 											if (value===undefined) {
 												delete target[name];
@@ -1389,7 +1387,7 @@ class ZephElementClass {
 									handler = (value)=>{
 										value = binding.transform(value);
 										if (value===undefined) return;
-										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+										let targets = binding.target.element==="." && [element] || binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
 										targets.forEach((target)=>{
 											if (target.textContent!==value) target.textContent = value===undefined || value===null ? "" : value;
 										});
