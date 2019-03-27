@@ -47,3 +47,7 @@ Here's a full example from our [ExampleService example](./examples/EXampleServic
 ```
 
 Note that using the polyfill will add about 115k to your page load, which isn't really that bad, but still much heavier than ZephJS by itself.
+
+## Using Polyfill with the CLI Bundler
+
+The bundler will only produce a bundle that works on modern browsers.  If you want your bundle to be included by others with the polyfill, please include instructions for them on how to do so, as outlined above.  The bundler cannot inline the polyfill at this time.
