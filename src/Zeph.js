@@ -17,6 +17,12 @@
  * in the LICENSE file.
  */
 
+if (!window.customElements || !window.ShadowRoot || !document.body.attachShadow) {
+	/* eslint-disable no-console */
+	console.error("ZephJS is not supported by this browser. Please consult the Browser Support section of the ZephJS documentation for more details.");
+	/* eslint-enable no-console */
+}
+
 // Define Symbols for usage on various objects below
 // Sometimes we reuse these symbols on different objects
 // for different purposes, but always of a similar nature.

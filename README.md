@@ -119,12 +119,12 @@ The following browser compatability chart indicates which browsers are supported
 
 | Browser                     | Minimum Required Version | Notes
 |-----------------------------|--------------------------|----------------------------
-| Microsoft Internet Explorer | NOT SUPPORTED            | No support as of v11.
-| Microsoft Edge              | NOT SUPPORTED            | No support as of v18, but in development
 | **Firefox**                 | 63                       | |
 | **Chrome**                  | 54                       | |
 | **Safari**                  | 10.1                     | :host and ::slotted psuedo-selectors are buggy.
 | **Opera**                   | 41                       | |
+| **Microsoft Edge**              | 15 (with Polyfill)       | Requires use of Polymer polyfill. See [ZephJS Polyfill Documentation](./docs/Polyfill.md).
+| Microsoft Internet Explorer | NOT SUPPORTED            | |
 | **IOS Safari**              | 10.3                     | :host and ::slotted psuedo-selectors are buggy.
 | **Android Browser**         | 67                       | |
 | Blackberry Browser          | NOT SUPPORTED            | No support as ov v10.
