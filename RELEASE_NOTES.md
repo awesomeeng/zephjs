@@ -1,5 +1,11 @@
 # AwesomeComponenets Release Notes
 
+#### **Version 1.1.1**
+
+ - Adds support for MS Edge via polyfill. Added supporting documentation.
+
+ - Adds warning message for unsupported browsers.
+
 #### **Version 1.1.0**
 
  - Adds the optional ability to use a destructured object in your definition function to expose the definition methods instead of using `import`.
