@@ -1,5 +1,5 @@
 <a href="https://www.npmjs.com/package/zephjs">![npm](https://img.shields.io/npm/v/zephjs.svg "npm Details")</a>
-<a href="./LICENSE">![GitHub](https://img.shields.io/github/license/awesomeeng/zephjs.svg "License Details)</a>
+<a href="./LICENSE">![GitHub](https://img.shields.io/github/license/awesomeeng/zephjs.svg "License Details")</a>
 <a href="http://npm-stats.com/~packages/zephjs">![npm](https://img.shields.io/npm/dt/zephjs.svg "npm download stats")</a>
 <a href="https://github.com/awesomeeng/zephjs/graphs/contributors">![GitHub contributors](https://img.shields.io/github/contributors-anon/awesomeeng/zephjs.svg "Github Contributors")</a>
 <a href="https://github.com/awesomeeng/zephjs/commits/master">![GitHub last commit](https://img.shields.io/github/last-commit/awesomeeng/zephjs.svg "Github Commit Log")</a>
