@@ -1,13 +1,13 @@
-![npm](https://img.shields.io/npm/v/zephjs.svg)
-![GitHub](https://img.shields.io/github/license/awesomeeng/zephjs.svg)
-![npm](https://img.shields.io/npm/dt/zephjs.svg)
-![GitHub contributors](https://img.shields.io/github/contributors-anon/awesomeeng/zephjs.svg)
-![GitHub last commit](https://img.shields.io/github/last-commit/awesomeeng/zephjs.svg)
-![Twitter Follow](https://img.shields.io/twitter/follow/zeph_js.svg)
-<br/>![node](https://img.shields.io/node/v/zephjs.svg)
-![GitHub issues](https://img.shields.io/github/issues/awesomeeng/zephjs.svg)
-![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/awesomeeng/zephjs.svg)
-![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/zephjs.svg)
+<a href="https://www.npmjs.com/package/zephjs">![npm](https://img.shields.io/npm/v/zephjs.svg "npmjs")</a>
+<a href="./LICENSE">![GitHub](https://img.shields.io/github/license/awesomeeng/zephjs.svg)</a>
+<a href="http://npm-stats.com/~packages/zephjs">![npm](https://img.shields.io/npm/dt/zephjs.svg)</a>
+<a href="https://github.com/awesomeeng/zephjs/graphs/contributors">![GitHub contributors](https://img.shields.io/github/contributors-anon/awesomeeng/zephjs.svg)</a>
+<a href="https://github.com/awesomeeng/zephjs/commits/master">![GitHub last commit](https://img.shields.io/github/last-commit/awesomeeng/zephjs.svg)</a>
+<a href="https://twitter.com/zeph_js">![Twitter Follow](https://img.shields.io/twitter/follow/zeph_js.svg)</a>
+<br/><a href="https://nodejs.org/en/">![node](https://img.shields.io/node/v/zephjs.svg)</a>
+<a href="https://github.com/awesomeeng/zephjs/issues">![GitHub issues](https://img.shields.io/github/issues/awesomeeng/zephjs.svg)</a>
+<a href="https://snyk.io/vuln/search?type=npm&q=zephjs">![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/awesomeeng/zephjs.svg)</a>
+<a href="https://libraries.io/npm/zephjs">![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/zephjs.svg)</a>
 
 #  ZephJS 
 
