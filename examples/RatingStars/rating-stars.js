@@ -3,7 +3,7 @@
 /* eslint no-console: off */
 
 import {ZephComponents} from "./Zeph.js";
-import {html,css,attribute,property,bind,onProperty,onEvent} from "./Zeph.js";
+import {html,css,attribute,property,bind,onProperty,onEventAt} from "./Zeph.js";
 
 ZephComponents.define("rating-stars",()=>{
 	html("./rating-stars.html");
@@ -24,23 +24,26 @@ ZephComponents.define("rating-stars",()=>{
 		update(element,content);
 	});
 
-	onEvent("click",(event,element)=>{
+	onEventAt("div.star","click",(event,selected,element,content)=>{
 		if (element.hasAttribute("disabled")) {
 			event.stopPropagation();
 			event.preventDefault();
 			return;
 		}
 
-		console.log("click",event);
+		let value = [...content.querySelectorAll(".stars > div.star")].indexOf(selected)+1;
+		if (element.hasAttribute("value") && parseInt(element.getAttribute("value"))===value) value = 0;
+
+		element.setAttribute("value",value);
+		// update(element,content);
 	});
 
 	const update = (element,content)=>{
 		let value = element.value;
 
-		content.querySelectorAll("div.star").forEach((e,i)=>{
-			let has = e.hasAttribute("selected");
-			if (value>i && !has) e.setAttribute("selected","");
-			else e.removeAttribute("selected");
+		content.querySelectorAll(".stars > div.star").forEach((e,i)=>{
+			e.removeAttribute("selected");
+			if (value>i) e.setAttribute("selected","");
 		});
 	};
 });
