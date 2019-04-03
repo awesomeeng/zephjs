@@ -123,14 +123,14 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 	}
 }
 
-const loader = function loader(url,rootDir) {
+const loader = function loader(url,rootDir,encoding="utf-8") {
 	if (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("ftp:")) {
 		// load via request
 	}
 	else {
 		url = Path.resolve(rootDir,url);
 		return FS.readFileSync(url,{
-			encoding: "utf-8"
+			encoding: encoding
 		});
 	}
 };
@@ -140,70 +140,222 @@ const inlineReferences = function inlineReferences(code,origin,quiet) {
 
 	let root = Path.dirname(origin);
 
-	let tokens = [...Acorn.tokenizer(code,{
-		ecmaVersion: 10
-	})];
+	let nodes = Acorn.parse(code,{
+		ecmaVersion: 10,
+		sourceType: "module"
+	});
 
 	let offset = 0;
-	tokens.forEach((token,i)=>{
-		if (!token || !token.type || !token.type.label || !token.value) return;
-		if (token.type.label==="name" && (token.value==="html" || token.value==="css") && tokens[i+1] && tokens[i+1].type && tokens[i+1].type.label && tokens[i+1].type.label==="(") {
-			let content = tokens[i+2];
-			let following = tokens[i+3];
-			if (!content || !content.type || !content.type.label) {
-				console.error("ERROR: "+origin+": "+token.value+"() statement was not syntactically valid.");
-				process.exit();
-			}
+	let paths = AwesomeUtils.Object.paths(nodes);
+	paths.forEach((path)=>{
+		if (!path) return;
 
-			let filename;
-			if (content.type.label==="`" && following && following.type && following.type.label && following.type.label==="template") {
-				filename = following.value;
-			}
-			else if (content.type.label==="string" && following && following.type && following.type.label && (following.type.label===")" || following.type.label===",")) {
-				filename = content.value;
-			}
-			else {
-				// console.log(0,code);
-				// console.log(0,tokens[i]);
-				// console.log(1,tokens[i+1]);
-				// console.log(2,tokens[i+2]);
-				// console.log(3,tokens[i+3]);
-				console.error("ERROR: "+origin+": "+token.value+"() statement may only be a string literal.");
-				process.exit();
-			}
+		let node = AwesomeUtils.Object.get(nodes,path);
+		if (typeof node==="object" && node.type && node.type==="CallExpression" && node.callee && node.callee.type==="Identifier") {
 
-			let data = null;
-			if (filename.startsWith("http:") || filename.startsWith("https:") || filename.startsWith("ftp:")) {
-				if (!quiet) console.log("  "+filename);
-				data = loader(filename);
+			let revised = null;
+			if (node.callee.name==="html") revised = inlineHTML(origin,root,code,offset,node,quiet);
+			else if (node.callee.name==="css") revised = inlineCSS(origin,root,code,offset,node,quiet);
+			else if (node.callee.name==="image") revised = inlineImage(origin,root,code,offset,node,quiet);
+			if (revised) {
+				code = revised.code;
+				offset = revised.offset;
 			}
-			else {
-				filename = Path.resolve(root,filename);
-				if (!AwesomeUtils.FS.existsSync(filename)) {
-					filename += ".js";
-					if (!AwesomeUtils.FS.existsSync(filename)) {
-						// data is not a filename and probably inline content.
-						return;
-					}
-				}
-				if (!quiet) console.log("  "+filename);
-				data = loader(filename);
-			}
-
-			if (!data) {
-				console.error("ERROR: "+origin+": Could not find inline reference to "+filename+".");
-				process.exit();
-			}
-
-			let start = content.start+offset;
-			let end = content.end+offset;
-
-			code = code.slice(0,start)+"`"+data.replace(/`/g,"\\`")+"`"+code.slice(end);
-			offset += (data.length-content.value.length);
 		}
 	});
 
 	return code;
+};
+
+const errorOut = function errorOut(origin,msg,exit=false) {
+	console.error("ERROR: "+origin+": "+msg);
+	if (exit) process.exit();
+};
+
+const inlineHTML = function inlineHTML(origin,root,code,offset,node,quiet) {
+	if (!node) return;
+
+	if (!node.callee) return;
+
+	if (!node.callee.type) return;
+	if (node.callee.type!=="Identifier") return;
+
+	if (!node.callee.name) return;
+	if (node.callee.name!=="html") return;
+
+	if (!node.arguments) return;
+	if (!(node.arguments instanceof Array)) return;
+
+	let args = node.arguments;
+	if (args.length<1) return;
+
+	let arg = args[0];
+	if (!arg) return;
+
+	if (!arg.type) return errorOut(origin,"html() statement was not syntactically valid.",true);
+	if (arg.type==="TemplateLiteral") return; // template literals are allowed for raw content.
+	if (arg.type!=="Literal") return errorOut(origin,"html() statement may only be a string literal.",true);
+	if (!arg.value) return;
+
+	let start = arg.start;
+	let end = arg.end;
+	let length = arg.value.length;
+	let filename = arg.value;
+
+	let data = null;
+	if (filename.startsWith("http:") || filename.startsWith("https:") || filename.startsWith("ftp:")) {
+		if (!quiet) console.log("  "+filename);
+		data = loader(filename);
+	}
+	else {
+		// data is not a filename and probably inline content.
+		filename = resolveFilename(root,filename,[".html",".htm"]);
+		if (!filename) return;
+
+		if (!quiet) console.log("  "+filename);
+		data = loader(filename);
+	}
+
+	if (!data) {
+		console.error("ERROR: "+origin+": Could not find inline reference to "+filename+".");
+		process.exit();
+	}
+
+	code = code.slice(0,start+offset)+"`"+data.replace(/`/g,"\\`")+"`"+code.slice(end+offset);
+	offset += (data.length-length);
+
+	return {code,offset};
+};
+
+const inlineCSS = function inlineCSS(origin,root,code,offset,node,quiet) {
+	if (!node) return;
+
+	if (!node.callee) return;
+
+	if (!node.callee.type) return;
+	if (node.callee.type!=="Identifier") return;
+
+	if (!node.callee.name) return;
+	if (node.callee.name!=="css") return;
+
+	if (!node.arguments) return;
+	if (!(node.arguments instanceof Array)) return;
+
+	let args = node.arguments;
+	if (args.length<1) return;
+
+	let arg = args[0];
+	if (!arg) return;
+
+	if (!arg.type || !arg.value) return errorOut(origin,"css() statement was not syntactically valid.",true);
+	if (arg.type==="TemplateLiteral") return; // template literals are allowed for raw content.
+	if (arg.type!=="Literal") return errorOut(origin,"css() statement may only be a string literal.",true);
+
+	let start = arg.start;
+	let end = arg.end;
+	let length = arg.value.length;
+	let filename = arg.value;
+
+	let data = null;
+	if (filename.startsWith("http:") || filename.startsWith("https:") || filename.startsWith("ftp:")) {
+		if (!quiet) console.log("  "+filename);
+		data = loader(filename);
+	}
+	else {
+		// data is not a filename and probably inline content.
+		filename = resolveFilename(root,filename,[".css"]);
+		if (!filename) return;
+
+		if (!quiet) console.log("  "+filename);
+		data = loader(filename);
+	}
+
+	if (!data) {
+		console.error("ERROR: "+origin+": Could not find inline reference to "+filename+".");
+		process.exit();
+	}
+
+	code = code.slice(0,start+offset)+"`"+data.replace(/`/g,"\\`")+"`"+code.slice(end+offset);
+	offset += (data.length-length);
+
+	return {code,offset};
+};
+
+const inlineImage = function inlineImage(origin,root,code,offset,node,quiet) {
+	if (!node) return;
+
+	if (!node.callee) return;
+
+	if (!node.callee.type) return;
+	if (node.callee.type!=="Identifier") return;
+
+	if (!node.callee.name) return;
+	if (node.callee.name!=="image") return;
+
+	if (!node.arguments) return;
+	if (!(node.arguments instanceof Array)) return;
+
+	let args = node.arguments;
+	if (args.length<1) return;
+
+	let arg = args.length===1 ? args[0] : args[1];
+	if (!arg) return;
+
+	if (!arg.type || !arg.value) return errorOut(origin,"image() statement was not syntactically valid.",true);
+	if (arg.type==="TemplateLiteral") return; // template literals are allowed for raw content.
+	if (arg.type!=="Literal") return errorOut(origin,"image() statement may only be a string literal.",true);
+
+	let start = arg.start;
+	let end = arg.end;
+	let length = arg.value.length;
+	let filename = arg.value;
+
+	let data = null;
+	if (filename.startsWith("http:") || filename.startsWith("https:") || filename.startsWith("ftp:")) {
+		if (!quiet) console.log("  "+filename);
+		data = loader(filename,filename,null);
+	}
+	else {
+		// data is not a filename and probably inline content.
+		filename = resolveFilename(root,filename,[".png",".gif",".jpg",".jpeg",".apng",".svg",".icon",".ico",".bmp"]);
+		if (!filename) return;
+
+		if (!quiet) console.log("  "+filename);
+		data = loader(filename,filename,null);
+	}
+
+	if (!data) {
+		console.error("ERROR: "+origin+": Could not find inline reference to "+filename+".");
+		process.exit();
+	}
+
+	data = "data:image/png;base64,"+data.toString("base64");
+
+	code = code.slice(0,start+offset)+"`"+data+"`"+code.slice(end+offset);
+	offset += (data.length-length);
+
+	return {code,offset};
+};
+
+const resolveFilename = function resolveFilename(root,filename,extensions) {
+	if (!root || !filename) return null;
+
+	let possible = Path.resolve(root,filename);
+	if (AwesomeUtils.FS.existsSync(possible)) return possible;
+	if (!extensions) return null;
+	if (!(extensions instanceof Array)) extensions = [extensions];
+
+	return extensions.reduce((possible,ext)=>{
+		if (possible) return possible;
+
+		if (!ext) return null;
+		if (!ext.startsWith(".")) ext = "."+ext;
+
+		possible = Path.resolve(root,possible+ext);
+		if (AwesomeUtils.FS.existsSync(possible)) return possible;
+
+		return null;
+	},null);
 };
 
 module.exports = Bundle;

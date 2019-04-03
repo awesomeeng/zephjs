@@ -195,6 +195,29 @@ const utils = {
 	},
 
 	/**
+	 * Fetch but also resolves the content as binary. Useful for reading
+	 * Images, audio, video, etc. Returns an object which contains the data
+	 * and the contentType.
+	 *
+	 * @param  {URL} url
+	 * @return {Promise}
+	 */
+	fetchBinary: (url)=>{
+		check.not.uon(url,"url");
+		check.not.empty(url,"url");
+
+		return utils.tryprom(async (resolve)=>{
+			let response = await utils.fetch(url);
+			if (!response) resolve(undefined);
+
+			let contentType = response.headers && response.headers.get("Content-Type") || null;
+
+			let data = await response.arrayBuffer();
+			resolve({data,contentType});
+		});
+	},
+
+	/**
 	 * Given some URL resolves it against a base url to ensure correct pathing.
 	 *
 	 * @param  {URL} url
@@ -230,6 +253,7 @@ const utils = {
 	 */
 	resolveName(url,base=document.URL,extension=".js") {
 		let urlstr = ""+url;
+		if (urlstr.match(/^data:/)) return Promise.resolve(new URL(url));
 		if (!urlstr.match(/^http:\/\/|^https:\/\/|^ftp:\/\/|^\.\/|^\.\.\//)) return Promise.resolve(undefined);
 
 		return utils.tryprom(async (resolve)=>{
@@ -248,6 +272,28 @@ const utils = {
 
 			resolve(undefined);
 		});
+	},
+
+	/**
+	 * Given some data: url this function returns the contentType and data
+	 * from that url.
+	 *
+	 * @param  {URL} url
+	 * @return {Object}
+	 */
+	parseDataURL(url) {
+		check.not.uon(url,"url");
+		if (!(url instanceof URL)) throw new Error("Invalid url.");
+		if (url.protocol!=="data:") return null;
+		if (!url.href) return null;
+
+		let match = url.href.match(/^data:([^;]+)(([^;]+;)?;base64)?,(.*)$/);
+		let contentType = match && match[1] || "";
+		let data = match && match[4] || null;
+		return {
+			contentType,
+			data
+		};
 	}
 };
 
@@ -603,6 +649,50 @@ class ZephComponentExecution {
 
 			this.context.css = this.context.css || [];
 			this.context.css.push({content,options});
+
+			resolve();
+		});
+
+		this.context.pending = this.context.pending || [];
+		this.context.pending.push(prom);
+	}
+
+	image(selector,url,options={}) {
+		check.not.uon(selector,"selector");
+		check.string(selector,"selector");
+		check.not.empty(selector,"selector");
+		check.not.uon(url,"content");
+
+		let urlstr = ""+url;
+		if (!urlstr.match(/^data:|^http:\/\/|^https:\/\/|^ftp:\/\/|^\.\/|^\.\.\//)) throw new Error("Url must be a valid url (http, https, ftp), or a relative filename, or a data url.");
+
+		options = Object.assign({
+			target: "auto"
+		},options||{});
+
+		let prom = utils.tryprom(async (resolve)=>{
+			url = await utils.resolveName(url,this.context.origin,"");
+
+			let response;
+			if (url && url.protocol==="data:") {
+				response = utils.parseDataURL(url);
+			}
+			else {
+				response = await utils.fetchBinary(url);
+
+				// source: https://stackoverflow.com/questions/9267899/arraybuffer-to-base64-encoded-string
+				response.data = btoa([].reduce.call(new Uint8Array(response.data),(p,c)=>{
+					return p+String.fromCharCode(c);
+				},''));
+			}
+
+			this.context.images = this.context.images || [];
+			this.context.images.push({
+				selector,
+				contentType: response && response.contentType || null,
+				data: response && response.data || null,
+				options
+			});
 
 			resolve();
 		});
@@ -1293,6 +1383,21 @@ class ZephElementClass {
 					shadow.appendChild(styleElement);
 				}
 
+				// Handle image resources
+				if (context.images) {
+					context.images.forEach((image)=>{
+						let target = image.options && image.options.target && image.options.target.toLowerCase() || "auto";
+						let elements = image.selector==="." && [element] || [...shadow.querySelectorAll(image.selector)] || [];
+						let srcstr = "data:"+image.contentType+";base64,"+image.data;
+						let urlstr = "url('"+srcstr+"')";
+						elements.forEach((e)=>{
+							let tag = e.tagName.toLowerCase();
+							if (target==="tag" || (target==="auto" && tag==="img")) e.setAttribute("src",srcstr);
+							else e.style.backgroundImage = urlstr;
+						});
+					});
+				}
+
 				// All of the below, setting attributes, properties, bindings,
 				// must happen AFTER the constructor is complete or it violates
 				// the custom elements spec and will throw weird errors when
@@ -1346,8 +1451,6 @@ class ZephElementClass {
 							let binding = context.bindings[name];
 							if (!binding) return;
 
-							if (binding.target.element===".") binding.target.element = element;
-
 							let srcele = binding.source.element;
 							if (srcele===".") srcele = [element];
 							else if (typeof srcele==="string") srcele = [...shadow.querySelectorAll(srcele)];
@@ -1359,7 +1462,7 @@ class ZephElementClass {
 									handler = (value)=>{
 										let name = binding.target.name.slice(1);
 										value = binding.transform(value);
-										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+										let targets = binding.target.element==="." && [element] || binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
 										targets.forEach((target)=>{
 											if (value===undefined) {
 												target.removeAttribute(name);
@@ -1374,7 +1477,7 @@ class ZephElementClass {
 									handler = (value)=>{
 										let name = binding.target.name.slice(1);
 										value = binding.transform(value);
-										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+										let targets = binding.target.element==="." && [element] || binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
 										targets.forEach((target)=>{
 											if (value===undefined) {
 												delete target[name];
@@ -1389,7 +1492,7 @@ class ZephElementClass {
 									handler = (value)=>{
 										value = binding.transform(value);
 										if (value===undefined) return;
-										let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+										let targets = binding.target.element==="." && [element] || binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
 										targets.forEach((target)=>{
 											if (target.textContent!==value) target.textContent = value===undefined || value===null ? "" : value;
 										});
@@ -2218,6 +2321,7 @@ const from = contextCall("from");
 const alias = contextCall("alias");
 const html = contextCall("html");
 const css = contextCall("css");
+const image = contextCall("image");
 const attribute = contextCall("attribute");
 const property = contextCall("property");
 const bind = contextCall("binding");
@@ -2237,7 +2341,7 @@ const ZephComponents = new ZephComponentsClass();
 
 // Exports
 export {ZephComponents,ZephObserver,ZephService,utils as ZephUtils};
-export {from,alias,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
+export {from,alias,html,css,image,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
 
 // Bind window.Zeph to our libs as well.
 window.Zeph = {
@@ -2250,5 +2354,5 @@ window.Zeph = {
 // build our DEFINITION_METHODS object that gets used
 // to pass methods into define
 DEFINITION_METHODS = {
-	from,alias,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt
+	from,alias,html,css,image,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt
 };
