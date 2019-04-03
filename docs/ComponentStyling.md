@@ -44,7 +44,7 @@ ZephComponents.define("my-component",()=>{
 
 ZephJS uses 100% standard CSS. There is no special css dervived language or shortcuts provided.
 
-The CSS you provide for your custom element is ONLY for the custom element.  It does not leak out. (See our [Component Concepts](./ComponentConcepts.md) documentation for more details about Encapsulation.) Likewise, the CSS does not leak in. That is, there is no way currently to address the inner content of a custom element via CSS Selector.  (Please read Monica Dinculescu's excellent article about the upcoming :part and :theme for a lot more details.)
+The CSS you provide for your custom element is ONLY for the custom element.  It does not leak out. (See our [Component Concepts](./ComponentConcepts.md) documentation for more details about Encapsulation.) Likewise, the CSS does not leak in. That is, there is no way currently to address the inner content of a custom element via CSS Selector.  (Please read [Monica Dinculescu's excellent article](https://meowni.ca/posts/part-theme-explainer/) about the upcoming :part and :theme for a lot more details.)
 
 Your CSS can style the custom element itself with the `:host` psuedo-selector. You can learn more about `:host` [here](https://developer.mozilla.org/en-US/docs/Web/CSS/:host) and about `:host()` [here](https://developer.mozilla.org/en-US/docs/Web/CSS/:host()).
 
