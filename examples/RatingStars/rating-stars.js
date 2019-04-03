@@ -3,11 +3,14 @@
 /* eslint no-console: off */
 
 import {ZephComponents} from "./Zeph.js";
-import {html,css,attribute,property,bind,onProperty,onEventAt} from "./Zeph.js";
+import {html,css,image,attribute,property,bind,onProperty,onEventAt} from "./Zeph.js";
 
 ZephComponents.define("rating-stars",()=>{
 	html("./rating-stars.html");
 	css("./rating-stars.css");
+
+	image(".set","./rating-stars.filled.png");
+	image(".unset","./rating-stars.empty.png");
 
 	attribute("value","0");
 	attribute("disabled",undefined);
@@ -35,7 +38,6 @@ ZephComponents.define("rating-stars",()=>{
 		if (element.hasAttribute("value") && parseInt(element.getAttribute("value"))===value) value = 0;
 
 		element.setAttribute("value",value);
-		// update(element,content);
 	});
 
 	const update = (element,content)=>{

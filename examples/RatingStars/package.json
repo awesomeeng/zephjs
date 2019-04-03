@@ -5,5 +5,8 @@
     "license": "(c) 2018-present, The Awesome Engineering Company, inc",
     "dependencies": {
         "@awesomeeng/awesome-components": "*"
-    }
+    },
+	"scripts": {
+		"bundle": "zeph bundle rating-stars.js rating-stars.min.js"
+	}
 }

@@ -5,6 +5,10 @@
 		<title>Zeph - Examples - HelloBadge</title>
 		<script src="./rating-stars.js" type="module"></script>
 		<style>
+			body {
+				font-family: sans-serif;
+			}
+
 			.rate {
 				display: grid;
 				grid-template-columns: auto 100%;
@@ -12,21 +16,25 @@
 				grid-row-gap: 25px;
 				align-items: center;
 				font-size: 24px;
-				font-family: sans-serif;
+				margin-left: 20px;
 			}
 		</style>
 	</head>
 	<body>
-		<h4>Rate the Bob's Burgers Characters!</h4>
+		<h2>Rate the Bob's Burgers Characters!</h2>
 		<div class="rate">
-			<rating-stars name="bob_belcher" value="2"></rating-stars>
+			<rating-stars name="bob_belcher" value="4"></rating-stars>
 			<label>Bob Belcher</label>
+
 			<rating-stars name="linda_belcher" value="0"></rating-stars>
 			<label>Linda Belcher</label>
+
 			<rating-stars name="tina_belcher" value="0"></rating-stars>
 			<label>Tina Belcher</label>
+
 			<rating-stars name="gene_belcher" value="0"></rating-stars>
 			<label>Gene Belcher</label>
+
 			<rating-stars name="louise_belcher" value="0"></rating-stars>
 			<label>Louise Belcher</label>
 		</div>
