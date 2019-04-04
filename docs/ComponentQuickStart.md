@@ -404,6 +404,7 @@ After you have the quick start down we strongly encourage you to continue readin
  - [Inheritance](./ComponentInheritance.md)
  - [HTML](./ComponentMarkup.md)
  - [CSS](./ComponentStyling.md)
+ - [Resources](./ComponentResources.md)
  - [Attributes](./ComponentAttributes.md)
  - [Properties](./ComponentProperties.md)
  - [Lifecycle Handlers](./ComponentLifecycleHandlers.md)

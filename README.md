@@ -62,6 +62,7 @@ ZephJS Provides a ton of documentation to help you use it...
  - [Inheritance](./docs/ComponentInheritance.md)
  - [HTML](./docs/ComponentMarkup.md)
  - [CSS](./docs/ComponentStyling.md)
+ - [Resources](./docs/ComponentResources.md)
  - [Attributes](./docs/ComponentAttributes.md)
  - [Properties](./docs/ComponentProperties.md)
  - [Lifecycle Handlers](./docs/ComponentLifecycleHandlers.md)
@@ -110,6 +111,8 @@ ZephJS ships with a set of examples for your reference.
  - [ExampleCollection](./examples/ExampleCollection): An example of grouping several components together into a single file, called a collection.
 
  - [ExampleService](./examples/ExampleService): An example of using the ZephService class to build a re-usable service.
+
+ - [RatingStars](./examples/RatingStars): An example of using resources and bundling.
 
 ## Browser Compatability
 
