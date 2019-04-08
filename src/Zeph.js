@@ -17,6 +17,12 @@
  * in the LICENSE file.
  */
 
+if (!window.customElements || !window.ShadowRoot || !document.body.attachShadow) {
+	/* eslint-disable no-console */
+	console.error("ZephJS is not supported by this browser. Please consult the Browser Support section of the ZephJS documentation for more details.");
+	/* eslint-enable no-console */
+}
+
 // Define Symbols for usage on various objects below
 // Sometimes we reuse these symbols on different objects
 // for different purposes, but always of a similar nature.
@@ -589,8 +595,11 @@ class ZephComponentExecution {
 				if (url) content = await utils.fetchText(url);
 			}
 
+			let template = document.createElement("template");
+			template.innerHTML = content;
+
 			this.context.html = this.context.html || [];
-			this.context.html.push({content,options});
+			this.context.html.push({template,options});
 
 			resolve();
 		});
@@ -647,8 +656,11 @@ class ZephComponentExecution {
 				if (url) content = await utils.fetchText(url);
 			}
 
+			let template = document.createElement("template");
+			template.innerHTML = "<style>\n"+content+"\n</style>";
+
 			this.context.css = this.context.css || [];
-			this.context.css.push({content,options});
+			this.context.css.push({template,options});
 
 			resolve();
 		});
@@ -1320,6 +1332,9 @@ class ZephElementClass {
 	 * @return {Class}
 	 */
 	static generateClass(context) {
+		let setup = null;
+		let setupqueue = [];
+
 		const clazz = (class ZephCustomElement extends HTMLElement {
 			/**
 			 * Used by the Custom Elements Registry to know which attributes
@@ -1349,39 +1364,38 @@ class ZephElementClass {
 				});
 				this[$SHADOW] = shadow;
 
-				// Get any existing CSS that might already exist for
-				// for some reason.
-				let css = shadow.querySelector("style");
-				if (css) css = css.textContent;
-				else css = "";
-
 				// Take our context.html and add it as our
 				// internal content. If some pre-existing
 				// style did exist (see above) then this would
 				// destroy it.
-				let html = shadow.innerHTML;
 				(context.html||[]).forEach((markup)=>{
-					let content = markup.content;
+					let template = markup.template;
 					let options = markup.options;
 
-					if (options.overwrite) html = content;
-					else html += content;
+					if (options.overwrite) shadow.innerHTML = "";
+
+					let clone = document.importNode(template.content,true);
+					shadow.appendChild(clone);
 				});
-				shadow.innerHTML = html;
 
 				// Now, a new style tag and populate it with our CSS.
+				let styleElements = [];
 				(context.css||[]).forEach((style)=>{
-					let content = style.content;
+					let template = style.template;
 					let options = style.options;
 
-					if (options.overwrite) css = content;
-					else css += content+"\n";
+					if (options.overwrite) {
+						styleElements.forEach((e)=>{
+							[...e.children].forEach((ec)=>{
+								ec.remove();
+							});
+						});
+					}
+
+					let clone = document.importNode(template.content,true);
+					styleElements.push(clone);
+					shadow.appendChild(clone);
 				});
-				if (css) {
-					let styleElement = document.createElement("style");
-					styleElement.textContent = css;
-					shadow.appendChild(styleElement);
-				}
 
 				// Handle image resources
 				if (context.images) {
@@ -1404,196 +1418,217 @@ class ZephElementClass {
 				// you create new elements with document.createElement()
 				//
 				// so, we do this as a timeout.
-				setTimeout(()=>{
-					// Add our attributes
-					if (context.attributes) {
-						Object.values(context.attributes).forEach((attr)=>{
-							let value = element.hasAttribute(attr.attributeName) ? element.getAttribute(attr.attributeName) : attr.initialValue;
+				//
+				// But instead of a single timeout for each created element,
+				// we create a queue of pending created elements and
+				// a single timeout for all pending created elements. The
+				// single timeout can process a bunch of pending elements
+				// at one go around and we are less blocked by the event
+				// queue.
+				const setupComponent = function setupComponent() {
+					let all = setupqueue;
+					setupqueue = [];
 
-							if (value===undefined || value===null) element.removeAttribute(attr.attributeName);
-							else element.setAttribute(attr.attributeName,attr.transformFunction ? attr.transformFunction(value) : value);
-						});
-					}
+					setup = null;
 
-					// Add our properties
-					if (context.properties) {
-						Object.values(context.properties).forEach((prop)=>{
-							let value = element[prop.propertyName]!==undefined ? element[prop.propertyName] : prop.initialValue;
+					all.forEach(({element,shadow,context})=>{
+						// Add our attributes
+						if (context.attributes) {
+							Object.values(context.attributes).forEach((attr)=>{
+								let value = element.hasAttribute(attr.attributeName) ? element.getAttribute(attr.attributeName) : attr.initialValue;
 
-							propetize(element,prop.propertyName,{
-								get: ($super)=>{
-									if ($super) return $super();
-									return value;
-								},
-								set: (val,$super)=>{
-									val = prop.transformFunction ? prop.transformFunction(val) : val;
-									if ($super) val = $super(val);
-									value = val;
-
-									(prop.changes||[]).forEach((listener)=>{
-										listener(prop.propertyName,val,element,shadow);
-									});
-								}
+								if (value===undefined || value===null) element.removeAttribute(attr.attributeName);
+								else element.setAttribute(attr.attributeName,attr.transformFunction ? attr.transformFunction(value) : value);
 							});
+						}
 
-							element[prop.propertyName] = element[prop.propertyName]===undefined ? prop.initialValue : element[prop.propertyName];
-						});
-					}
+						// Add our properties
+						if (context.properties) {
+							Object.values(context.properties).forEach((prop)=>{
+								let value = element[prop.propertyName]!==undefined ? element[prop.propertyName] : prop.initialValue;
 
-					// fire our create event. We need to do this here and immediately
-					// so the onCreate handlers can do whatever setup they need to do
-					// before we go off and register bindings and events.
-					fireImmediately(context && context.lifecycle && context.lifecycle.create || [],this,this.shadowRoot);
+								propetize(element,prop.propertyName,{
+									get: ($super)=>{
+										if ($super) return $super();
+										return value;
+									},
+									set: (val,$super)=>{
+										val = prop.transformFunction ? prop.transformFunction(val) : val;
+										if ($super) val = $super(val);
+										value = val;
 
-					// register our bindings
-					if (context.bindings) {
-						Object.keys(context.bindings).forEach((name)=>{
-							let binding = context.bindings[name];
-							if (!binding) return;
-
-							let srcele = binding.source.element;
-							if (srcele===".") srcele = [element];
-							else if (typeof srcele==="string") srcele = [...shadow.querySelectorAll(srcele)];
-							else if (srcele instanceof HTMLElement) srcele = [srcele];
-
-							srcele.forEach((srcele)=>{
-								let handler;
-								if (binding.target.name.startsWith("@")) {
-									handler = (value)=>{
-										let name = binding.target.name.slice(1);
-										value = binding.transform(value);
-										let targets = binding.target.element==="." && [element] || binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
-										targets.forEach((target)=>{
-											if (value===undefined) {
-												target.removeAttribute(name);
-											}
-											else if (target.getAttribute(name)!==value) {
-												target.setAttribute(name,value);
-											}
+										(prop.changes||[]).forEach((listener)=>{
+											listener(prop.propertyName,val,element,shadow);
 										});
-									};
-								}
-								else if (binding.target.name.startsWith(".")) {
-									handler = (value)=>{
-										let name = binding.target.name.slice(1);
-										value = binding.transform(value);
-										let targets = binding.target.element==="." && [element] || binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
-										targets.forEach((target)=>{
-											if (value===undefined) {
-												delete target[name];
-											}
-											else if (target[name]!==value) {
-												target[name] = value;
-											}
-										});
-									};
-								}
-								else if (binding.target.name==="$") {
-									handler = (value)=>{
-										value = binding.transform(value);
-										if (value===undefined) return;
-										let targets = binding.target.element==="." && [element] || binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
-										targets.forEach((target)=>{
-											if (target.textContent!==value) target.textContent = value===undefined || value===null ? "" : value;
-										});
-									};
-								}
-								else {
-									/* eslint-disable no-console */
-									console.warn("Unable to handle binding to '"+binding.target.name+"'; Must start with '@' or '$' or '.'.");
-									/* eslint-enable no-console */
-									return;
-								}
+									}
+								});
 
-								if (!srcele[$OBSERVER]) {
-									srcele[$OBSERVER] = new ZephObserver(srcele);
-									srcele[$OBSERVER].start();
-								}
+								element[prop.propertyName] = element[prop.propertyName]===undefined ? prop.initialValue : element[prop.propertyName];
+							});
+						}
 
-								// first we run the handler for the initial alignment,
-								// then we register the observer.
-								let observer = srcele[$OBSERVER];
-								if (binding.source.name.startsWith("@")) {
-									let name = binding.source.name.slice(1);
-									if (srcele.hasAttribute(name)) {
-										let value =  srcele.getAttribute(name);
-										handler(value,name,srcele);
+						// fire our create event. We need to do this here and immediately
+						// so the onCreate handlers can do whatever setup they need to do
+						// before we go off and register bindings and events.
+						fireImmediately(context && context.lifecycle && context.lifecycle.create || [],this,this.shadowRoot);
+
+						// register our bindings
+						if (context.bindings) {
+							Object.keys(context.bindings).forEach((name)=>{
+								let binding = context.bindings[name];
+								if (!binding) return;
+
+								if (binding.target.element===".") binding.target.element = element;
+
+								let srcele = binding.source.element;
+								if (srcele===".") srcele = [element];
+								else if (typeof srcele==="string") srcele = [...shadow.querySelectorAll(srcele)];
+								else if (srcele instanceof HTMLElement) srcele = [srcele];
+
+								srcele.forEach((srcele)=>{
+									let handler;
+									if (binding.target.name.startsWith("@")) {
+										handler = (value)=>{
+											let name = binding.target.name.slice(1);
+											value = binding.transform(value);
+											let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+											targets.forEach((target)=>{
+												if (value===undefined) {
+													target.removeAttribute(name);
+												}
+												else if (target.getAttribute(name)!==value) {
+													target.setAttribute(name,value);
+												}
+											});
+										};
+									}
+									else if (binding.target.name.startsWith(".")) {
+										handler = (value)=>{
+											let name = binding.target.name.slice(1);
+											value = binding.transform(value);
+											let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+											targets.forEach((target)=>{
+												if (value===undefined) {
+													delete target[name];
+												}
+												else if (target[name]!==value) {
+													target[name] = value;
+												}
+											});
+										};
+									}
+									else if (binding.target.name==="$") {
+										handler = (value)=>{
+											value = binding.transform(value);
+											if (value===undefined) return;
+											let targets = binding.target.element instanceof HTMLElement && [binding.target.element] || [...shadow.querySelectorAll(binding.target.element)] || [];
+											targets.forEach((target)=>{
+												if (target.textContent!==value) target.textContent = value===undefined || value===null ? "" : value;
+											});
+										};
+									}
+									else {
+										/* eslint-disable no-console */
+										console.warn("Unable to handle binding to '"+binding.target.name+"'; Must start with '@' or '$' or '.'.");
+										/* eslint-enable no-console */
+										return;
 									}
 
-									observer.addAttributeObserver(name,handler);
-								}
-								else if (binding.source.name.startsWith(".")) {
-									let name = binding.source.name.slice(1);
+									if (!srcele[$OBSERVER]) {
+										srcele[$OBSERVER] = new ZephObserver(srcele);
+										srcele[$OBSERVER].start();
+									}
 
-									context.properties = context.properties || {};
-									if (!context.properties[name]) {
-										context.properties[name] = {
-											propertyName: name,
-											changes: [],
-											value: element[name]
-										};
+									// first we run the handler for the initial alignment,
+									// then we register the observer.
+									let observer = srcele[$OBSERVER];
+									if (binding.source.name.startsWith("@")) {
+										let name = binding.source.name.slice(1);
+										if (srcele.hasAttribute(name)) {
+											let value =  srcele.getAttribute(name);
+											handler(value,name,srcele);
+										}
+
+										observer.addAttributeObserver(name,handler);
+									}
+									else if (binding.source.name.startsWith(".")) {
+										let name = binding.source.name.slice(1);
+
+										context.properties = context.properties || {};
+										if (!context.properties[name]) {
+											context.properties[name] = {
+												propertyName: name,
+												changes: [],
+												value: element[name]
+											};
+
+											let prop = context.properties[name];
+											propetize(element,name,{
+												get: ($super)=>{
+													if ($super) return $super();
+													return prop.value;
+												},
+												set: (value,$super)=>{
+													let val = prop.transformFunction ? prop.transformFunction(value) : value;
+													if ($super) $super(val);
+													prop.value = val;
+
+													(prop.changes||[]).forEach((listener)=>{
+														listener(prop.propertyName,val,element,shadow);
+													});
+												}
+											});
+										}
 
 										let prop = context.properties[name];
-										propetize(element,name,{
-											get: ($super)=>{
-												if ($super) return $super();
-												return prop.value;
-											},
-											set: (value,$super)=>{
-												let val = prop.transformFunction ? prop.transformFunction(value) : value;
-												if ($super) $super(val);
-												prop.value = val;
-
-												(prop.changes||[]).forEach((listener)=>{
-													listener(prop.propertyName,val,element,shadow);
-												});
-											}
+										prop.changes = prop.changes || [];
+										prop.changes.push((name,value)=>{
+											handler(value);
 										});
 									}
+									else if (binding.source.name==="$") {
+										let value = srcele.textContent;
+										handler(value,null,srcele);
 
-									let prop = context.properties[name];
-									prop.changes = prop.changes || [];
-									prop.changes.push((name,value)=>{
-										handler(value);
-									});
-								}
-								else if (binding.source.name==="$") {
-									let value = srcele.textContent;
-									handler(value,null,srcele);
-
-									observer.addContentObserver(handler);
-								}
-								else {
-									/* eslint-disable no-console */
-									console.warn("Unable to handle binding to '"+binding.target.name+"'; Must start with '@' or '$' or '.'.");
-									/* eslint-enable no-console */
-									return;
-								}
-							});
-						});
-					}
-
-					// register events from onEvent
-					if (context.events) {
-						context.events.forEach((obj)=>{
-							this.addEventListener(obj.eventName,(event)=>{
-								obj.listener.call(element,event,element,shadow);
-							});
-						});
-					}
-
-					// register events from onEventAt
-					if (context.eventsAt) {
-						context.eventsAt.forEach((obj)=>{
-							let selected = [...shadow.querySelectorAll(obj.selector)];
-							selected.forEach((sel)=>{
-								sel.addEventListener(obj.eventName,(event)=>{
-									obj.listener.call(sel,event,sel,element,shadow);
+										observer.addContentObserver(handler);
+									}
+									else {
+										/* eslint-disable no-console */
+										console.warn("Unable to handle binding to '"+binding.target.name+"'; Must start with '@' or '$' or '.'.");
+										/* eslint-enable no-console */
+										return;
+									}
 								});
 							});
-						});
-					}
-				},0);
+						}
+
+						// register events from onEvent
+						if (context.events) {
+							context.events.forEach((obj)=>{
+								this.addEventListener(obj.eventName,(event)=>{
+									obj.listener.call(element,event,element,shadow);
+								});
+							});
+						}
+
+						// register events from onEventAt
+						if (context.eventsAt) {
+							context.eventsAt.forEach((obj)=>{
+								let selected = [...shadow.querySelectorAll(obj.selector)];
+								selected.forEach((sel)=>{
+									sel.addEventListener(obj.eventName,(event)=>{
+										obj.listener.call(sel,event,sel,element,shadow);
+									});
+								});
+							});
+						}
+					});
+				};
+
+				setupqueue.push({element,shadow,context});
+				if (setup) return;
+
+				setup = setTimeout(setupComponent,0);
 			}
 
 			/**

@@ -1,4 +1,15 @@
-# ZephJS
+<a href="https://www.npmjs.com/package/zephjs">![npm](https://img.shields.io/npm/v/zephjs.svg "npm Details")</a>
+<a href="./LICENSE">![GitHub](https://img.shields.io/github/license/awesomeeng/zephjs.svg "License Details")</a>
+<a href="http://npm-stats.com/~packages/zephjs">![npm](https://img.shields.io/npm/dt/zephjs.svg "npm download stats")</a>
+<a href="https://github.com/awesomeeng/zephjs/graphs/contributors">![GitHub contributors](https://img.shields.io/github/contributors-anon/awesomeeng/zephjs.svg "Github Contributors")</a>
+<a href="https://github.com/awesomeeng/zephjs/commits/master">![GitHub last commit](https://img.shields.io/github/last-commit/awesomeeng/zephjs.svg "Github Commit Log")</a>
+<a href="https://twitter.com/zeph_js">![Twitter Follow](https://img.shields.io/twitter/follow/zeph_js.svg "Follow us on Twitter!")</a>
+<br/><a href="https://nodejs.org/en/">![node](https://img.shields.io/node/v/zephjs.svg "NodeJS")</a>
+<a href="https://github.com/awesomeeng/zephjs/issues">![GitHub issues](https://img.shields.io/github/issues/awesomeeng/zephjs.svg "Github Issues")</a>
+<a href="https://snyk.io/vuln/search?type=npm&q=zephjs">![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/awesomeeng/zephjs.svg "Synk Vulnerabilities Database")</a>
+<a href="https://libraries.io/npm/zephjs">![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/zephjs.svg "Libraries.io Page")</a>
+
+#  ZephJS
 
 ZephJS is an easy, understandable, and ultra-light framework for defining and using Web Components. It is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want all the weight of a modern JavaScript Browser framework. ZephJS simplifies the process of defining custom Web Components into a declarative highly readable structure that uses standard JavaScript, standard HTML markup, and standard CSS Styling.
 
@@ -53,8 +64,13 @@ Pick the best way to get started for you and start using ZephJS today!
 
 ZephJS Provides a ton of documentation to help you use it...
 
+**Getting Started**
+ - [Introducing ZephJS](./docs/Introducing.md)
+ - [Component Quick Start Guide](./docs/ComponentQuickStart.md)
+ - [Frequently Asked Questions](./docs/FAQ.md)
+
 **Components**
- - [Quick Start](./docs/ComponentQuickStart.md)
+ - [Component Quick Start Guide](./docs/ComponentQuickStart.md)
  - [Component Concepts](./docs/ComponentConcepts.md)
  - [Creating a New Component](./docs/ComponentCreation.md)
  - [Importing ZephJS](./docs/ComponentImporting.md)
@@ -122,12 +138,12 @@ The following browser compatability chart indicates which browsers are supported
 
 | Browser                     | Minimum Required Version | Notes
 |-----------------------------|--------------------------|----------------------------
-| Microsoft Internet Explorer | NOT SUPPORTED            | No support as of v11.
-| Microsoft Edge              | NOT SUPPORTED            | No support as of v18, but in development
 | **Firefox**                 | 63                       | |
 | **Chrome**                  | 54                       | |
 | **Safari**                  | 10.1                     | :host and ::slotted psuedo-selectors are buggy.
 | **Opera**                   | 41                       | |
+| **Microsoft Edge**          | 15 (with Polyfill)       | Requires use of Polymer polyfill. See [ZephJS Polyfill Documentation](./docs/Polyfill.md).
+| Microsoft Internet Explorer | NOT SUPPORTED            | |
 | **IOS Safari**              | 10.3                     | :host and ::slotted psuedo-selectors are buggy.
 | **Android Browser**         | 67                       | |
 | Blackberry Browser          | NOT SUPPORTED            | No support as ov v10.
@@ -148,6 +164,10 @@ ZephJS is written and maintained by The Awesome Engineering Company. The Awesome
 To learn more about The Awesome Engineering Company and our suite of products, visit us on the web at https://awesomeeng.com.
 
 ## Support and Help
+
+If you need help working with ZephJS, please do not hesitate to reach out for help.  Submit an issue with your help request and we will answer as quickly as we can!
+
+Also, if you find any bugs or typos, please make sure to submit an issue as well.
 
 ## License
 
