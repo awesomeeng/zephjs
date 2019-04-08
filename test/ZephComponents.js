@@ -123,12 +123,12 @@ describe("ZephComponents",function(){
 		assert(component.context.html);
 		assert.equal(component.context.html.length,1);
 		assert(component.context.html[0]);
-		assert.equal(component.context.html[0].content,"<div></div>");
+		assert(component.context.html[0].template);
 
 		assert(component.context.css);
 		assert.equal(component.context.css.length,1);
 		assert(component.context.css[0]);
-		assert.equal(component.context.css[0].content,"/*some css*/");
+		assert(component.context.css[0].template);
 
 		assert(component.context.attributes);
 		assert(component.context.attributes.xyz);
