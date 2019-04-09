@@ -145,7 +145,7 @@ But if you are more interested in a specific area...
    - [Inheritance](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentInheritance.md)
    - [HTML](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentMarkup.md)
    - [CSS](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentStyling.md)
-   - [Resources](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentResources.md)
+   - [Resources](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentAssets.md)
    - [Attributes](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentAttributes.md)
    - [Properties](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentProperties.md)
    - [Lifecycle Handlers](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentLifecycleHandlers.md)

@@ -78,7 +78,7 @@ ZephJS Provides a ton of documentation to help you use it...
  - [Inheritance](./docs/ComponentInheritance.md)
  - [HTML](./docs/ComponentMarkup.md)
  - [CSS](./docs/ComponentStyling.md)
- - [Resources](./docs/ComponentResources.md)
+ - [Resources](./docs/ComponentAssets.md)
  - [Attributes](./docs/ComponentAttributes.md)
  - [Properties](./docs/ComponentProperties.md)
  - [Lifecycle Handlers](./docs/ComponentLifecycleHandlers.md)
