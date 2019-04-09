@@ -669,6 +669,41 @@ class ZephComponentExecution {
 		this.context.pending.push(prom);
 	}
 
+	/**
+	 * @summary
+	 *
+	 * Definition Method to associate some external asset like
+	 * an image, audio clip, or video, with some element within
+	 * the components internal content.
+	 *
+	 * In order for asset() to assoicate you must provide both
+	 * the CSS Query Selector you want to associate to, and a
+	 * url or filename to the external asset you want associated.
+	 *
+	 * The association is done by converting the asset into its
+	 * base64 encoded binary data and making it part of a data:
+	 * url.  This url is then associated with the appropriate
+	 * `src` attribute on the selected elements. (The associating
+	 * attribute can be changed with the `target` option.)
+	 *
+	 * asset() is really powerful for bundling purposes as the
+	 * CLI bundle command will download the asset and inline
+	 * the content as a data: url this allowing one to ship
+	 * both the component and its dependant resources.
+	 *
+	 * It should be noted, however, that using this approach can
+	 * explode your asset sizes by up to 4 times and is not
+	 * recommended in all scenarios.
+	 *
+	 * @param {string} selector
+	 * @param {string} url
+	 * @param {Object} [options={}]
+	 * @param  [options.target=false] {boolean}
+	 * @return {void}
+	 *
+	 * @exports asset
+	 * @kind function
+	 */
 	asset(selector,url,options={}) {
 		check.not.uon(selector,"selector");
 		check.string(selector,"selector");
