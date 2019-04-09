@@ -679,7 +679,7 @@ class ZephComponentExecution {
 		if (!urlstr.match(/^data:|^http:\/\/|^https:\/\/|^ftp:\/\/|^\.\/|^\.\.\//)) throw new Error("Url must be a valid url (http, https, ftp), or a relative filename, or a data url.");
 
 		options = Object.assign({
-			target: "auto"
+			target: "src"
 		},options||{});
 
 		let prom = utils.tryprom(async (resolve)=>{
@@ -1406,16 +1406,13 @@ class ZephElementClass {
 						let srcstr = "data:"+type+";base64,"+data;
 						let urlstr = "url('"+srcstr+"')";
 
-						let target = asset.options && asset.options.target && asset.options.target.toLowerCase() || "auto";
+						let target = asset.options && asset.options.target || "src";
 						let flavor = type.replace(/^([^/]+)\/.*$/g,"$1");
-						if (flavor!=="image" && target==="style") target = "auto";
 
 						elements.forEach((e)=>{
 							let tag = e.tagName.toLowerCase();
-							if (flavor==="image" && (target==="auto" || target==="style") && tag!=="img") e.style.backgroundImage = urlstr;
-							else if (flavor==="image" && (target==="auto" || target==="tag") && tag==="img") e.setAttribute("src",srcstr);
-							else if (flavor==="video" && tag==="video") e.setAttribute("src",srcstr);
-							else if (flavor==="audio" && tag==="audio") e.setAttribute("src",srcstr);
+							if (flavor==="image" && tag!=="img") e.style.backgroundImage = urlstr;
+							else e.setAttribute(target,srcstr);
 						});
 					});
 				}
