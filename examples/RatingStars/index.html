@@ -4,39 +4,42 @@
 		<meta charset="utf-8">
 		<title>Zeph - Examples - RatingStars</title>
 		<script src="./rating-stars.min.js" type="module"></script>
+		<script src="./movie-player.min.js" type="module"></script>
 		<style>
 			body {
 				font-family: sans-serif;
 			}
 
 			.rate {
-				display: grid;
-				grid-template-columns: auto 100%;
-				grid-column-gap: 25px;
-				grid-row-gap: 25px;
-				align-items: center;
-				font-size: 24px;
-				margin-left: 20px;
+				font-size: 20px;
+				margin-left: 5px;
+				margin-top: 20px;
+			}
+
+			.rate > label {
+				display: block;
+				margin-bottom: 5px;
+			}
+
+			.rate > rating-stars {
+				display: block;
+				margin-left: 10px;
 			}
 		</style>
 	</head>
 	<body>
-		<h2>Rate the Bob's Burgers Characters!</h2>
+		<movie-player></movie-player>
 		<div class="rate">
-			<rating-stars name="bob_belcher" value="4"></rating-stars>
-			<label>Bob Belcher</label>
-
-			<rating-stars name="linda_belcher" value="0"></rating-stars>
-			<label>Linda Belcher</label>
-
-			<rating-stars name="tina_belcher" value="0"></rating-stars>
-			<label>Tina Belcher</label>
-
-			<rating-stars name="gene_belcher" value="0"></rating-stars>
-			<label>Gene Belcher</label>
-
-			<rating-stars name="louise_belcher" value="0"></rating-stars>
-			<label>Louise Belcher</label>
+			<label>What did you think of this video? </label>
+			<rating-stars name="think" value="3"></rating-stars>
+		</div>
+		<div class="rate">
+			<label>Was the quality good? </label>
+			<rating-stars name="quality" value="4"></rating-stars>
+		</div>
+		<div class="rate">
+			<label>Would you watch it again? </label>
+			<rating-stars name="rewatch" value="1"></rating-stars>
 		</div>
 	</body>
 </html>

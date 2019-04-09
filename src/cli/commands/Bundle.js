@@ -26,6 +26,26 @@ For more details about ZephJS, please visit https://zephjs.com
 */
 `; // must be on its own line!
 
+// Parse our known mimetypes and add to our allowed
+// asset extensions if the mimetype is an asset type.
+const extensions = [];
+(()=>{
+	let image =[];
+	let audio =[];
+	let video =[];
+	Object.keys(AwesomeUtils.MimeTypes.mimetypes).forEach((type)=>{
+		let flavor = type.replace(/^([^/]+)\/.*$/g,"$1");
+		if (flavor==="image") image.concat(AwesomeUtils.MimeTypes.getExtensionForType(type).split(" "));
+		if (flavor==="audio") audio.concat(AwesomeUtils.MimeTypes.getExtensionForType(type).split(" "));
+		if (flavor==="video") video.concat(AwesomeUtils.MimeTypes.getExtensionForType(type).split(" "));
+	});
+
+	([].concat(image,audio,video)).forEach((ext)=>{
+		ext = "."+ext;
+		extensions.push(ext);
+	});
+})();
+
 class Bundle extends AwesomeCLI.AbstractCommand {
 	constructor() {
 		super();
@@ -112,7 +132,7 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 					banner: BANNER
 				});
 
-				if (!quiet) console.log("\nWriting output to "+target+".");
+				if (!quiet) console.log("\nWriting output to "+target+".\n");
 
 				resolve();
 			}
@@ -153,7 +173,8 @@ const loader = function loader(url,rootDir,encoding="utf-8") {
 				if (!response) return reject("URL did not return anything.");
 
 				let data = await response.content;
-				resolve(data);
+				let mimetype = response.contentType;
+				resolve({data,mimetype});
 			}
 			else {
 				url = Path.resolve(rootDir,url);
@@ -161,7 +182,10 @@ const loader = function loader(url,rootDir,encoding="utf-8") {
 					encoding: encoding
 				},(err,data)=>{
 					if (err) return reject(err);
-					resolve(data);
+					resolve({
+						data,
+						mimetype: null
+					});
 				});
 			}
 		}
@@ -194,7 +218,7 @@ const inlineReferences = async function inlineReferences(code,origin,quiet) {
 					let revised = null;
 					if (node.callee.name==="html") revised = await inlineHTML(root,code,offset,node,quiet);
 					else if (node.callee.name==="css") revised = await inlineCSS(root,code,offset,node,quiet);
-					else if (node.callee.name==="image") revised = await inlineImage(root,code,offset,node,quiet);
+					else if (node.callee.name==="asset") revised = await inlineAsset(root,code,offset,node,quiet);
 					if (revised) {
 						code = revised.code;
 						offset = revised.offset;
@@ -248,7 +272,7 @@ const inlineHTML = function inlineHTML(root,code,offset,node,quiet) {
 			let data = null;
 			if (filename.startsWith("http:") || filename.startsWith("https:") || filename.startsWith("ftp:")) {
 				if (!quiet) console.log("  "+filename);
-				data = await loader(filename);
+				({data} = await loader(filename));
 			}
 			else {
 				// data is not a filename and probably inline content.
@@ -256,9 +280,9 @@ const inlineHTML = function inlineHTML(root,code,offset,node,quiet) {
 				if (!filename) return;
 
 				if (!quiet) console.log("  "+filename);
-				data = await loader(filename);
+				({data} = await loader(filename));
 			}
-			if (!data) return reject("Could not find inline reference to "+filename+".");
+			if (data===undefined || data===null) return reject("Could not find inline reference to "+filename+".");
 
 			code = code.slice(0,start+offset)+"`"+data.replace(/`/g,"\\`")+"`"+code.slice(end+offset);
 			offset += (data.length-length);
@@ -305,7 +329,7 @@ const inlineCSS = function inlineCSS(root,code,offset,node,quiet) {
 			let data = null;
 			if (filename.startsWith("http:") || filename.startsWith("https:") || filename.startsWith("ftp:")) {
 				if (!quiet) console.log("  "+filename);
-				data = await loader(filename);
+				({data} = await loader(filename));
 			}
 			else {
 				// data is not a filename and probably inline content.
@@ -313,9 +337,9 @@ const inlineCSS = function inlineCSS(root,code,offset,node,quiet) {
 				if (!filename) return;
 
 				if (!quiet) console.log("  "+filename);
-				data = await loader(filename);
+				({data} = await loader(filename));
 			}
-			if (!data) return reject("Could not find inline reference to "+filename+".");
+			if (data===undefined || data===null) return reject("Could not find inline reference to "+filename+".");
 
 			code = code.slice(0,start+offset)+"`"+data.replace(/`/g,"\\`")+"`"+code.slice(end+offset);
 			offset += (data.length-length);
@@ -328,7 +352,7 @@ const inlineCSS = function inlineCSS(root,code,offset,node,quiet) {
 	});
 };
 
-const inlineImage = function inlineImage(root,code,offset,node,quiet) {
+const inlineAsset = function inlineAsset(root,code,offset,node,quiet) {
 	return new Promise(async (resolve,reject)=>{
 		try {
 			if (!node) return resolve();
@@ -339,7 +363,7 @@ const inlineImage = function inlineImage(root,code,offset,node,quiet) {
 			if (node.callee.type!=="Identifier") return resolve();
 
 			if (!node.callee.name) return resolve();
-			if (node.callee.name!=="image") return resolve();
+			if (node.callee.name!=="asset") return resolve();
 
 			if (!node.arguments) return resolve();
 			if (!(node.arguments instanceof Array)) return resolve();
@@ -350,9 +374,9 @@ const inlineImage = function inlineImage(root,code,offset,node,quiet) {
 			let arg = args.length===1 ? args[0] : args[1];
 			if (!arg) return resolve();
 
-			if (!arg.type || !arg.value) return reject("image() statement was not syntactically valid.");
+			if (!arg.type || !arg.value) return reject("asset() statement was not syntactically valid.");
 			if (arg.type==="TemplateLiteral") return resolve(); // template literals are allowed for raw content.
-			if (arg.type!=="Literal") return reject("image() statement may only be a string literal.");
+			if (arg.type!=="Literal") return reject("asset() statement may only be a string literal.");
 
 			let start = arg.start;
 			let end = arg.end;
@@ -360,21 +384,26 @@ const inlineImage = function inlineImage(root,code,offset,node,quiet) {
 			let filename = arg.value;
 
 			let data = null;
+			let mimetype = null;
 			if (filename.startsWith("http:") || filename.startsWith("https:") || filename.startsWith("ftp:")) {
 				if (!quiet) console.log("  "+filename);
-				data = await loader(filename,filename,null);
+				({data,mimetype} = await loader(filename,filename,null));
 			}
 			else {
 				// data is not a filename and probably inline content.
-				filename = resolveFilename(root,filename,[".png",".gif",".jpg",".jpeg",".apng",".svg",".icon",".ico",".bmp"]);
+				filename = resolveFilename(root,filename,extensions);
+
 				if (!filename) return;
 
 				if (!quiet) console.log("  "+filename);
-				data = await loader(filename,filename,null);
+				({data,mimetype} = await loader(filename,filename,null));
+
+				if (!mimetype) mimetype = AwesomeUtils.MimeTypes.getTypeForExtension(Path.extname(filename));
 			}
 			if (!data) return reject("Could not find inline reference to "+filename+".");
 
-			data = "data:image/png;base64,"+data.toString("base64");
+			if (!mimetype) return reject("asset() could not associate valid mime type with filename: "+filename);
+			data = "data:"+mimetype+";base64,"+data.toString("base64");
 
 			code = code.slice(0,start+offset)+"`"+data+"`"+code.slice(end+offset);
 			offset += (data.length-length);
