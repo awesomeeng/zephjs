@@ -41,11 +41,12 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 	});
 
 	it("definition methods",async function(){
-		await ZephComponents.define("text-component0",({from,alias,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt})=>{
+		await ZephComponents.define("text-component0",({from,alias,html,css,asset,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt})=>{
 			assert(from);
 			assert(alias);
 			assert(html);
 			assert(css);
+			assert(asset);
 			assert(attribute);
 			assert(property);
 			assert(bind);
@@ -79,11 +80,14 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 	});
 
 	it("context",async function(){
-		let component = await ZephComponents.define("test-component2",({html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt})=>{
+		let component = await ZephComponents.define("test-component2",({html,css,asset,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt})=>{
 			html("<div></div>",{
 				noRemote: true
 			});
 			css("/*some css*/",{
+				noRemote: true
+			});
+			asset(".someElement","data:image/png;base64,AAAAAAAA=",{
 				noRemote: true
 			});
 
@@ -130,6 +134,14 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 		assert.equal(component.context.css.length,1);
 		assert(component.context.css[0]);
 		assert(component.context.css[0].template);
+
+		assert(component.context.assets);
+		assert.equal(component.context.assets.length,1);
+		assert(component.context.assets[0]);
+		assert.equal(component.context.assets[0].selector,".someElement");
+		assert.equal(component.context.assets[0].contentType,"image/png");
+		assert.equal(component.context.assets[0].data,"AAAAAAAA=");
+		assert(component.context.assets[0].options);
 
 		assert(component.context.attributes);
 		assert(component.context.attributes.xyz);
@@ -183,11 +195,14 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 	});
 
 	it("inheritance",async function(){
-		await ZephComponents.define("test-parent3",({html,css,attribute,property,bind,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt})=>{
+		await ZephComponents.define("test-parent3",({html,css,asset,attribute,property,bind,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt})=>{
 			html("<div>parent</div>",{
 				noRemote: true
 			});
 			css("/*parent css*/",{
+				noRemote: true
+			});
+			asset(".parentElement","data:image/png;base64,AAAAAAAA=",{
 				noRemote: true
 			});
 			attribute("xyz",123);
@@ -202,12 +217,15 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 			onEvent("click",()=>{});
 			onEventAt("div","click",()=>{});
 		});
-		let component = await ZephComponents.define("test-component3",({from,html,css,attribute,property,bind,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt})=>{
+		let component = await ZephComponents.define("test-component3",({from,html,css,asset,attribute,property,bind,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt})=>{
 			from("test-parent3");
 			html("<div>child</div>",{
 				noRemote: true
 			});
 			css("/*child css*/",{
+				noRemote: true
+			});
+			asset(".childElement","data:image/png;base64,AAAAAAAA=",{
 				noRemote: true
 			});
 			attribute("xyz",123);
@@ -250,6 +268,19 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 		assert.equal(component.context.css.length,2);
 		assert(component.context.css[0]);
 		assert(component.context.css[1]);
+
+		assert(component.context.assets);
+		assert.equal(component.context.assets.length,2);
+		assert(component.context.assets[0]);
+		assert.equal(component.context.assets[0].selector,".parentElement");
+		assert.equal(component.context.assets[0].contentType,"image/png");
+		assert.equal(component.context.assets[0].data,"AAAAAAAA=");
+		assert(component.context.assets[0].options);
+		assert(component.context.assets[1]);
+		assert.equal(component.context.assets[1].selector,".childElement");
+		assert.equal(component.context.assets[1].contentType,"image/png");
+		assert.equal(component.context.assets[1].data,"AAAAAAAA=");
+		assert(component.context.assets[1].options);
 
 		assert(component.context.attributes);
 		assert.equal(Object.keys(component.context.attributes).length,1);
@@ -299,4 +330,5 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 		assert(component.context.eventsAt[0]);
 		assert(component.context.eventsAt[1]);
 	});
+
 });

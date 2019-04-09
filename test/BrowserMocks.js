@@ -93,6 +93,7 @@ global.window.Event = Event;
 global.window.HTMLElement = Event;
 global.window.URL = NodeURL.URL;
 global.window.fetch = fetch;
+global.window.ShadowRoot = {};
 
 global.window.document = {};
 global.window.document.URL = new NodeURL.URL("http://localhost/");
@@ -101,6 +102,8 @@ global.window.document.addEventListener = addEventListener;
 global.window.document.removeEventListener = removeEventListener;
 global.window.document.createElement = createElement;
 global.window.document.importNode = importNode;
+global.window.document.body = {};
+global.window.document.body.attachShadow = ()=>{};
 
 Object.keys(global.window).forEach((key)=>{
 	global[key] = global.window[key];

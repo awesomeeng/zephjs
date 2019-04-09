@@ -22,7 +22,7 @@ require("./BrowserMocks");
 const assert = require("assert");
 
 const ZephComponents = require("../src/Zeph.js").ZephComponents;
-const {from,alias,html,css,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt} = require("../src/Zeph.js");
+const {from,alias,html,css,asset,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt} = require("../src/Zeph.js");
 
 describe("ZephComponents",function(){
 	beforeEach(()=>{
@@ -46,6 +46,7 @@ describe("ZephComponents",function(){
 		assert(alias);
 		assert(html);
 		assert(css);
+		assert(asset);
 		assert(attribute);
 		assert(property);
 		assert(bind);
@@ -83,6 +84,9 @@ describe("ZephComponents",function(){
 				noRemote: true
 			});
 			css("/*some css*/",{
+				noRemote: true
+			});
+			asset(".someElement","data:image/png;base64,AAAAAAAA=",{
 				noRemote: true
 			});
 
@@ -129,6 +133,14 @@ describe("ZephComponents",function(){
 		assert.equal(component.context.css.length,1);
 		assert(component.context.css[0]);
 		assert(component.context.css[0].template);
+
+		assert(component.context.assets);
+		assert.equal(component.context.assets.length,1);
+		assert(component.context.assets[0]);
+		assert.equal(component.context.assets[0].selector,".someElement");
+		assert.equal(component.context.assets[0].contentType,"image/png");
+		assert.equal(component.context.assets[0].data,"AAAAAAAA=");
+		assert(component.context.assets[0].options);
 
 		assert(component.context.attributes);
 		assert(component.context.attributes.xyz);
@@ -189,6 +201,9 @@ describe("ZephComponents",function(){
 			css("/*parent css*/",{
 				noRemote: true
 			});
+			asset(".parentElement","data:image/png;base64,AAAAAAAA=",{
+				noRemote: true
+			});
 			attribute("xyz",123);
 			property("xyz",456);
 			bind("@xyz","div");
@@ -207,6 +222,9 @@ describe("ZephComponents",function(){
 				noRemote: true
 			});
 			css("/*child css*/",{
+				noRemote: true
+			});
+			asset(".childElement","data:image/png;base64,AAAAAAAA=",{
 				noRemote: true
 			});
 			attribute("xyz",123);
@@ -249,6 +267,19 @@ describe("ZephComponents",function(){
 		assert.equal(component.context.css.length,2);
 		assert(component.context.css[0]);
 		assert(component.context.css[1]);
+
+		assert(component.context.assets);
+		assert.equal(component.context.assets.length,2);
+		assert(component.context.assets[0]);
+		assert.equal(component.context.assets[0].selector,".parentElement");
+		assert.equal(component.context.assets[0].contentType,"image/png");
+		assert.equal(component.context.assets[0].data,"AAAAAAAA=");
+		assert(component.context.assets[0].options);
+		assert(component.context.assets[1]);
+		assert.equal(component.context.assets[1].selector,".childElement");
+		assert.equal(component.context.assets[1].contentType,"image/png");
+		assert.equal(component.context.assets[1].data,"AAAAAAAA=");
+		assert(component.context.assets[1].options);
 
 		assert(component.context.attributes);
 		assert.equal(Object.keys(component.context.attributes).length,1);
