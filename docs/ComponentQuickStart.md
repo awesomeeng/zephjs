@@ -267,6 +267,16 @@ The CSS applies to the internal content of the element, or with the usage of the
 
 > Learn More: [CSS](./ComponentCSS.md).
 
+### Add Assets
+
+Although not included in the quick start example we wanted to take a second and talk about assets and the `asset()` definition method...
+
+You may optionally add one or more assets to your component definition.  Assets provide a means to identify specific external assets (images, audio clips, video clips) that are essential to your component and should be bundled within them when the component is bundeled for distribution.  Assets are entirely optional.
+
+You use an asset by calling the `asset()` definition method and providing two things: the CSS Query Selector of all elements to which the asset would be applied; and the filename/URL of the asset itself.  When running ZephJS unbundled the assets are downloaded as needed and then injected into the all matching elements of the CSS Query Selector.  In bundled mode, the bundle CLI command replaces the bundled filename/URL with the actual content (As a `data:` url) of the asset, thus inlining the actual asset itself.
+
+> Learn More: [Assets](./ComponentAssets.md)
+
 ### Add Attrbitues
 
 Next, we add Attributes to our component definition with the `attribute()` definition method. Doing this step is completely optional, but it will help your component be cleaner.
