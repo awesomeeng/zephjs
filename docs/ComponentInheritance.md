@@ -10,6 +10,7 @@
 - **Inheritance**
 - [HTML](./ComponentMarkup.md)
 - [CSS](./ComponentStyling.md)
+- [Resources](./ComponentAssets.md)
 - [Attributes](./ComponentAttributes.md)
 - [Properties](./ComponentProperties.md)
 - [Lifecycle Handlers](./ComponentLifecycleHandlers.md)

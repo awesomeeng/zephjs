@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>Zeph - Examples - RatingStars</title>
+		<script src="./rating-stars.js" type="module"></script>
+		<script src="./movie-player.js" type="module"></script>
+		<style>
+			body {
+				font-family: sans-serif;
+			}
+
+			.rate {
+				font-size: 20px;
+				margin-left: 5px;
+				margin-top: 20px;
+			}
+
+			.rate > label {
+				display: block;
+				margin-bottom: 5px;
+			}
+
+			.rate > rating-stars {
+				display: block;
+				margin-left: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<movie-player></movie-player>
+		<div class="rate">
+			<label>What did you think of this video? </label>
+			<rating-stars name="think" value="3"></rating-stars>
+		</div>
+		<div class="rate">
+			<label>Was the quality good? </label>
+			<rating-stars name="quality" value="4"></rating-stars>
+		</div>
+		<div class="rate">
+			<label>Would you watch it again? </label>
+			<rating-stars name="rewatch" value="1"></rating-stars>
+		</div>
+	</body>
+</html>

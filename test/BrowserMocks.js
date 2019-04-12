@@ -35,6 +35,21 @@ class CustomEvent extends Event {
 	}
 }
 
+class Element {
+	constructor(type) {
+		this.tagName = type;
+		this.innerHTML = "";
+	}
+
+	get textContent() {
+		return this.innerHTML;
+	}
+
+	set textContent(s) {
+		this.innerHTML = s;
+	}
+}
+
 const dispatchEvent = function fire(event) {
 	let ls = listeners[event.type] || [];
 	ls.forEach((l)=>{
@@ -54,6 +69,16 @@ const removeEventListener = function removeEventListener(eventType,listener) {
 	});
 };
 
+const createElement = function createElement(type) {
+	return new Element(type);
+};
+
+const importNode = function createElement(src) {
+	let tgt = new Element(src.tagName);
+	tgt.innerHTML = src.innerHTML;
+	return tgt;
+};
+
 const fetch = function fetch() {
 	return Promise.resolve({
 		statusCode: 404
@@ -68,12 +93,17 @@ global.window.Event = Event;
 global.window.HTMLElement = Event;
 global.window.URL = NodeURL.URL;
 global.window.fetch = fetch;
+global.window.ShadowRoot = {};
 
 global.window.document = {};
 global.window.document.URL = new NodeURL.URL("http://localhost/");
 global.window.document.dispatchEvent = dispatchEvent;
 global.window.document.addEventListener = addEventListener;
 global.window.document.removeEventListener = removeEventListener;
+global.window.document.createElement = createElement;
+global.window.document.importNode = importNode;
+global.window.document.body = {};
+global.window.document.body.attachShadow = ()=>{};
 
 Object.keys(global.window).forEach((key)=>{
 	global[key] = global.window[key];

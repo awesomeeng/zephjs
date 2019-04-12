@@ -1,0 +1,27 @@
+div {
+	display: flex;
+	flex-direction: row;
+}
+
+div > .star {
+	flex: 0 0 auto;
+	cursor: pointer;
+	margin-right: 3px;
+}
+
+div > .star > .set {
+	width: 0px;
+}
+
+div > .star > .unset {
+	height: 20px;
+	width: 0px;
+}
+
+div > .star[selected] > .set {
+	width: 20px;
+}
+
+div > .star:not([selected]) > .unset {
+	width: 20px;
+}
