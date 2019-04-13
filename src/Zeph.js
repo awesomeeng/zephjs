@@ -1452,7 +1452,7 @@ class ZephElementClass {
 					});
 				}
 
-				// All of the below, setting attributes, properties, bindings,
+				// All of the remaining, setting attributes, properties, bindings,
 				// must happen AFTER the constructor is complete or it violates
 				// the custom elements spec and will throw weird errors when
 				// you create new elements with document.createElement()
@@ -1544,6 +1544,19 @@ class ZephElementClass {
 	}
 }
 
+/**
+ * @private
+ *
+ * This function handles setting up a new element when the
+ * Component constructor is called.  It is everything beyond
+ * creating the shadow dom and adding the html, css, and assets.
+ * It is called by the timeout which is setup in the constructor.
+ *
+ * @param  {HTMLElement} element
+ * @param  {ShadowRoot} shadow
+ * @param  {object} context
+ * @return {void}
+ */
 const zephPopulateElement = function zephPopulateElement(element,shadow,context) {
 	// Add our attributes
 	if (context.attributes) {
