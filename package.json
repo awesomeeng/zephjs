@@ -1,6 +1,6 @@
 {
   "name": "zephjs",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "author": "the awesome engineering company",
   "license": "MIT",
   "contributors": [
@@ -18,15 +18,16 @@
     "@awesomeeng/awesome-log": "3.0.2",
     "@awesomeeng/awesome-server": "1.4.0",
     "@awesomeeng/awesome-utils": "1.4.8",
-    "@webcomponents/webcomponentsjs": "^2.2.7",
+    "@webcomponents/webcomponentsjs": "2.2.7",
     "acorn": "6.1.0",
     "rollup": "1.2.2"
   },
   "devDependencies": {
+    "eslint": "5.16.0",
     "esm": "3.2.5",
     "jsdoc-to-markdown": "4.0.1",
     "minify": "4.1.1",
-    "mocha": "^6.1.2"
+    "mocha": "6.1.2"
   },
   "optionalDependencies": {},
   "scripts": {

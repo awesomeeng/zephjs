@@ -669,6 +669,41 @@ class ZephComponentExecution {
 		this.context.pending.push(prom);
 	}
 
+	/**
+	 * @summary
+	 *
+	 * Definition Method to associate some external asset like
+	 * an image, audio clip, or video, with some element within
+	 * the components internal content.
+	 *
+	 * In order for asset() to assoicate you must provide both
+	 * the CSS Query Selector you want to associate to, and a
+	 * url or filename to the external asset you want associated.
+	 *
+	 * The association is done by converting the asset into its
+	 * base64 encoded binary data and making it part of a data:
+	 * url.  This url is then associated with the appropriate
+	 * `src` attribute on the selected elements. (The associating
+	 * attribute can be changed with the `target` option.)
+	 *
+	 * asset() is really powerful for bundling purposes as the
+	 * CLI bundle command will download the asset and inline
+	 * the content as a data: url this allowing one to ship
+	 * both the component and its dependant resources.
+	 *
+	 * It should be noted, however, that using this approach can
+	 * explode your asset sizes by up to 4 times and is not
+	 * recommended in all scenarios.
+	 *
+	 * @param {string} selector
+	 * @param {string} url
+	 * @param {Object} [options={}]
+	 * @param  [options.target=false] {boolean}
+	 * @return {void}
+	 *
+	 * @exports asset
+	 * @kind function
+	 */
 	asset(selector,url,options={}) {
 		check.not.uon(selector,"selector");
 		check.string(selector,"selector");
@@ -679,7 +714,7 @@ class ZephComponentExecution {
 		if (!urlstr.match(/^data:|^http:\/\/|^https:\/\/|^ftp:\/\/|^\.\/|^\.\.\//)) throw new Error("Url must be a valid url (http, https, ftp), or a relative filename, or a data url.");
 
 		options = Object.assign({
-			target: "auto"
+			target: "src"
 		},options||{});
 
 		let prom = utils.tryprom(async (resolve)=>{
@@ -1397,7 +1432,7 @@ class ZephElementClass {
 					shadow.appendChild(clone);
 				});
 
-				// Handle image resources
+				// Handle assets
 				if (context.assets) {
 					context.assets.forEach((asset)=>{
 						let data = asset.data;
@@ -1406,21 +1441,18 @@ class ZephElementClass {
 						let srcstr = "data:"+type+";base64,"+data;
 						let urlstr = "url('"+srcstr+"')";
 
-						let target = asset.options && asset.options.target && asset.options.target.toLowerCase() || "auto";
+						let target = asset.options && asset.options.target || "src";
 						let flavor = type.replace(/^([^/]+)\/.*$/g,"$1");
-						if (flavor!=="image" && target==="style") target = "auto";
 
 						elements.forEach((e)=>{
 							let tag = e.tagName.toLowerCase();
-							if (flavor==="image" && (target==="auto" || target==="style") && tag!=="img") e.style.backgroundImage = urlstr;
-							else if (flavor==="image" && (target==="auto" || target==="tag") && tag==="img") e.setAttribute("src",srcstr);
-							else if (flavor==="video" && tag==="video") e.setAttribute("src",srcstr);
-							else if (flavor==="audio" && tag==="audio") e.setAttribute("src",srcstr);
+							if (flavor==="image" && tag!=="img") e.style.backgroundImage = urlstr;
+							else e.setAttribute(target,srcstr);
 						});
 					});
 				}
 
-				// All of the below, setting attributes, properties, bindings,
+				// All of the remaining, setting attributes, properties, bindings,
 				// must happen AFTER the constructor is complete or it violates
 				// the custom elements spec and will throw weird errors when
 				// you create new elements with document.createElement()
@@ -1512,6 +1544,19 @@ class ZephElementClass {
 	}
 }
 
+/**
+ * @private
+ *
+ * This function handles setting up a new element when the
+ * Component constructor is called.  It is everything beyond
+ * creating the shadow dom and adding the html, css, and assets.
+ * It is called by the timeout which is setup in the constructor.
+ *
+ * @param  {HTMLElement} element
+ * @param  {ShadowRoot} shadow
+ * @param  {object} context
+ * @return {void}
+ */
 const zephPopulateElement = function zephPopulateElement(element,shadow,context) {
 	// Add our attributes
 	if (context.attributes) {

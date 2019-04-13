@@ -1,8 +1,34 @@
 # AwesomeComponenets Release Notes
 
+#### **Version 1.2.0**
+
+ - **Adds a new definition method called asset(). This method is used to
+ identify external assets such as images, audio clips, or video clips, which are
+ required by the component. These assets are loaded and then injected into the
+ associated elements for those assets. Then, when you bundle your components up
+ the bundle will inline those assets into the bundled output, thus creating a
+ single distributable for the entire component.**
+
+ - Documentation updates for asset().
+
+ - Test updates for asset().
+ 
+ - **Performance improvements for creating new elements which should result
+ in a 3 fold reduction in time and overhead.**
+
+ - Update dependencies, specifically to use AwesomeServer 1.4.0 and AwesomeUtils 1.4.8.
+
+ - Fix for bundle cli command to download external url references.
+
+ - Adds a FAQ section to the documentation.
+
+ - Updates project readme with shields/badges about project status.
+
+ - Adds some basic logos for ZephJS.
+
 #### **Version 1.1.1**
 
- - Adds support for MS Edge via polyfill. Added supporting documentation.
+ - **Adds support for MS Edge via polyfill. Added supporting documentation.**
 
  - Adds warning message for unsupported browsers.
 
