@@ -149,15 +149,18 @@ const utils = {
 	 * a promise that will resolve to true or false depending on the result.
 	 *
 	 * @param  {URL} url
+	 * @param  {Object} options
 	 * @return {Promise}
 	 */
-	exists: (url)=>{
+	exists: (url,options={})=>{
 		if (url===undefined || url===null || url==="") return Promise.resolve(false);
 
+		options = Object.assign({},options,{
+			method: "HEAD"
+		});
+
 		return utils.tryprom(async (resolve)=>{
-			let response = await fetch(url,{
-				method: "HEAD"
-			});
+			let response = await fetch(url,options);
 			if (response.ok) resolve(true);
 			else resolve(false);
 		});
@@ -167,14 +170,15 @@ const utils = {
 	 * A simplified fetch wrapper.
 	 *
 	 * @param  {URL} url
+	 * @param  {Object} options
 	 * @return {Promise}
 	 */
-	fetch: (url)=>{
+	fetch: (url,options={})=>{
 		check.not.uon(url,"url");
 		check.not.empty(url,"url");
 
 		return utils.tryprom(async (resolve)=>{
-			let response = await fetch(url);
+			let response = await fetch(url,options);
 			if (response.ok) return resolve(response);
 			resolve(undefined);
 		});
@@ -185,14 +189,15 @@ const utils = {
 	 * HTML and CSS files.
 	 *
 	 * @param  {URL} url
+	 * @param  {Object} options
 	 * @return {Promise}
 	 */
-	fetchText: (url)=>{
+	fetchText: (url,options={})=>{
 		check.not.uon(url,"url");
 		check.not.empty(url,"url");
 
 		return utils.tryprom(async (resolve)=>{
-			let response = await utils.fetch(url);
+			let response = await utils.fetch(url,options);
 			if (!response) resolve(undefined);
 
 			let text = await response.text();
@@ -206,14 +211,15 @@ const utils = {
 	 * and the contentType.
 	 *
 	 * @param  {URL} url
+	 * @param  {Object} options
 	 * @return {Promise}
 	 */
-	fetchBinary: (url)=>{
+	fetchBinary: (url,options={})=>{
 		check.not.uon(url,"url");
 		check.not.empty(url,"url");
 
 		return utils.tryprom(async (resolve)=>{
-			let response = await utils.fetch(url);
+			let response = await utils.fetch(url,options);
 			if (!response) resolve(undefined);
 
 			let contentType = response.headers && response.headers.get("Content-Type") || null;
