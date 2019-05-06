@@ -1,6 +1,6 @@
 // (c) 2018-present, The Awesome Engineering Company, https://awesomeneg.com
 
-import {ZephComponents,html,css} from "../../zeph.min.js";
+import {ZephComponents,html,css} from "./Zeph.js";
 
 ZephComponents.define("awesome-hello",()=>{
 	html("./awesome-hello.html");

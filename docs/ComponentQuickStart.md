@@ -18,8 +18,8 @@ After we look at the code we will break it down piece by piece.
 ##### my-button.js
 
 ```javascript
- 1:	import {ZephComponents} from "./zeph.min.js";
- 2:	import {html,css,attribute,property,bind,onCreate,onEvent} from "./zeph.min.js";
+ 1:	import {ZephComponents} from "./Zeph.js";
+ 2:	import {html,css,attribute,property,bind,onCreate,onEvent} from "./Zeph.js";
  3:
  4:	ZephComponents.define("my-button",()=>{
  5:		html("./my-button.html");
@@ -146,8 +146,8 @@ In this particular example we are also using:
  - and `onEvent`
 
 ```javascript
- 1:	import {ZephComponents} from "./zeph.min.js";
- 2:	import {html,css,attribute,property,bind,onCreate,onEvent} from "./zeph.min.js";
+ 1:	import {ZephComponents} from "./Zeph.js";
+ 2:	import {html,css,attribute,property,bind,onCreate,onEvent} from "./Zeph.js";
 ```
 
 > Learn More: [Importing ZephJS](./ComponentImporting.md).

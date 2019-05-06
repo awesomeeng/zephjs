@@ -13,7 +13,7 @@ Let us describe services by using a simple example: suppose we wanted to write a
 Here is our entire ClockService, which emits an "updated" event every minute (Every 60000 milliseconds) as close to the minute change as the JavaScript execution queue will allow.
 
 ```javascript
-import {ZephService} from "../../zeph.min.js";
+import {ZephService} from "./Zeph.js";
 
 const $FREQUENCY = Symbol("frequency");
 const $NEXT = Symbol("next");
@@ -64,7 +64,7 @@ export {instance as ClockService};
 We start, by importing ZephService from ZephJS.  ZephService provides all the event firing and event handling functionality that we need.
 
 ```javascript
-import {ZephService} from "../../zeph.min.js";
+import {ZephService} from "./Zeph.js";
 ```
 
 > Read more about [ZephService's API](#zephservice-api) below.

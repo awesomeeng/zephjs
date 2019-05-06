@@ -9,8 +9,8 @@ Here's an example of using ZephJS to build a customized button:
 ##### my-button.js
 
 ```javascript
-import {ZephComponents} from "./zeph.min.js";
-import {html,css,attribute,property,bind,onCreate,onEvent} from "./zeph.min.js";
+import {ZephComponents} from "./Zeph.js";
+import {html,css,attribute,property,bind,onCreate,onEvent} from "./Zeph.js";
 
 ZephComponents.define("my-button",()=>{
 	html("./my-button.html");

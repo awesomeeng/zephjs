@@ -75,7 +75,7 @@ class Create extends AwesomeCLI.AbstractCommand {
 	and is released under the MIT licesne.
  */
 
-import {ZephComponents,html,css,bindAttribute,onEventAt} from "./zeph.min.js";
+import {ZephComponents,html,css,bindAttribute,onEventAt} from "./Zeph.js";
 
 ZephComponents.define("hello-world",()=>{
 	html("./hello-world.html");

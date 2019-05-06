@@ -2,7 +2,7 @@
 
 import "./zeph-benchmark-row.js";
 
-import {ZephComponents,onAdd} from "../../zeph.min.js";
+import {ZephComponents,onAdd} from "./Zeph.js";
 
 ZephComponents.define("zeph-benchmark",()=>{
 	const rows = 10000;

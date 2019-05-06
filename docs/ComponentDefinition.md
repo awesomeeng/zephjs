@@ -44,8 +44,8 @@ It is important to note that everything in the definition function is entirely o
 Here is an example of defining a component:
 
 ```
-import {ZephComponents} from "./zeph.min.js";
-import {html,css,attribute,bind,onEvent} from "./zeph.min.js";
+import {ZephComponents} from "./Zeph.js";
+import {html,css,attribute,bind,onEvent} from "./Zeph.js";
 
 ZephComponents.define("my-button",()=>{
 	html("./my-button.html");

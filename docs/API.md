@@ -479,10 +479,10 @@ Remove a listener for a specific event. Same as removeEventListener.
 * [ZephUtils](#ZephUtils) : <code>object</code>
     * [.ready()](#ZephUtils.ready) ⇒ <code>boolean</code>
     * [.tryprom(f)](#ZephUtils.tryprom) ⇒ <code>Promise</code>
-    * [.exists(url)](#ZephUtils.exists) ⇒ <code>Promise</code>
-    * [.fetch(url)](#ZephUtils.fetch) ⇒ <code>Promise</code>
-    * [.fetchText(url)](#ZephUtils.fetchText) ⇒ <code>Promise</code>
-    * [.fetchBinary(url)](#ZephUtils.fetchBinary) ⇒ <code>Promise</code>
+    * [.exists(url, options)](#ZephUtils.exists) ⇒ <code>Promise</code>
+    * [.fetch(url, options)](#ZephUtils.fetch) ⇒ <code>Promise</code>
+    * [.fetchText(url, options)](#ZephUtils.fetchText) ⇒ <code>Promise</code>
+    * [.fetchBinary(url, options)](#ZephUtils.fetchBinary) ⇒ <code>Promise</code>
     * [.resolve(url, [base])](#ZephUtils.resolve) ⇒ <code>URL</code>
     * [.resolveName(url, [base], [extension])](#ZephUtils.resolveName) ⇒ <code>Promise</code>
     * [.parseDataURL(url)](#ZephUtils.parseDataURL) ⇒ <code>Object</code>
@@ -519,7 +519,7 @@ characters in ZephJS when minimized.
 
 <a name="ZephUtils.exists"></a>
 
-### ZephUtils.exists(url) ⇒ <code>Promise</code>
+### ZephUtils.exists(url, options) ⇒ <code>Promise</code>
 Performs a HEAD fetch request to determine if a given URL "exists". Returns
 a promise that will resolve to true or false depending on the result.
 
@@ -528,13 +528,14 @@ a promise that will resolve to true or false depending on the result.
 | Param | Type |
 | --- | --- |
 | url | <code>URL</code> | 
+| options | <code>Object</code> | 
 
 
 * * *
 
 <a name="ZephUtils.fetch"></a>
 
-### ZephUtils.fetch(url) ⇒ <code>Promise</code>
+### ZephUtils.fetch(url, options) ⇒ <code>Promise</code>
 A simplified fetch wrapper.
 
 **Kind**: static method of [<code>ZephUtils</code>](#ZephUtils)  
@@ -542,13 +543,14 @@ A simplified fetch wrapper.
 | Param | Type |
 | --- | --- |
 | url | <code>URL</code> | 
+| options | <code>Object</code> | 
 
 
 * * *
 
 <a name="ZephUtils.fetchText"></a>
 
-### ZephUtils.fetchText(url) ⇒ <code>Promise</code>
+### ZephUtils.fetchText(url, options) ⇒ <code>Promise</code>
 Fetch but also resolves the content as plaintext. Useful for reading
 HTML and CSS files.
 
@@ -557,13 +559,14 @@ HTML and CSS files.
 | Param | Type |
 | --- | --- |
 | url | <code>URL</code> | 
+| options | <code>Object</code> | 
 
 
 * * *
 
 <a name="ZephUtils.fetchBinary"></a>
 
-### ZephUtils.fetchBinary(url) ⇒ <code>Promise</code>
+### ZephUtils.fetchBinary(url, options) ⇒ <code>Promise</code>
 Fetch but also resolves the content as binary. Useful for reading
 Images, audio, video, etc. Returns an object which contains the data
 and the contentType.
@@ -573,6 +576,7 @@ and the contentType.
 | Param | Type |
 | --- | --- |
 | url | <code>URL</code> | 
+| options | <code>Object</code> | 
 
 
 * * *
@@ -736,7 +740,7 @@ each with an import statement. Either approach is valid and both
 can be used interchangable:
 
 	```javascript
-	import {ZephComponents} from "./zeph.min.js";
+	import {ZephComponents} from "./Zeph.js";
 
 	ZephComponents.define("my-button",({html,css,attribute})=>{
 		html("./my-button.html");

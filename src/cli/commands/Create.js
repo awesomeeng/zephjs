@@ -50,8 +50,8 @@ class Create extends AwesomeCLI.AbstractCommand {
 			let csspath = "./"+rootname+".css";
 			let zephmin = Path.resolve(rootdir,"zeph.min.js");
 			let zephminsource = AwesomeUtils.Module.resolve(module,"../../../zeph.min.js");
-			let zephfull = Path.resolve(rootdir,"zeph.full.js");
-			let zephfullsource = AwesomeUtils.Module.resolve(module,"../../../zeph.full.js");
+			let zephfull = Path.resolve(rootdir,"Zeph.js");
+			let zephfullsource = AwesomeUtils.Module.resolve(module,"../../../src/Zeph.js");
 
 			if (AwesomeUtils.FS.existsSync(js)) return console.error("File "+js+" already exists. Stopping to prevent overwritting.");
 			if (AwesomeUtils.FS.existsSync(html)) return console.error("File "+html+" already exists. Stopping to prevent overwritting.");
@@ -63,7 +63,7 @@ class Create extends AwesomeCLI.AbstractCommand {
 			}
 			if (!options.nozeph && !AwesomeUtils.FS.existsSync(zephfull)) {
 				FS.writeFileSync(zephfull,FS.readFileSync(zephfullsource));
-				console.log("Copied zeph.full.js locally.");
+				console.log("Copied Zeph.js locally.");
 			}
 
 			let index = Path.resolve(rootdir,"index.html");
@@ -95,7 +95,7 @@ class Create extends AwesomeCLI.AbstractCommand {
 	and is released under the MIT licesne.
  */
 
-import {ZephComponents,html,css} from "./zeph.min.js";
+import {ZephComponents,html,css} from "./Zeph.js";
 
 ZephComponents.define("${name}",()=>{
 	html("${htmlpath}");

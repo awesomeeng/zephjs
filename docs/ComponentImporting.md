@@ -23,14 +23,14 @@
 Writing a web component with ZephJS is done with the ZephComponents library.  To use ZephComponents we must first import it into our JavaScript:
 
 ```
-import {ZephComponents} from "./zeph.min.js";
+import {ZephComponents} from "./Zeph.js";
 ```
 
 Additionally, all of the the definition methods we are going to use in our component definition need to be imported as well.  You could just wildcard this, but we prefer to call this out specifically.
 
 ```
-import {ZephComponents} from "./zeph.min.js";
-import {html,css,attribute,property} from "./zeph.min.js";
+import {ZephComponents} from "./Zeph.js";
+import {html,css,attribute,property} from "./Zeph.js";
 ```
 
 The following items can be imported from ZephJS:
@@ -79,7 +79,7 @@ The following definition methods can be imported from ZephJS:
 Some users of ZephJS can find the need to `import` all of the definition methods a little confusion or not to thier taste and thus Zeph supports an alternate approach for using Definition Methods. (Note that you will still need to import ZephComponents.)
 
 ```javascript
-import {ZephComponents} from "./zeph.min.js";
+import {ZephComponents} from "./Zeph.js";
 
 ZephComponents.define("my-button",({html,css,attribute,onCreate})=>{
 	html("./my-button.html");
@@ -102,7 +102,7 @@ Both `import` or the destructuring approach work identically, so this is purely 
 A third approach to importing is the use of a wildcard character with your `import` statement.  For example:
 
 ```javascript
-import * as Zeph from "./zeph.min.js";
+import * as Zeph from "./Zeph.js";
 
 Zeph.ZephComponents.define("my-button",()=>{
 	Zeph.html("./my-button.html");

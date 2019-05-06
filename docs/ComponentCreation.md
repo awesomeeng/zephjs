@@ -65,7 +65,7 @@ Would create the following files in the current directory:
  6:	        and is released under the MIT licesne.
  7:	 */
  8:
- 9:	import {ZephComponents,html,css} from "./zeph.min.js";
+ 9:	import {ZephComponents,html,css} from "./Zeph.js";
 10:
 11:	ZephComponents.define("my-button",()=>{
 12:	        html("./my-button.html");

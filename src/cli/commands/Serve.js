@@ -53,18 +53,18 @@ class Create extends AwesomeCLI.AbstractCommand {
 			console.error("zeph.min.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
 			process.exit(1);
 		}
-		let zephfull = AwesomeUtils.Module.resolve(module,"../../../zeph.full.js");
+		let zephfull = AwesomeUtils.Module.resolve(module,"../../../src/Zeph.js");
 		if (!AwesomeUtils.FS.existsSync(zephfull)) {
-			console.error("zeph.full.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
+			console.error("Zeph.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
 			process.exit(1);
 		}
 
 		server.serve("/Zeph.js",zeph);
 		server.serve("*/Zeph.js",zeph);
+		server.serve("/zeph.js",zeph);
+		server.serve("*/zeph.js",zeph);
 		server.serve("/zeph.min.js",zephmin);
 		server.serve("*/zeph.min.js",zephmin);
-		server.serve("/zeph.full.js",zephfull);
-		server.serve("*/zeph.full.js",zephfull);
 		Log.info("Serving ZephJS from "+Path.dirname(zephmin));
 
 		let cwd = process.cwd();

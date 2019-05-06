@@ -2,7 +2,7 @@
 
 "use strict";
 
-import {ZephService} from "../../zeph.min.js";
+import {ZephService} from "./Zeph.js";
 
 const $FREQUENCY = Symbol("frequency");
 const $NEXT = Symbol("next");

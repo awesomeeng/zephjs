@@ -2059,7 +2059,7 @@ class ZephComponentsClass {
 	 * can be used interchangable:
 	 *
 	 * 	```javascript
-	 * 	import {ZephComponents} from "./zeph.min.js";
+	 * 	import {ZephComponents} from "./Zeph.js";
 	 *
 	 * 	ZephComponents.define("my-button",({html,css,attribute})=>{
 	 * 		html("./my-button.html");

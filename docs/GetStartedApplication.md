@@ -52,7 +52,7 @@ import "./sub-component-one.js";
 import "./sub-component-two.js";
 import "./sub-component-three.js";
 
-import {ZephComponents,html,css} from "../zeph.min.js";
+import {ZephComponents,html,css} from "./Zeph.js";
 
 ZephComponents.define("main-component",()=>{
 	html("./main-component.html");

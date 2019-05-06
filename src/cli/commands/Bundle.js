@@ -95,9 +95,9 @@ class Bundle extends AwesomeCLI.AbstractCommand {
 			console.error("zep.min.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
 			process.exit(1);
 		}
-		const zephfull = AwesomeUtils.Module.resolve(module,"../../../zeph.full.js");
+		const zephfull = AwesomeUtils.Module.resolve(module,"../../../src/Zeph.js");
 		if (!AwesomeUtils.FS.existsSync(zephfull)) {
-			console.error("zep.full.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
+			console.error("src/Zeph.js was not found in the Zeph.js project root and is required. Please try reinstalling ZephJS from npm.");
 			process.exit(1);
 		}
 		const zeph = full ? zephfull : zephmin;

@@ -2,7 +2,7 @@
 
 import "./zeph-benchmark-row.js";
 
-import {ZephComponents,html} from "../../zeph.min.js";
+import {ZephComponents,html} from "./Zeph.js";
 
 ZephComponents.define("zeph-benchmark-row",()=>{
 	html("<div>this is a row.</div>");

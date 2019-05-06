@@ -40,7 +40,7 @@ If your browser does not support all of these technologies, you may be able to u
 ZephJS makes this super easy... Simply call the `define()` method on the `ZephComponents` object, like this...
 
 ```javascript
-import {ZephComponents} from "./zeph.min.js";
+import {ZephComponents} from "./Zeph.js";
 
 ZephComponents.define("my-button",()=>{
 	...
@@ -281,3 +281,11 @@ You can read more about [The ZephJS CLI Tool](./CLI.md) in our documentation.
 #### How does the `bundle` command work?
 
 The `bundle` command is used to turn a ZephJS project spread across multiple files into a single cohessive JavaScript file for distribution or production systems.  It does this by parsing your ZephJS defininition JavaScript and using [Rollup](https://rollupjs.org/guide) to merge it all together.  Additionally any `html()`, `css()` or resource reference (`image()`, `font()`, etc) that references a file has that file contents inlined into the JavaScript.  This means all the details necessary to distribute your component or component library gets bundled up into a single file.
+
+#### I get a Windows Scripting Host error when I use the `zeph` command. Am I doing something wrong?
+
+This problem only occurs in Windows OS based machines and only if you are executing the `zeph` command in a directory that contains the `Zeph.js` file.  This occurs because at some point you indicated that the default behavior for JavaScript files in your Windows system should be to execute them via Windows Scripting Host.  Fortunately, there is an easy fix.
+
+If you edit the `PATHEXT` environment variable and remove the `.js` portion of it, this will resolve the problem.  You may need to restart any open shells after doing this edit.
+
+(To edit this environment variable go to Start > Type "Environment" > Select "Edit the System Environment Variables" > Click the "Environment Variables" button")

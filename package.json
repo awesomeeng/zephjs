@@ -35,7 +35,7 @@
     "docs": "jsdoc2md src/** --separators > docs/API.md",
     "test": "mocha test",
     "tests": "mocha test",
-    "minify": "cp src/Zeph.js zeph.full.js && minify src/Zeph.js > zeph.min.js"
+    "minify": "minify src/Zeph.js > zeph.min.js"
   },
   "description": "Ultra light and easy to use Web Component framework for building and distributing independant components and integrating them together for web pages and web applications.",
   "directories": {

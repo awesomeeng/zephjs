@@ -73,7 +73,7 @@ The following options may be passed to the bundler on the command line:
 
  - `--quiet` Disables output text during the bundle operation.
 
- - `--full` Uses the un-minified version of ZephJS `zeph.full.js` in the bundle instead of the minified version. This is useful for debugging sometimes.
+ - `--full` Uses the un-minified version of ZephJS `Zeph.js` in the bundle instead of the minified version. This is useful for debugging sometimes.
 
 ### Some Useful Tips
 
