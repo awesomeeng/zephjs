@@ -836,6 +836,35 @@ class ZephComponentExecution {
 	/**
 	 * @summary
 	 *
+	 * Definition Method to create a new method on the element object. Takes
+	 * the name of the method to create and the function to execute when the
+	 * method is called.  The executed function will get the element and the
+	 * content as the first two arguments when executed.  All arguments passed
+	 * to the function will be available as the thrid and later arguments.
+	 *
+	 * If the provided method name is the same as an existing method on
+	 * the element this will overwrite it and you are required to handle
+	 * the details of overloading yourself..
+	 *
+	 * @param  {String} methodName
+	 * @param  {Function} methodFunction
+	 * @return {void}
+	 */
+	method(methodName,methodFunction) {
+		check.not.uon(methodName,"methodName");
+		check.string(methodName);
+
+		this.context.methods = this.context.methods || {};
+		if (this.context.methods[methodName]) throw new Error("Method '"+methodName+"' already defined for custom element; cannot have multiple definitions.");
+		this.context.methods[methodName] = Object.assign(this.context.methods[methodName]||{},{
+			methodName,
+			methodFunction
+		});
+	}
+
+	/**
+	 * @summary
+	 *
 	 * Definition Method to bind one part of the new element or its content
 	 * to some other part of the new element or its content. Bindings are a
 	 * useful way to avoid having to write a lot of custom code to do
@@ -1596,6 +1625,14 @@ const zephPopulateElement = function zephPopulateElement(element,shadow,context)
 			});
 
 			element[prop.propertyName] = element[prop.propertyName]===undefined ? prop.initialValue : element[prop.propertyName];
+		});
+	}
+
+	// Add our methods
+	if (context.methods) {
+		Object.values(context.methods).forEach((meth)=>{
+			if (!meth || !meth.methodName || !meth.methodFunction) return;
+			element[meth.methodName] = meth.methodFunction.bind(element,element,shadow);
 		});
 	}
 
@@ -2426,6 +2463,7 @@ const css = contextCall("css");
 const asset = contextCall("asset");
 const attribute = contextCall("attribute");
 const property = contextCall("property");
+const method = contextCall("method");
 const bind = contextCall("binding");
 const bindAt = contextCall("bindingAt");
 const onInit = contextCall("onInit");
@@ -2443,7 +2481,7 @@ const ZephComponents = new ZephComponentsClass();
 
 // Exports
 export {ZephComponents,ZephObserver,ZephService,utils as ZephUtils};
-export {from,alias,html,css,asset,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
+export {from,alias,html,css,asset,attribute,property,method,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
 
 // Bind window.Zeph to our libs as well.
 window.Zeph = {
