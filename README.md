@@ -165,9 +165,7 @@ To learn more about The Awesome Engineering Company and our suite of products, v
 
 ## Support and Help
 
-If you need help working with ZephJS, please do not hesitate to reach out for help.  Submit an issue with your help request and we will answer as quickly as we can!
-
-Also, if you find any bugs or typos, please make sure to submit an issue as well.
+This product is maintained and supported by The Awesome Engineering Company.  For support please [file an issue](./issues) or contact us via our Webiste at [https://awesomeeng.com](https://awesomeeng.com).  We will do our best to respond to you in a timely fashion.
 
 ## License
 
