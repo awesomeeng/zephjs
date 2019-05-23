@@ -13,7 +13,7 @@
  * ZephJS is often called just "Zeph" and pronounced "Zef".
  *
  * ZephJS is copyright 2018-present by The Awesome Engineering Company.
- * It is publically available under the MIT licenese as described
+ * It is publically available under the MIT License as described
  * in the LICENSE file.
  */
 
