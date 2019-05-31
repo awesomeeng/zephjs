@@ -13,12 +13,6 @@
 
 ZephJS is an easy, understandable, and ultra-light framework for defining and using Web Components. It is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want all the weight of a modern JavaScript Browser framework. ZephJS simplifies the process of defining custom Web Components into a declarative highly readable structure that uses standard JavaScript, standard HTML markup, and standard CSS Styling.
 
-ZephJS is often called just "Zeph" and pronounced "Zef".
-
-## Justification
-
-The promise of Web Components was that one would be able to easily load a component onto a web page and use it. But to date that promise has largely not been realized. The current Web Components standards lack an implemented method for easily loading components or component libraries, and writing a web component in JavaScript is far from an easy or straight-forward task.  Couple this with the current generation of web frameworks that add an insane amount of complexity to what was promised to be a very simple activity. Writing a web component should be simple, obvious, and require no more effort than writing JavaScript/HTML/CSS does.
-
 ZephJS aims to bring the promised ease of web components back to the community. It does so by living up to the following principals:
 
  - Define new components simply in a readable, declarative manner.
@@ -26,6 +20,8 @@ ZephJS aims to bring the promised ease of web components back to the community. 
  - Use the standards and technologies that have made the web great.
  - Never try to outwit the browser.
  - Keep it incredibly small and light.
+
+ZephJS is often called just "Zeph" and pronounced "Zef".
 
 ## Features
 
