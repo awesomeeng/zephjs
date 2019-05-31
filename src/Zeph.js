@@ -30,6 +30,7 @@ const $COMPONENTS = Symbol("components");
 const $CONTEXT = Symbol("context");
 const $CODE = Symbol("code");
 const $ELEMENT = Symbol("element");
+const $ATTRIBUTES = Symbol("attributes");
 const $SHADOW = Symbol("shadow");
 const $OBSERVER = Symbol("observer");
 const $LISTENERS = Symbol("listeners");
@@ -1427,6 +1428,26 @@ class ZephElementClass {
 				// create and store our element
 				let element = this;
 				this[$ELEMENT] = element;
+
+				this[$ATTRIBUTES] = null;
+				let origSetAttribute = this.setAttribute;
+				let origGetAttribute = this.getAttribute;
+				this.setAttribute = (name,value)=>{
+					check.string(name);
+					check.not.empty(name);
+
+					this[$ATTRIBUTES] = this[$ATTRIBUTES] || {};
+					this[$ATTRIBUTES][name] = value;
+
+					return origSetAttribute.call(element,name,value);
+				};
+				this.getAttribute = (name,preventCoercion=false)=>{
+					check.string(name);
+					check.not.empty(name);
+
+					if (preventCoercion && this[$ATTRIBUTES] && this[$ATTRIBUTES][name]!==undefined) return this[$ATTRIBUTES][name];
+					return origGetAttribute.call(element,name);
+				};
 
 				// create and store out element internal content.
 				let shadow = this.shadowRoot || this.attachShadow({
