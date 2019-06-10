@@ -1223,6 +1223,42 @@ class ZephComponentExecution {
 	/**
 	 * @summary
 	 *
+	 * Definition Method to register a function to execute on the Content
+	 * Lifecycle event.  If multiple onContent() methods are called, each
+	 * will execute in order.
+	 *
+	 * The Content Lifecycle event occurs when the inner content (text or
+	 * DOM nodes) changes. This includes changes to children DOM nodes of
+	 * the element, but this does not include changes to those children.
+	 * That is, direct children changing will trigger this, but
+	 * grand-children changing will not.
+	 *
+	 * The function passed to onContent() is executed with the signature
+	 *
+	 *   (element,content)
+	 *
+	 * - element is the custom element.
+	 * - content is the Document Fragment of the internal content.
+	 *
+	 * @param  {String} attributeName
+	 * @param  {Function} listener
+	 * @return {void}
+	 *
+	 * @exports onAttribute
+	 * @kind function
+	 */
+	onContent(listener) {
+		check.not.uon(listener,"listener");
+		check.function(listener,"listener");
+
+		this.context.lifecycle = this.context.lifecycle || {};
+		this.context.lifecycle.content = this.context.lifecycle.content || [];
+		this.context.lifecycle.content.push(listener);
+	}
+
+	/**
+	 * @summary
+	 *
 	 * Definition Method to register a function to execute on the Attribute
 	 * Lifecycle event.  If multiple onAttribute() methods are called, each
 	 * will execute in order.
@@ -1657,6 +1693,19 @@ const zephPopulateElement = function zephPopulateElement(element,shadow,context)
 		});
 	}
 
+	// add our lifecycle content listeners, if any
+	if (context.lifecycle && context.lifecycle.content && context.lifecycle.content.length>0) {
+		if (!element[$OBSERVER]) {
+			element[$OBSERVER] = new ZephObserver(element);
+			element[$OBSERVER].start();
+		}
+
+		let observer = element[$OBSERVER];
+		observer.addContentObserver(()=>{
+			fire(context && context.lifecycle && context.lifecycle.content || [],element,shadow);
+		});
+	}
+
 	// fire our create event. We need to do this here and immediately
 	// so the onCreate handlers can do whatever setup they need to do
 	// before we go off and register bindings and events.
@@ -1688,6 +1737,7 @@ const zephPopulateElement = function zephPopulateElement(element,shadow,context)
 					handler = (value)=>{
 						let name = tgtname.slice(1);
 						value = transform(value);
+						console.log(100,name,value);
 						let targets = tgtele instanceof HTMLElement && [tgtele] || [...shadow.querySelectorAll(tgtele)] || [];
 						targets.forEach((target)=>{
 							if (value===undefined) {
@@ -1980,7 +2030,7 @@ class ZephObserver {
 		let name = record.attributeName;
 		if (!this.attributes[name] || this.attributes[name].length<1) return;
 
-		let value = this.element.getAttribute(name);
+		let value = this.element.hasAttribute(name) ? this.element.getAttribute(name) : undefined;
 		this.attributes[name].forEach((handler)=>{
 			handler(value,name,this.element);
 		});
@@ -2492,6 +2542,7 @@ const onCreate = contextCall("onCreate");
 const onAdd = contextCall("onAdd");
 const onRemove = contextCall("onRemove");
 const onAdopt = contextCall("onAdopt");
+const onContent = contextCall("onContent");
 const onAttribute = contextCall("onAttribute");
 const onProperty = contextCall("onProperty");
 const onEvent = contextCall("onEvent");
@@ -2502,7 +2553,7 @@ const ZephComponents = new ZephComponentsClass();
 
 // Exports
 export {ZephComponents,ZephObserver,ZephService,utils as ZephUtils};
-export {from,alias,html,css,asset,attribute,property,method,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt};
+export {from,alias,html,css,asset,attribute,property,method,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onContent,onAttribute,onProperty,onEvent,onEventAt};
 
 // Bind window.Zeph to our libs as well.
 window.Zeph = {
@@ -2515,5 +2566,5 @@ window.Zeph = {
 // build our DEFINITION_METHODS object that gets used
 // to pass methods into define
 DEFINITION_METHODS = {
-	from,alias,html,css,asset,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt
+	from,alias,html,css,asset,attribute,property,method,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onContent,onAttribute,onProperty,onEvent,onEventAt
 };

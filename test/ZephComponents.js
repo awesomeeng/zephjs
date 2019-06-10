@@ -22,7 +22,7 @@ require("./BrowserMocks");
 const assert = require("assert");
 
 const ZephComponents = require("../src/Zeph.js").ZephComponents;
-const {from,alias,html,css,asset,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt} = require("../src/Zeph.js");
+const {from,alias,html,css,asset,attribute,property,method,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onContent,onAttribute,onProperty,onEvent,onEventAt} = require("../src/Zeph.js");
 
 describe("ZephComponents",function(){
 	beforeEach(()=>{
@@ -49,6 +49,7 @@ describe("ZephComponents",function(){
 		assert(asset);
 		assert(attribute);
 		assert(property);
+		assert(method);
 		assert(bind);
 		assert(bindAt);
 		assert(onInit);
@@ -56,6 +57,7 @@ describe("ZephComponents",function(){
 		assert(onAdd);
 		assert(onRemove);
 		assert(onAdopt);
+		assert(onContent);
 		assert(onAttribute);
 		assert(onProperty);
 		assert(onEvent);
@@ -96,6 +98,8 @@ describe("ZephComponents",function(){
 			property("xyz",456);
 			property("def","ghi");
 
+			method("jkl",()=>{});
+
 			bind("@xyz","div");
 			bindAt("div","@xyz","div",".xyz");
 
@@ -104,6 +108,7 @@ describe("ZephComponents",function(){
 			onAdd(()=>{});
 			onRemove(()=>{});
 			onAdopt(()=>{});
+			onContent(()=>{});
 			onAttribute("xyz",()=>{});
 			onProperty("def",()=>{});
 
@@ -158,6 +163,9 @@ describe("ZephComponents",function(){
 		assert.equal(component.context.properties.def.initialValue,"ghi");
 		assert.equal(component.context.properties.def.changes.length,1);
 
+		assert(component.context.methods);
+		assert(component.context.methods.jkl);
+
 		assert(component.context.bindings);
 		assert.equal(Object.keys(component.context.bindings).length,2);
 		assert.equal(component.context.bindings[".:@xyz>div:@xyz"].source.element,".");
@@ -175,12 +183,14 @@ describe("ZephComponents",function(){
 		assert(component.context.lifecycle.add);
 		assert(component.context.lifecycle.remove);
 		assert(component.context.lifecycle.adopt);
+		assert(component.context.lifecycle.content);
 		assert(component.context.lifecycle.attributes);
 		assert(component.context.lifecycle.init[0]);
 		assert(component.context.lifecycle.create[0]);
 		assert(component.context.lifecycle.add[0]);
 		assert(component.context.lifecycle.remove[0]);
 		assert(component.context.lifecycle.adopt[0]);
+		assert(component.context.lifecycle.content[0]);
 		assert(component.context.lifecycle.attributes);
 		assert(component.context.lifecycle.attributes.xyz);
 		assert(component.context.lifecycle.attributes.xyz[0]);
@@ -206,12 +216,14 @@ describe("ZephComponents",function(){
 			});
 			attribute("xyz",123);
 			property("xyz",456);
+			method("jkl",()=>{});
 			bind("@xyz","div");
 			onInit(()=>{});
 			onCreate(()=>{});
 			onAdd(()=>{});
 			onRemove(()=>{});
 			onAdopt(()=>{});
+			onContent(()=>{});
 			onAttribute("xyz",()=>{});
 			onEvent("click",()=>{});
 			onEventAt("div","click",()=>{});
@@ -229,12 +241,14 @@ describe("ZephComponents",function(){
 			});
 			attribute("xyz",123);
 			property("xyz",456);
+			method("jkl",()=>{});
 			bind("@xyz","div");
 			onInit(()=>{});
 			onCreate(()=>{});
 			onAdd(()=>{});
 			onRemove(()=>{});
 			onAdopt(()=>{});
+			onContent(()=>{});
 			onAttribute("xyz",()=>{});
 			onProperty("xyz",()=>{});
 			onEvent("click",()=>{});
@@ -284,9 +298,14 @@ describe("ZephComponents",function(){
 		assert(component.context.attributes);
 		assert.equal(Object.keys(component.context.attributes).length,1);
 		assert(component.context.attributes.xyz);
+
 		assert(component.context.properties);
 		assert.equal(Object.keys(component.context.properties).length,1);
 		assert(component.context.properties.xyz);
+
+		assert(component.context.methods);
+		assert.equal(Object.keys(component.context.methods).length,1);
+		assert(component.context.methods.jkl);
 
 		assert(component.context.bindings);
 		assert.equal(Object.keys(component.context.bindings).length,1);
@@ -302,16 +321,20 @@ describe("ZephComponents",function(){
 		assert.equal(component.context.lifecycle.remove.length,2);
 		assert(component.context.lifecycle.adopt);
 		assert.equal(component.context.lifecycle.adopt.length,2);
+		assert(component.context.lifecycle.content);
+		assert.equal(component.context.lifecycle.content.length,2);
 		assert(component.context.lifecycle.init[0]);
 		assert(component.context.lifecycle.create[0]);
 		assert(component.context.lifecycle.add[0]);
 		assert(component.context.lifecycle.remove[0]);
 		assert(component.context.lifecycle.adopt[0]);
+		assert(component.context.lifecycle.content[0]);
 		assert(component.context.lifecycle.init[1]);
 		assert(component.context.lifecycle.create[1]);
 		assert(component.context.lifecycle.add[1]);
 		assert(component.context.lifecycle.remove[1]);
 		assert(component.context.lifecycle.adopt[1]);
+		assert(component.context.lifecycle.content[1]);
 
 		assert(component.context.lifecycle.attributes);
 		assert.equal(Object.keys(component.context.lifecycle.attributes).length,1);

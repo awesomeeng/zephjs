@@ -41,7 +41,7 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 	});
 
 	it("definition methods",async function(){
-		await ZephComponents.define("text-component0",({from,alias,html,css,asset,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt})=>{
+		await ZephComponents.define("text-component0",({from,alias,html,css,asset,attribute,property,method,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onContent,onAttribute,onProperty,onEvent,onEventAt})=>{
 			assert(from);
 			assert(alias);
 			assert(html);
@@ -49,6 +49,7 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 			assert(asset);
 			assert(attribute);
 			assert(property);
+			assert(method);
 			assert(bind);
 			assert(bindAt);
 			assert(onInit);
@@ -56,6 +57,7 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 			assert(onAdd);
 			assert(onRemove);
 			assert(onAdopt);
+			assert(onContent);
 			assert(onAttribute);
 			assert(onProperty);
 			assert(onEvent);
@@ -80,7 +82,7 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 	});
 
 	it("context",async function(){
-		let component = await ZephComponents.define("test-component2",({html,css,asset,attribute,property,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt})=>{
+		let component = await ZephComponents.define("test-component2",({html,css,asset,attribute,property,method,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onContent,onAttribute,onProperty,onEvent,onEventAt})=>{
 			html("<div></div>",{
 				noRemote: true
 			});
@@ -97,6 +99,8 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 			property("xyz",456);
 			property("def","ghi");
 
+			method("jkl",()=>{});
+
 			bind("@xyz","div");
 			bindAt("div","@xyz","div",".xyz");
 
@@ -105,6 +109,7 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 			onAdd(()=>{});
 			onRemove(()=>{});
 			onAdopt(()=>{});
+			onContent(()=>{});
 			onAttribute("xyz",()=>{});
 			onProperty("def",()=>{});
 
@@ -159,6 +164,9 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 		assert.equal(component.context.properties.def.initialValue,"ghi");
 		assert.equal(component.context.properties.def.changes.length,1);
 
+		assert(component.context.methods);
+		assert(component.context.methods.jkl);
+
 		assert(component.context.bindings);
 		assert.equal(Object.keys(component.context.bindings).length,2);
 		assert.equal(component.context.bindings[".:@xyz>div:@xyz"].source.element,".");
@@ -176,12 +184,14 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 		assert(component.context.lifecycle.add);
 		assert(component.context.lifecycle.remove);
 		assert(component.context.lifecycle.adopt);
+		assert(component.context.lifecycle.content);
 		assert(component.context.lifecycle.attributes);
 		assert(component.context.lifecycle.init[0]);
 		assert(component.context.lifecycle.create[0]);
 		assert(component.context.lifecycle.add[0]);
 		assert(component.context.lifecycle.remove[0]);
 		assert(component.context.lifecycle.adopt[0]);
+		assert(component.context.lifecycle.content[0]);
 		assert(component.context.lifecycle.attributes);
 		assert(component.context.lifecycle.attributes.xyz);
 		assert(component.context.lifecycle.attributes.xyz[0]);
@@ -195,7 +205,7 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 	});
 
 	it("inheritance",async function(){
-		await ZephComponents.define("test-parent3",({html,css,asset,attribute,property,bind,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onEvent,onEventAt})=>{
+		await ZephComponents.define("test-parent3",({html,css,asset,attribute,property,method,bind,onInit,onCreate,onAdd,onRemove,onAdopt,onContent,onAttribute,onEvent,onEventAt})=>{
 			html("<div>parent</div>",{
 				noRemote: true
 			});
@@ -207,17 +217,19 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 			});
 			attribute("xyz",123);
 			property("xyz",456);
+			method("jkl",()=>{});
 			bind("@xyz","div");
 			onInit(()=>{});
 			onCreate(()=>{});
 			onAdd(()=>{});
 			onRemove(()=>{});
 			onAdopt(()=>{});
+			onContent(()=>{});
 			onAttribute("xyz",()=>{});
 			onEvent("click",()=>{});
 			onEventAt("div","click",()=>{});
 		});
-		let component = await ZephComponents.define("test-component3",({from,html,css,asset,attribute,property,bind,onInit,onCreate,onAdd,onRemove,onAdopt,onAttribute,onProperty,onEvent,onEventAt})=>{
+		let component = await ZephComponents.define("test-component3",({from,html,css,asset,attribute,property,method,bind,onInit,onCreate,onAdd,onRemove,onAdopt,onContent,onAttribute,onProperty,onEvent,onEventAt})=>{
 			from("test-parent3");
 			html("<div>child</div>",{
 				noRemote: true
@@ -230,12 +242,14 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 			});
 			attribute("xyz",123);
 			property("xyz",456);
+			method("jkl",()=>{});
 			bind("@xyz","div");
 			onInit(()=>{});
 			onCreate(()=>{});
 			onAdd(()=>{});
 			onRemove(()=>{});
 			onAdopt(()=>{});
+			onContent(()=>{});
 			onAttribute("xyz",()=>{});
 			onProperty("xyz",()=>{});
 			onEvent("click",()=>{});
@@ -285,9 +299,14 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 		assert(component.context.attributes);
 		assert.equal(Object.keys(component.context.attributes).length,1);
 		assert(component.context.attributes.xyz);
+
 		assert(component.context.properties);
 		assert.equal(Object.keys(component.context.properties).length,1);
 		assert(component.context.properties.xyz);
+
+		assert(component.context.methods);
+		assert.equal(Object.keys(component.context.methods).length,1);
+		assert(component.context.methods.jkl);
 
 		assert(component.context.bindings);
 		assert.equal(Object.keys(component.context.bindings).length,1);
@@ -303,16 +322,20 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 		assert.equal(component.context.lifecycle.remove.length,2);
 		assert(component.context.lifecycle.adopt);
 		assert.equal(component.context.lifecycle.adopt.length,2);
+		assert(component.context.lifecycle.content);
+		assert.equal(component.context.lifecycle.content.length,2);
 		assert(component.context.lifecycle.init[0]);
 		assert(component.context.lifecycle.create[0]);
 		assert(component.context.lifecycle.add[0]);
 		assert(component.context.lifecycle.remove[0]);
 		assert(component.context.lifecycle.adopt[0]);
+		assert(component.context.lifecycle.content[0]);
 		assert(component.context.lifecycle.init[1]);
 		assert(component.context.lifecycle.create[1]);
 		assert(component.context.lifecycle.add[1]);
 		assert(component.context.lifecycle.remove[1]);
 		assert(component.context.lifecycle.adopt[1]);
+		assert(component.context.lifecycle.content[1]);
 
 		assert(component.context.lifecycle.attributes);
 		assert.equal(Object.keys(component.context.lifecycle.attributes).length,1);
@@ -330,5 +353,4 @@ describe("ZephComponents without Importing Defintion Methods",function(){
 		assert(component.context.eventsAt[0]);
 		assert(component.context.eventsAt[1]);
 	});
-
 });
