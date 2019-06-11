@@ -1737,7 +1737,6 @@ const zephPopulateElement = function zephPopulateElement(element,shadow,context)
 					handler = (value)=>{
 						let name = tgtname.slice(1);
 						value = transform(value);
-						console.log(100,name,value);
 						let targets = tgtele instanceof HTMLElement && [tgtele] || [...shadow.querySelectorAll(tgtele)] || [];
 						targets.forEach((target)=>{
 							if (value===undefined) {
