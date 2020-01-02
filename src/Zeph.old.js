@@ -30,7 +30,6 @@ const $COMPONENTS = Symbol("components");
 const $CONTEXT = Symbol("context");
 const $CODE = Symbol("code");
 const $ELEMENT = Symbol("element");
-const $INSTANCE = Symbol("element");
 const $ATTRIBUTES = Symbol("attributes");
 const $SHADOW = Symbol("shadow");
 const $OBSERVER = Symbol("observer");
@@ -322,14 +321,14 @@ const utils = {
  *
  * It should be noted that this is not the same as the Element produced when
  * using a component as an HTML tag or from document.createElement().
- * ZephComponentInternal is the definition of that element, not the element itself.
+ * ZephComponent is the definition of that element, not the element itself.
  *
- * ZephCompoonentInternal is returned when you ask ZephComponents to get the
+ * ZephCompoonent is returned when you ask ZephComponents to get the
  * component.
  *
  * @class
  */
-class ZephComponentInternal {
+class ZephComponent {
 	constructor(name,origin,code) {
 		check.posstr(name,"name");
 		check.posstr(name,"origin");
@@ -349,7 +348,7 @@ class ZephComponentInternal {
 	 * The context object that was built by executing the component definition.
 	 * Depending on when this member is examined, the context might be
 	 * very simple or very complex; it depends on whether or not the
-	 * ZephComponentInternal has been "defined".  Prior to being "defined" the
+	 * ZephComponent has been "defined".  Prior to being "defined" the
 	 * definition code has not yet been executed and thus the context will
 	 * have very little in it.  Once "defined" the code will have been
 	 * executed and the resulting context populated.
@@ -397,7 +396,7 @@ class ZephComponentInternal {
 	}
 
 	/**
-	 * Returns true if the ZephComponentInternal was "defined" and has a registered
+	 * Returns true if the ZephComponent was "defined" and has a registered
 	 * custom element class.
 	 *
 	 * @return {boolean}
@@ -427,7 +426,7 @@ class ZephComponentInternal {
 	define() {
 		return utils.tryprom(async (resolve)=>{
 			let execution = new ZephComponentExecution(this.context,this.code);
-			await execution.instantiate();
+			await execution.run();
 
 			await Promise.all(this.context.pending||[]);
 
@@ -442,7 +441,7 @@ class ZephComponentInternal {
 				this[$CONTEXT] = extend({},from.context,this.context);
 			}
 
-			this[$ELEMENT] = ZephElementClass.generateClass(this.context,this.code);
+			this[$ELEMENT] = ZephElementClass.generateClass(this.context);
 			customElements.define(this.name,this[$ELEMENT]);
 			(this.context.aliases||[]).forEach((aliasName)=>{
 				const aliasClass = (class AliasClass extends this[$ELEMENT]{
@@ -489,11 +488,10 @@ class ZephComponentExecution {
 	 *
 	 * @return {Promise}
 	 */
-	instantiate() {
+	run() {
 		return utils.tryprom(async (resolve)=>{
 			CODE_CONTEXT = this;
-			// await this[$CODE].bind(this)(DEFINITION_METHODS);
-			this[$INSTANCE] = new this[$CODE]();
+			await this[$CODE].bind(this)(DEFINITION_METHODS);
 			CODE_CONTEXT = null;
 
 			resolve();
@@ -1440,7 +1438,7 @@ class ZephElementClass {
 	 * @param  {Object} context
 	 * @return {Class}
 	 */
-	static generateClass(context,code) {
+	static generateClass(context) {
 		let setup = null;
 		let setupqueue = [];
 
@@ -1546,8 +1544,6 @@ class ZephElementClass {
 					});
 				}
 
-				let instance = new code();
-
 				// All of the remaining, setting attributes, properties, bindings,
 				// must happen AFTER the constructor is complete or it violates
 				// the custom elements spec and will throw weird errors when
@@ -1561,7 +1557,7 @@ class ZephElementClass {
 				// single timeout can process a bunch of pending elements
 				// at one go around and we are less blocked by the event
 				// queue.
-				setupqueue.push({element,shadow,context,instance});
+				setupqueue.push({element,shadow,context});
 				if (setup) return;
 				setup = setTimeout(()=>{
 					let all = setupqueue;
@@ -1569,8 +1565,8 @@ class ZephElementClass {
 
 					setup = null;
 
-					all.forEach(({element,shadow,context,instance})=>{
-						zephPopulateElement(element,shadow,context,instance);
+					all.forEach(({element,shadow,context})=>{
+						zephPopulateElement(element,shadow,context);
 					});
 				},0);
 			}
@@ -2224,7 +2220,7 @@ class ZephComponentsClass {
 		}));
 
 		return utils.tryprom(async (resolve)=>{
-			let component = new ZephComponentInternal(name,origin,code);
+			let component = new ZephComponent(name,origin,code);
 			this[$COMPONENTS][name] = component;
 			await component.define();
 
@@ -2553,15 +2549,13 @@ const onEventAt = contextCall("onEventAt");
 
 // Our ZephComponents singleton.
 const ZephComponents = new ZephComponentsClass();
-const ZephComponent = ZephComponents.define.bind(ZephComponents);
 
 // Exports
-export {ZephComponent,ZephComponents,ZephObserver,ZephService,utils as ZephUtils};
+export {ZephComponents,ZephObserver,ZephService,utils as ZephUtils};
 export {from,alias,html,css,asset,attribute,property,method,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onContent,onAttribute,onProperty,onEvent,onEventAt};
 
 // Bind window.Zeph to our libs as well.
 window.Zeph = {
-	ZephComponent,
 	ZephComponents,
 	ZephObserver,
 	ZephService,
