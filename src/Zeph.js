@@ -90,7 +90,7 @@ const check = {
 	},
 	// throw an exception if arg is not a boolean.
 	boolean: (arg,name)=>{
-		check.type(arg,"string",name);
+		check.type(arg,"boolean",name);
 	},
 	// throw an exception if arg is not a function.
 	function: (arg,type,name)=>{
@@ -527,6 +527,31 @@ class ZephComponentExecution {
 		this.context.pending.push(ZephComponents.waitFor(fromTagName));
 
 		this.context.from = fromTagName;
+	}
+
+	/**
+	 * Definition Method used to tell the ZephComponent that it should not create a
+	 * shadowRoot when created and all the html work is going to be applied
+	 * inline to the element.
+	 *
+	 * By default ZephJS creates a shadowRoot for each element that is of the
+	 * custom component defined. The HTML and CSS of these elements is then
+	 * placed into that shadowRoot to  prevent them from leaking outside.
+	 * However, in some cases the component doesnt want a shadowRoot and the html
+	 * should be applied inline the element.
+	 *
+	 * Because there is no shadowRoot the HTML content is appended to the elements
+	 * children and the CSS is appended to the head (if not already there).
+	 *
+	 * @param  {Boolean} [disableShadowRoot=true]
+	 * @return {void}
+	 * @exports inline
+	 * @kind function
+	 */
+	inline(disableShadowRoot=true) {
+		check.boolean(disableShadowRoot);
+
+		this.context.disableShadowRoot = disableShadowRoot;
 	}
 
 	/**
@@ -1486,9 +1511,12 @@ class ZephElementClass {
 				};
 
 				// create and store out element internal content.
-				let shadow = this.shadowRoot || this.attachShadow({
-					mode:"open"
-				});
+				let shadow = null;
+				if (!context.disableShadowRoot) {
+					shadow = this.shadowRoot || this.attachShadow({
+						mode:"open"
+					});
+				}
 				this[$SHADOW] = shadow;
 
 				// Take our context.html and add it as our
@@ -1502,7 +1530,9 @@ class ZephElementClass {
 					if (options.overwrite) shadow.innerHTML = "";
 
 					let clone = document.importNode(template.content,true);
-					shadow.appendChild(clone);
+
+					if (shadow) shadow.appendChild(clone);
+					else element.appendChild(clone);
 				});
 
 				// Now, a new style tag and populate it with our CSS.
@@ -1521,7 +1551,16 @@ class ZephElementClass {
 
 					let clone = document.importNode(template.content,true);
 					styleElements.push(clone);
-					shadow.appendChild(clone);
+					if (shadow) shadow.appendChild(clone);
+					else { // if no shadow, put the style in the head, but only if not already there.
+						clone[$CONTEXT] = style;
+
+						let head = document.head;
+						let found = [...head.querySelectorAll("style")].find((s)=>{
+							return s[$CONTEXT]===style;
+						});
+						if (!found) head.appendChild(clone);
+					}
 				});
 
 				// Handle assets
@@ -1529,7 +1568,7 @@ class ZephElementClass {
 					context.assets.forEach((asset)=>{
 						let data = asset.data;
 						let type = asset.contentType;
-						let elements = asset.selector==="." && [element] || [...shadow.querySelectorAll(asset.selector)] || [];
+						let elements = asset.selector==="." && [element] || shadow && [...shadow.querySelectorAll(asset.selector)] || [];
 						let srcstr = "data:"+type+";base64,"+data;
 						let urlstr = "url('"+srcstr+"')";
 
@@ -2033,6 +2072,9 @@ class ZephObserver {
 		this.attributes[name].forEach((handler)=>{
 			handler(value,name,this.element);
 		});
+		this.attributes["*"].forEach((handler)=>{
+			handler(value,name,this.element);
+		});
 	}
 
 	/**
@@ -2527,6 +2569,7 @@ const contextCall = function(name) {
 
 // Our Definition Methods
 const from = contextCall("from");
+const inline = contextCall("inline");
 const alias = contextCall("alias");
 const html = contextCall("html");
 const css = contextCall("css");
@@ -2552,7 +2595,7 @@ const ZephComponents = new ZephComponentsClass();
 
 // Exports
 export {ZephComponents,ZephObserver,ZephService,utils as ZephUtils};
-export {from,alias,html,css,asset,attribute,property,method,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onContent,onAttribute,onProperty,onEvent,onEventAt};
+export {from,inline,alias,html,css,asset,attribute,property,method,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onContent,onAttribute,onProperty,onEvent,onEventAt};
 
 // Bind window.Zeph to our libs as well.
 window.Zeph = {
@@ -2565,5 +2608,5 @@ window.Zeph = {
 // build our DEFINITION_METHODS object that gets used
 // to pass methods into define
 DEFINITION_METHODS = {
-	from,alias,html,css,asset,attribute,property,method,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onContent,onAttribute,onProperty,onEvent,onEventAt
+	inline,from,alias,html,css,asset,attribute,property,method,bind,bindAt,onInit,onCreate,onAdd,onRemove,onAdopt,onContent,onAttribute,onProperty,onEvent,onEventAt
 };
