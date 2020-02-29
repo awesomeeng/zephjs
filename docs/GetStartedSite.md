@@ -7,7 +7,7 @@ This guide details how to build a Web Site with Custom Components using ZephJS. 
 It is recommended to create a `components` folder within the project and place all the custom components within that. Additionally, ZephJS recommends keeping JavaScript, HTML, and CSS as separate files with the same name.  For example, if one is creating the `my-button` component, one might have the following directory structure:
 
 ```text
-compontents
+components
   	my-button.js
 	my-button.html
 	my-button.css
@@ -88,7 +88,7 @@ Web Site authors may be interested in the additional specific topics:
  - [Services](./Services.md)
 
 **APIs**
- - [API Documentaton](./API.md)
+ - [API Documentation](./API.md)
 
 **Bundling**
   - [Bundling for Distribution](./ComponentBundling.md)

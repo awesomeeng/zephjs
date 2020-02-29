@@ -1,6 +1,6 @@
 # [ZephJS](../README.md) > Polyfill
 
-ZephJS is a modern Web Component framework for modern browsers. As such it requires certain forward technologies to work.  If the browser you are using does not support these, ZephJS may be able to fall back to a polyfill... possibly.
+ZephJS is a modern Web Component framework for modern browsers.  As such, it requires certain forward technologies to work.  If the browser you are using does not support these, ZephJS may be able to fall back to a polyfill... possibly.
 
 ## Required Technologies
 
@@ -19,7 +19,7 @@ ZephJS requires the following forward technologies:
  - ShadowDOM API v1
  - Custom Elements API v1
 
-For browsers that support the first five (ES2017, Fetch, Mutation Observer, Fetch API, HTML Templates) but not the last two (Micrsoft Edge for example), ZephJS can be used in conjunction with the [webcomponents.org](https://www.webcomponents.org/introduction) polyfill.
+For browsers that support the first five (ES2017, Fetch, Mutation Observer, Fetch API, HTML Templates) but not the last two (Microsoft Edge for example), ZephJS can be used in conjunction with the [webcomponents.org](https://www.webcomponents.org/introduction) polyfill.
 
 ## Using the Polyfill
 
@@ -29,7 +29,7 @@ To use the [webcomponents.org](https://www.webcomponents.org/introduction) polyf
 <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2/webcomponents-loader.js"></script>
 ```
 
-Here's a full example from our [ExampleService example](./examples/EXampleService)
+Here's a full example from our [ExampleService example](./examples/ExampleService)
 
 ```html
 <!DOCTYPE html>

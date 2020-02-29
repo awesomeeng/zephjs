@@ -2,7 +2,7 @@
 
 We are pleased to announce the release of [ZephJS](https://github.com/awesomeeng/zephjs)!
 
-ZephJS is an extremely easy to use, simple to understand, ultra-light framework for defining and using Web Components. ZephJS is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want the gigantic weight of a modern JavaScript browser framework. ZephJS simplifies the process of defining custom Web Components into a highly readable declarative structure that uses standard JavaScript, standard HTML markup, and standard CSS styling. And ZephJS weighs in at less than 20k minified!
+ZephJS is an extremely easy to use, simple to understand, ultra-light framework for defining and using Web Components.  ZephJS is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want the gigantic weight of a modern JavaScript browser framework.  ZephJS simplifies the process of defining custom Web Components into a highly readable declarative structure that uses standard JavaScript, standard HTML markup, and standard CSS styling.  And ZephJS weighs in at less than 20k minified!
 
 Here's an example of using ZephJS to build a customized button:
 
@@ -10,26 +10,26 @@ Here's an example of using ZephJS to build a customized button:
 
 ```javascript
 import {ZephComponents} from "./Zeph.js";
-import {html,css,attribute,property,bind,onCreate,onEvent} from "./Zeph.js";
+import {html, css, attribute, property, bind, onCreate, onEvent} from "./Zeph.js";
 
-ZephComponents.define("my-button",()=>{
+ZephComponents.define("my-button", () => {
 	html("./my-button.html");
 	css("./my-button.css");
 
 	attribute("icon","");
-	attribute("icon-placement","left");
-	attribute("disabled",undefined);
+	attribute("icon-placement", "left");
+	attribute("disabled", undefined);
 
 	property("clickCount",0);
 
-	bind("@icon","button > img","@src");
-	bind("@disabled","button");
+	bind("@icon","button > img", "@src");
+	bind("@disabled", "button");
 
 	onCreate((element)=>{
-		console.log("Element '"+element.getAttribute("name")+"' created!",element);
+		console.log("Element '"+element.getAttribute("name")+"' created!", element);
 	});
 
-	onEvent("click",(event,element)=>{
+	onEvent("click", (event, element)=>{
 		if (element.hasAttribute("disabled")) {
 			event.stopPropagation();
 			event.preventDefault();
@@ -43,7 +43,7 @@ ZephComponents.define("my-button",()=>{
 });
 ```
 
-ZephJS uses modern, standard JavaScript to make writing Web Components super easy to do. There is no mucking about with Shadow DOM or figuring out how to add encapsualted styles; Zeph handles all of that for you. Want to add an attribute to your Web Component? Zeph has you covered with its `attribute()` declaration.  Want that attribute to update a component in your Web Component's internal content? Zeph has you covered with support for Attribute/Property/Content binding. Want to handle a click event on a button nested in your Web Component's internal content? Zeph makes it easy to do so. Zeph provides all the tools you need to define and use modern Web Components.
+ZephJS uses modern, standard JavaScript to make writing Web Components super easy to do.  There is no mucking about with Shadow DOM or figuring out how to add encapsulated styles; Zeph handles all of that for you.  Want to add an attribute to your Web Component? Zeph has you covered with its `attribute()` declaration.  Want that attribute to update a component in your Web Component's internal content? Zeph has you covered with support for Attribute/Property/Content binding.  Want to handle a click event on a button nested in your Web Component's internal content?  Zeph makes it easy to do so.  Zeph provides all the tools you need to define and use modern Web Components.
 
 ## How ZephJS Works
 
@@ -57,15 +57,15 @@ There are currently seventeen different definition methods for you to describe y
 
 > **html()** is used to add the internal content of your Web Component, that is all the HTML that makes up the inner workings of your component.
 
-> **css()** is used to associate a set of internal CSS style rules to your content. These rules can target the internal content (provided by `html()` above) or the created element itself (with the `:host` and `:host()` psuedo-selectors.)
+> **css()** is used to associate a set of internal CSS style rules to your content.  These rules can target the internal content (provided by `html()` above) or the created element itself (with the `:host` and `:host()` psuedo-selectors.)
 
 > **attribute()** adds an attribute to your custom element and associates an initial value with that attribute.
 
 > **property()** adds a property to your custom element and associates an initial value with that property.
 
-> **bind()** and **bindAt()** are used to watch for attribute/property/content changes in your element and then propagate the changed value to some other attribute/property/content of a different element. (See "Bindings" below.)
+> **bind()** and **bindAt()** are used to watch for attribute/property/content changes in your element and then propagate the changed value to some other attribute/property/content of a different element.  (See "Bindings" below.)
 
-> **onInit()** / **onCreate()** / **onAdd()** / **onRemove()** / **onAdopt()** all allow you to provide a callback function to execute when certain [ZephJS Lifecycle events](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentConcepts.md#component-lifecycle) occur. For example, `onAdd(myAddHandler)` would execute when the element is added to some Document or DocumentFragement.
+> **onInit()** / **onCreate()** / **onAdd()** / **onRemove()** / **onAdopt()** all allow you to provide a callback function to execute when certain [ZephJS Lifecycle events](./ComponentConcepts.md#component-lifecycle) occur. For example, `onAdd(myAddHandler)` would execute when the element is added to some Document or DocumentFragment.
 
 > **onAttribute()** is used to execute a callback if a given attribute on the element is changed.
 
@@ -73,19 +73,19 @@ There are currently seventeen different definition methods for you to describe y
 
 > **onEvent()** and **onEventAt()** are used to execute some callback handler when a given event (like a mouse click or a keystroke) occurs.
 
-There are a few other definition methods, but these are the key ones. If you want to know more, check out the [ZephJS Quick Start guide](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentQuickStart.md) or the [ZephJS API documentation](https://github.com/awesomeeng/zephjs/blob/master/docs/API.md)
+There are a few other definition methods, but these are the key ones. If you want to know more, check out the [ZephJS Quick Start guide](./ComponentQuickStart.md) or the [ZephJS API documentation](./API.md)
 
 #### Inline vs Separated Content
 
 With both the `html()` and `css()` definition methods you may either provide the content inline as a string, or you may provide a URL or relative filename.  If the latter, ZephJS will go out and load the URL or relative filename and use that as the content for the call.
 
-ZephJS highly recomends you use the relative filename approach.  This allows you to separate your code, content, and style information cleanly.
+ZephJS highly recommends you use the relative filename approach.  This allows you to separate your code, content, and style information cleanly.
 
-Additionally, ZephJS provides a [bundler tool](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentBundling.md) that will read your component(s) and all of the associated `html()` and `css()` file references and bundle them into a single usable JavaScript file for production systems or distribution. This means keeping your code clean and separated can be done without impacting your external performance.
+Additionally, ZephJS provides a [bundler tool](./ComponentBundling.md) that will read your component(s) and all of the associated `html()` and `css()` file references and bundle them into a single usable JavaScript file for production systems or distribution.  This means keeping your code clean and separated can be done without impacting your external performance.
 
 #### Bindings
 
-Due to the ZephJS design goal to "Never try to outwit the browser", ZephJS does not provide inline binding template strings the way most of the big JavaScript frameworks do. However, ZephJS does provide bindings rooted to the element or an element within the web components internal content. To do so you provide the source element you want to watch, what you want to watch on that source element (attribute, property, or content), the target element to propagate the change to, and what on the target element to propagate to (attribute, property, or content).
+Due to the ZephJS design goal to "Never try to outwit the browser", ZephJS does not provide inline binding template strings the way most of the big JavaScript frameworks do.  However, ZephJS does provide bindings rooted to the element or an element within the web components internal content.  To do so you provide the source element you want to watch, what you want to watch on that source element (attribute, property, or content), the target element to propagate the change to, and what on the target element to propagate to (attribute, property, or content).
 
 Here are a few examples:
 
@@ -98,18 +98,18 @@ This would bind the Attribute "value" on the custom element to propagate any cha
 You could even shorten this by dropping the last argument; ZephJS will use the source name ("@value") for the target name, if not provided.
 
 ```javascript
-bind("@value","div > input.username");
+bind("@value", "div > input.username");
 ```
 
 Here's another example:
 
 ```javascript
-bindAt("button",".clickCount","div > span.counter","$");
+bindAt("button", ".clickCount", "div > span.counter", "$");
 ```
 
 This would bind the property "clickCount" on the "button" element to propagate any changes to the content (specified here as "$") of the "div > span.counter" element.
 
-Bindings use a special notation to determine if you are refering to an Attribute, a Property, or the content of an element, but once you understand the rules of the notation it is pretty easy to read:
+Bindings use a special notation to determine if you are referring to an Attribute, a Property, or the content of an element, but once you understand the rules of the notation, it is pretty easy to read:
 
  - An Attribute is prefixed by the "@" character as in "@value".
  - A Property is prefixed by the "." character as in ".value".
@@ -129,38 +129,38 @@ Finally, you provide a callback function to execute when the event occurs.  This
 
 ## Getting Started
 
-So that is the basics of ZephJS the extremely easy to use, simple to understand, ultra-light framework for defining and using Web Components. We have covered all the key features of ZephJS, but there is, of course, lots more.  Fortunately ZephJS has provided a ton of documentation to read and learn about all the in's and out's of building Web Components.
+So that is the basics of ZephJS the extremely easy to use, simple to understand, ultra-light framework for defining and using Web Components.  We have covered all the key features of ZephJS, but there is, of course, lots more.  Fortunately, ZephJS has provided a ton of documentation to read and learn about all the in's and out's of building Web Components.
 
 We recommend you get started here, with our Quick Start Guide:
 
-- [Quick Start Guide](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentQuickStart.md)
+- [Quick Start Guide](./ComponentQuickStart.md)
 
 But if you are more interested in a specific area...
 
  - Components
-   - [Component Concepts](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentConcepts.md)
-   - [Creating a New Component](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentCreation.md)
-   - [Importing ZephJS](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentImporting.md)
-   - [Defining the Component](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentDefinition.md)
-   - [Inheritance](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentInheritance.md)
-   - [HTML](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentMarkup.md)
-   - [CSS](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentStyling.md)
-   - [Resources](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentAssets.md)
-   - [Attributes](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentAttributes.md)
-   - [Properties](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentProperties.md)
-   - [Lifecycle Handlers](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentLifecycleHandlers.md)
-   - [Bindings](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentBindings.md)
-   - [Event Handlers](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentEvents.md)
+   - [Component Concepts](./ComponentConcepts.md)
+   - [Creating a New Component](./ComponentCreation.md)
+   - [Importing ZephJS](./ComponentImporting.md)
+   - [Defining the Component](./ComponentDefinition.md)
+   - [Inheritance](./ComponentInheritance.md)
+   - [HTML](./ComponentMarkup.md)
+   - [CSS](./ComponentStyling.md)
+   - [Resources](./ComponentAssets.md)
+   - [Attributes](./ComponentAttributes.md)
+   - [Properties](./ComponentProperties.md)
+   - [Lifecycle Handlers](./ComponentLifecycleHandlers.md)
+   - [Bindings](./ComponentBindings.md)
+   - [Event Handlers](./ComponentEvents.md)
  - Services
-   - [Services](https://github.com/awesomeeng/zephjs/blob/master/docs/Services.md)
+   - [Services](./Services.md)
  - API
-   - [API Documentation](https://github.com/awesomeeng/zephjs/blob/master/docs/API.md)
+   - [API Documentation](./API.md)
  - Bundling
-   - [Bundling for Distribution](https://github.com/awesomeeng/zephjs/blob/master/docs/ComponentBundling.md)
+   - [Bundling for Distribution](./ComponentBundling.md)
  - Command Line Tool
-   - [Command Line Tool](https://github.com/awesomeeng/zephjs/blob/master/docs/CLI.md)
+   - [Command Line Tool](./CLI.md)
 
-Naturally though, there is no better way to learn ZephJS then to roll up the proverbial sleves and try it out...
+Naturally though, there is no better way to learn ZephJS then to roll up the proverbial sleeves and try it out...
 
 You can start by checking out the [ZephJS repository](https://github.com/awesomeeng/zephjs).  From there you can learn all about the details of ZephJS including how to install it and get started using it.
 

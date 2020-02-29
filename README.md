@@ -11,9 +11,9 @@
 
 #  ZephJS
 
-ZephJS is an easy, understandable, and ultra-light framework for defining and using Web Components. It is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want all the weight of a modern JavaScript Browser framework. ZephJS simplifies the process of defining custom Web Components into a declarative highly readable structure that uses standard JavaScript, standard HTML markup, and standard CSS Styling.
+ZephJS is an easy, understandable, and ultra-light framework for defining and using Web Components. It is perfect for people writing component libraries, teams building applications or sites that just require a few custom components, or projects building whole applications that do not want all the weight of a modern JavaScript Browser framework. ZephJS simplifies the process of defining custom Web Components into a declarative, highly readable structure that uses standard JavaScript, standard HTML markup, and standard CSS Styling.
 
-ZephJS aims to bring the promised ease of web components back to the community. It does so by living up to the following principals:
+ZephJS aims to bring the promised ease of web components back to the community. It does so by living up to the following principles:
 
  - Define new components simply in a readable, declarative manner.
  - Make it easy for a component or component library to be used by others.
@@ -33,13 +33,13 @@ ZephJS has the following features...
  - Uses 100% Standard JavaScript/ES2018;
  - Uses 100% Standard HTML, inline or separated;
  - Uses 100% Standard CSS, inline or separated;
- - Encapsulated stlyes and content do not leak;
+ - Encapsulated styles and content do not leak;
  - Components can extend other components;
  - Value propagation via Attribute/Property/Content binding;
  - Supports building one-off components;
  - or Supports building component libraries;
  - or Supports building entire applications;
- - Included CLI for easy new component scafolding;
+ - Included CLI for easy new component scaffolding;
  - Included Bundler (using Rollup) to package into a single distributable;
  - and ZephJS is under 20k minified!
 

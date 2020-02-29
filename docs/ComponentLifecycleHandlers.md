@@ -4,7 +4,7 @@
 
 - [Quick Start](./ComponentQuickStart.md)
 - [Component Concepts](./ComponentConcepts.md)
-- [Creating a New Component](./docs/ComponentCreation.md)
+- [Creating a New Component](./ComponentCreation.md)
 - [Importing ZephJS](./ComponentImporting.md)
 - [Defining the Component](./ComponentDefinition.md)
 - [Inheritance](./ComponentInheritance.md)
@@ -16,25 +16,25 @@
 - **Lifecycle Handlers**
 - [Bindings](./ComponentBindings.md)
 - [Event Handlers](./ComponentEvents.md)
-- [Bundling for Distribution](./docs/ComponentBundling.md)
+- [Bundling for Distribution](./ComponentBundling.md)
 
 ### Component Lifecycle
 
-A custom element built with ZephJS has the following lifecycle, meaning it moves through the following stages at some point.  Each of these lifecylces has an associated Lifecycle Event. These events can be tapped within the component definition for you to use as needed.
+A custom element built with ZephJS has the following lifecycle, meaning it moves through the following stages at some point.  Each of these lifecycles has an associated Lifecycle Event.  These events can be tapped within the component definition for you to use as needed.
 
 **Definition** &rArr; **Initialization** &rArr; **Creation** &rArr; **Addition** | **Removal** | **Adoption** | **Attribute** | **Property**
 
- - **Definition**: Definition happens when you define a component via the `ZephComponents.define()` call. It is where your definition methods are executed and the ComponentContext is created. This will only occur once for each custom element defined.
+ - **Definition**: Definition happens when you define a component via the `ZephComponents.define()` call.  It is where your definition methods are executed and the ComponentContext is created.  This will only occur once for each custom element defined.
 
- - **Initialization**: Occurs after an element is defined and registered with the Custom Elements API. This is directly following the Definition lifecycle event. This will only occur once for each custom element defined.
+ - **Initialization**: Occurs after an element is defined and registered with the Custom Elements API.  This is directly following the Definition lifecycle event.  This will only occur once for each custom element defined.
 
  - **Creation**: Occurs when someone instantiates a new instance of your custom element.  Each usage of your element in the html occurs a creation lifecycle event. This will occur multiple times for a given custom element, once for each time it is instanced.
 
- - **Addition** | **Removal** | **Adoption**: Each of these occurs when an element is added or removed or adopted (moved from one document to another) to the DOM. This may occur multiple times for a single element as it moves around the DOM. For example, if I move a custom element from one DOM node to another both the Removal and Addition lifecycle events will occur.
+ - **Addition** | **Removal** | **Adoption**: Each of these occurs when an element is added or removed or adopted (moved from one document to another) to the DOM.  This may occur multiple times for a single element as it moves around the DOM.  For example, if I move a custom element from one DOM node to another, both the Removal and Addition lifecycle events will occur.
 
- - **Attribute**: Occurs when a given attribute of the created element changes. The may occur multiple times for a single custom element as the attributes changes on that element.
+ - **Attribute**: Occurs when a given attribute of the created element changes.  This may occur multiple times for a single custom element as the attributes changes on that element.
 
- - **Property**: Occurs when a given property of the created element changes. The may occur multiple times for a single custom element as the property changes on that element.
+ - **Property**: Occurs when a given property of the created element changes.  This may occur multiple times for a single custom element as the property changes on that element.
 
 ### Lifecycle Handlers
 
@@ -42,21 +42,21 @@ You may tap into all of these Lifecycles in your component definition using the 
 
 #### Definition
 
-There is no assicated Lifecylce Handler for the Definition Lifecycle event, because the component defintion function is in and of itself that event.
+There is no associated Lifecycle Handler for the Definition Lifecycle event, because the component definition function is in and of itself that event.
 
 #### Initialization
 
-The `onInit()` definition method is associated with the Initialization Lifecylce event.  `onInit()` is good for follow-up work when defining a component.
+The `onInit()` definition method is associated with the Initialization Lifecycle event.  `onInit()` is good for follow-up work when defining a component.
 
 > **`onInit(handler)`**
- - **handler** [Function]: The function executed when the Initialization Lifecycle event occurs. The function has the signature `(name,component)` where `name` is the tag name being defined and the `component` is the ZephComponent class which wraps the component itself.
+ - **handler** [Function]: The function executed when the Initialization Lifecycle event occurs.  The function has the signature `(name,component)` where `name` is the tag name being defined and the `component` is the ZephComponent class which wraps the component itself.
 
 ```
-ZephComponents.define("my-component",()=>{
+ZephComponents.define("my-component", () => {
 	html("./my-component.html");
 	css("./my-component.css");
 
-	onInit((name,zephComponent)=>{
+	onInit((name, zephComponent) => {
 		... do something ...
 	});
 });
@@ -64,17 +64,17 @@ ZephComponents.define("my-component",()=>{
 
 #### Creation
 
-The `onCreate(handler)` definition method is associated with the Creation Lifecylce event.  `onCreate()` is good for dynamically changing an element when it is instantiated.
+The `onCreate(handler)` definition method is associated with the Creation Lifecycle event.  `onCreate()` is good for dynamically changing an element when it is instantiated.
 
 > **`onCreate(handler)`**
- - **handler** [Function]: The function executed when the Creation Lifecycle event occurs.  The function has the signature `(element,content)` where `element` is the created element and `content` is the internal Shadow DOM based on any `html()` calls.
+ - **handler** [Function]: The function executed when the Creation Lifecycle event occurs.  The function has the signature `(element, content)` where `element` is the created element and `content` is the internal Shadow DOM based on any `html()` calls.
 
 ```
-ZephComponents.define("my-component",()=>{
+ZephComponents.define("my-component", () => {
 	html("./my-component.html");
 	css("./my-component.css");
 
-	onCreate((element,content)=>{
+	onCreate((element, content) => {
 		... do something ...
 	});
 });
@@ -88,11 +88,11 @@ The `onAdd(handler)` definition method is associated with the Added Lifecylce ev
  - **handler** [Function]: The function executed when the Added Lifecycle event occurs.  The function has the signature `(element,content)` where `element` is the created element and `content` is the internal Shadow DOM based on any `html()` calls.
 
 ```
-ZephComponents.define("my-component",()=>{
+ZephComponents.define("my-component", () => {
 	html("./my-component.html");
 	css("./my-component.css");
 
-	onAdd((element,content)=>{
+	onAdd((element, content) => {
 		... do something ...
 	});
 });
@@ -106,11 +106,11 @@ The `onRemove(handler)` definition method is associated with the Removed Lifecyl
  - **handler** [Function]: The function executed when the Removed Lifecycle event occurs.  The function has the signature `(element,content)` where `element` is the created element and `content` is the internal Shadow DOM based on any `html()` calls.
 
 ```
-ZephComponents.define("my-component",()=>{
+ZephComponents.define("my-component", () => {
 	html("./my-component.html");
 	css("./my-component.css");
 
-	onRemove((element,content)=>{
+	onRemove((element, content) => {
 		... do something ...
 	});
 });
@@ -136,18 +136,18 @@ ZephComponents.define("my-component",()=>{
 
 #### Attribute
 
-The `onAttribute(attributeName,handler)` definition method is associated with the Attribute Lifecylce event.  `onAttribute()` is good for changing an element when a given attribute changes.
+The `onAttribute(attributeName,handler)` definition method is associated with the Attribute Lifecycle event.  `onAttribute()` is good for changing an element when a given attribute changes.
 
 > **`onAttribute(attributeName,handler)`**
- - **attributeName** [string]: The name of the attribute to observe for changes. This may not be undefined or null or empty string.
+ - **attributeName** [string]: The name of the attribute to observe for changes.  This may not be undefined or null or empty string.
  - **handler** [Function]: The function executed when the Attribute Lifecycle event occurs.  The function has the signature `(oldValue,newValue,element,content)` where `oldValue` is the value prior to the attribute change, `newValue` is the value being set, `element` is the created element, and `content` is the internal Shadow DOM based on any `html()` calls.
 
 ```
-ZephComponents.define("my-component",()=>{
+ZephComponents.define("my-component", () => {
 	html("./my-component.html");
 	css("./my-component.css");
 
-	onAttribute((oldValue,newValue,element,content)=>{
+	onAttribute((oldValue, newValue, element, content) => {
 		... do something ...
 	});
 });
@@ -155,18 +155,18 @@ ZephComponents.define("my-component",()=>{
 
 #### Property
 
-The `onProperty(propertyName,handler)` definition method is associated with the Property Lifecylce event.  `onProperty()` is good for changing an element when a given property changes.
+The `onProperty(propertyName,handler)` definition method is associated with the Property Lifecycle event.  `onProperty()` is good for changing an element when a given property changes.
 
 > **`onProperty(propertyName,handler)`**
- - **propertyName** [string]: The name of the property to observe for changes. This may not be undefined or null or empty string.
+ - **propertyName** [string]: The name of the property to observe for changes.  This may not be undefined or null or empty string.
  - **handler** [Function]: The function executed when the Property Lifecycle event occurs.  The function has the signature `(propertyName,value,element,content)` where `propertyName` is the name of the property changed, `value` is the value being set, `element` is the created element, and `content` is the internal Shadow DOM based on any `html()` calls.
 
 ```
-ZephComponents.define("my-component",()=>{
+ZephComponents.define("my-component", () => {
 	html("./my-component.html");
 	css("./my-component.css");
 
-	onProperty((propertyName,value,element,content)=>{
+	onProperty((propertyName, value, element, content) => {
 		... do something ...
 	});
 });

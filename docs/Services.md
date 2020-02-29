@@ -2,7 +2,7 @@
 
 A common need when using ZephJS is to define functional services to work with your components.  In this approach a component provides the view of the data and the service provides the data itself.
 
-Initially ZephJS had a simple service registry layer which would allow one to couple a service to a given name, and then various ZephJS components could request the service and use it.  Ultimately this was overkill for ZephJS and it was removed. However, services are still a big part of application development and ZephJS provides some support for using that paradigm.
+Initially ZephJS had a simple service registry layer which would allow one to couple a service to a given name, and then various ZephJS components could request the service and use it.  Ultimately this was overkill for ZephJS and it was removed.  However, services are still a big part of application development and ZephJS provides some support for using that paradigm.
 
 ## An Example
 
@@ -81,13 +81,13 @@ class ClockService extends ZephService {
 }
 ```
 
-Otherwise, our service can do whatever it wants.  In our case we are setting up a timer to execute at the top of every minute. This in turn updates the time and fires our "updated" event.
+Otherwise, our service can do whatever it wants.  In our case we are setting up a timer to execute at the top of every minute.  This in turn updates the time and fires our "updated" event.
 
 ```javascript
 this.fire("updated",this[$TIME]);
 ```
 
-The final thing to do with a service is to export it.  In most cases you want to export a singleton of the service, thus you must first create that instance and then export that as the given name of your service. This is shown in the last two lines of our sample code:
+The final thing to do with a service is to export it.  In most cases you want to export a singleton of the service, thus you must first create that instance and then export that as the given name of your service.  This is shown in the last two lines of our sample code:
 
 ```javascript
 const instance = new ClockService();
@@ -114,14 +114,14 @@ Whatever you expose in your class as a getter, setter, or method, is available t
 
 ZephService provides the scaffolding your service will need to emit and handle events.  This includes
 
-> **`fire(eventName,...args)`** For emitting an event of the given name with any number of arguments.
+> **`fire(eventName, ...args)`** For emitting an event of the given name with any number of arguments.
 
-> **`addEventListner(eventName,listener)`** Add a listener for a given event name.
+> **`addEventListener(eventName, listener)`** Add a listener for a given event name.
 
-> **`removeEventListener(eventName,listener)`** Remove a listener for a given event name.
+> **`removeEventListener(eventName, listener)`** Remove a listener for a given event name.
 
-> **`on(eventName,listener)`** The same as `addEventListener()`.  Provided for convenience.
+> **`on(eventName, listener)`** The same as `addEventListener()`.  Provided for convenience.
 
-> **`once(eventName,listener)`** A special case of `addEventListner()`, this will fire once for a given event and then remove itself.
+> **`once(eventName, listener)`** A special case of `addEventListener()`, this will fire once for a given event and then remove itself.
 
-> **`off(eventName,listener)`** The same as `removeEventListener()`.  Provided for convenience.
+> **`off(eventName, listener)`** The same as `removeEventListener()`.  Provided for convenience.

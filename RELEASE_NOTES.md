@@ -1,4 +1,4 @@
-# AwesomeComponenets Release Notes
+# AwesomeComponents Release Notes
 
 #### **Version 1.2.0**
 
@@ -155,7 +155,7 @@ Fixed a pending promise resolution bug on components that inherit using from().
 
  - Restructured bindings to just bind() and bindAt().
 
- - Revapmped documentation greatly.
+ - Revamped documentation greatly.
 
  - Updated tests for new structure.
 
