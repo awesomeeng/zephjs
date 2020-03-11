@@ -4,7 +4,7 @@
 
 - [Quick Start](./ComponentQuickStart.md)
 - [Component Concepts](./ComponentConcepts.md)
-- [Creating a New Component](./docs/ComponentCreation.md)
+- [Creating a New Component](./ComponentCreation.md)
 - [Importing ZephJS](./ComponentImporting.md)
 - [Defining the Component](./ComponentDefinition.md)
 - **Inheritance**
@@ -16,13 +16,13 @@
 - [Lifecycle Handlers](./ComponentLifecycleHandlers.md)
 - [Bindings](./ComponentBindings.md)
 - [Event Handlers](./ComponentEvents.md)
-- [Bundling for Distribution](./docs/ComponentBundling.md)
+- [Bundling for Distribution](./ComponentBundling.md)
 
 ### Inheritance
 
-It is possible using ZephJS for one component to inherit from another component.  For example, `my-flashy-button` could inherit from `my-button`. We say "my-flashy-button inherits from my-button." This means that `my-flashy-button` has all of the definition of `my-button` plus its own definition.
+It is possible using ZephJS for one component to inherit from another component.  For example, `my-flashy-button` could inherit from `my-button`.  We say "my-flashy-button inherits from my-button."  This means that `my-flashy-button` has all of the definition of `my-button` plus its own definition.
 
-Inheritance is a really powerful feature of ZephJS, but it does has its own limitations and draw backs.  And under no circumstances can you inherit from a component that is not defined with ZephJS. For example, it is not possible to inherit from a `<div>` tag as that is not defined in ZephJS.
+Inheritance is a really powerful feature of ZephJS, but it does has its own limitations and draw backs.  And under no circumstances can you inherit from a component that is not defined with ZephJS.  For example, it is not possible to inherit from a `<div>` tag as that is not defined in ZephJS.
 
 In order to inherit from another component we use the `from()` definition method.
 
@@ -39,12 +39,12 @@ ZephComponents.define("my-flashy-button",()=>{
 
 ### Importing Parent Class
 
-It is highly recommend you import the class from which you are inheriting before you do the inheritence. So our example directly above should really be
+It is highly recommend you import the class from which you are inheriting before you do the inheritance. So our example directly above should really be
 
 ```javascript
 import "./my-button";
 
-ZephComponents.define("my-flashy-button",()=>{
+ZephComponents.define("my-flashy-button", () => {
 	from("my-button");
 
 	html("my-flashy-button.html");
@@ -59,14 +59,14 @@ In ZephJS when one component inherits from another the component definition of t
 
  1. The `html()` of both classes is applied, with the parent class' `html()` being written first.  On some occasions this is not desirable, so the `html()` method has a means to `overwrite` instead of appending.
 
- 1. The `css()` of both classes is applied, with the parent class' `css()` being written first. On some occasions this is not desirable, so the `css()` method has a means to `overwriter` instead of appending.
+ 1. The `css()` of both classes is applied, with the parent class' `css()` being written first.  On some occasions this is not desirable, so the `css()` method has a means to `overwrite` instead of appending.
 
- 1. Attributes defined with `attribute()` are applied from the parent first, then the child. If a child defines an attribute that the parent has already defined, the child will overwrite the initialValue.
+ 1. Attributes defined with `attribute()` are applied from the parent first, then the child.  If a child defines an attribute that the parent has already defined, the child will overwrite the initialValue.
 
- 1. Properties defined with `property()` are applied from the parent first, then the child. If a child defines a property that the parent has already defined, the child will overwrite the initialValue.
+ 1. Properties defined with `property()` are applied from the parent first, then the child.  If a child defines a property that the parent has already defined, the child will overwrite the initialValue.
 
- 1. Lifecylcle handlers from both the parent and child classes are all fired. Parent class handlers are fired first, then the child class handlers.
+ 1. Lifecycle handlers from both the parent and child classes are all fired.  Parent class handlers are fired first, then the child class handlers.
 
- 1. Both parent and child `bind()` and `bindAt()` bindings are executed for changes. If a child defines an exact binding that the parent also defined, the child will overwirte the parent binding and the child will be the only binding used.
+ 1. Both parent and child `bind()` and `bindAt()` bindings are executed for changes.  If a child defines an exact binding that the parent also defined, the child will overwrite the parent binding and the child will be the only binding used.
 
- 1. Event handlers from both the parent and child classes are all fired. Parent class handlers are fired first, then the child class handlers.
+ 1. Event handlers from both the parent and child classes are all fired.  Parent class handlers are fired first, then the child class handlers.

@@ -4,7 +4,7 @@
 
 - [Quick Start](./ComponentQuickStart.md)
 - [Component Concepts](./ComponentConcepts.md)
-- [Creating a New Component](./docs/ComponentCreation.md)
+- [Creating a New Component](./ComponentCreation.md)
 - [Importing ZephJS](./ComponentImporting.md)
 - **Defining the Component**
 - [Inheritance](./ComponentInheritance.md)
@@ -16,26 +16,26 @@
 - [Lifecycle Handlers](./ComponentLifecycleHandlers.md)
 - [Bindings](./ComponentBindings.md)
 - [Event Handlers](./ComponentEvents.md)
-- [Bundling for Distribution](./docs/ComponentBundling.md)
+- [Bundling for Distribution](./ComponentBundling.md)
 
 ### Defining the Component
 
 After we import ZephComponents and our definition methods, its time to define our component.  We do this by calling the `ZephComponents.define` method, like so:
 
 ```
-ZephComponents.define("my-component",()=>{
+ZephComponents.define("my-component", ()=>{
 	... your component definition ...
 });
 ```
 
-> `ZephComponents.define(name,definition)`
- - **name** [string]: The name of the component we are defining. The name becomes the tag name of our component. This argument is required and may not be undefined, null, or empty string. The name must be unique and it must have at least one dash ("-") character in it.
- - **definition** [Function]: The definition is a function that is executed before the component is defined and registered. Inside of the defintion function, we call the definition methods (that we imported previously) to describe how the component we are defining.
+> `ZephComponents.define(name, definition)`
+ - **name** [string]: The name of the component we are defining.  The name becomes the tag name of our component. This argument is required and may not be undefined, null, or empty string.  The name must be unique and it must have at least one dash ("-") character in it.
+ - **definition** [Function]: The definition is a function that is executed before the component is defined and registered.  Inside of the defintion function, we call the definition methods (that we imported previously) to describe how the component we are defining.
 
 The ZephComponents define process works like this:
 
 1. You define the component using `ZephComponents.define()`.
-2. The definition function you pass as the second argument to `ZephComponents.define()` is executed and each definition method you include within it, describes some aspect of the definition. All of these definitions are used to build what we call a ComponentContext.
+2. The definition function you pass as the second argument to `ZephComponents.define()` is executed and each definition method you include within it, describes some aspect of the definition.  All of these definitions are used to build what we call a ComponentContext.
 3. After the definition function has completed, ZephJS uses the ComponentContext to create a ComponentClass that describes the custom element you are defining.
 4. ZephJS registers the component using the given name and ComponentClass using the [Custom Elements API](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements).
 
@@ -45,22 +45,22 @@ Here is an example of defining a component:
 
 ```
 import {ZephComponents} from "./Zeph.js";
-import {html,css,attribute,bind,onEvent} from "./Zeph.js";
+import {html, css, attribute, bind, onEvent} from "./Zeph.js";
 
-ZephComponents.define("my-button",()=>{
+ZephComponents.define("my-button",( )=>{
 	html("./my-button.html");
 	css("./my-button.css");
 
-	attribute("icon-placement","left");
+	attribute("icon-placement", "left");
 
 	// Inherited from button.
-	bind("@autofocus","button");
-	bind("@disabled","button");
-	bind("@name","button");
-	bind("@value","button");
+	bind("@autofocus", "button");
+	bind("@disabled", "button");
+	bind("@name", "button");
+	bind("@value", "button");
 
-	onEvent("click",(event,element)=>{
-		if (element.hasAttribute("disabled") && (element.getAttribute("disabled")===true || element.getAttribute("disabled")==="")) {
+	onEvent("click", (event, element) => {
+		if (element.hasAttribute("disabled") && (element.getAttribute("disabled") === true || element.getAttribute("disabled") === "")) {
 			event.stopPropagation();
 			event.stopImmediatePropagation();
 			event.preventDefault();

@@ -1,13 +1,13 @@
 # [ZephJS](../RREADME.md) > Get Started > Building a Web Component Library with ZephJS
 
-This guide details how to build a Web Component Library using ZephJS. This involves defining one or more custom Web Components and then bundling them together into a single unified file.  Additionally, Component Inheritance may also be of interest.
+This guide details how to build a Web Component Library using ZephJS.  This involves defining one or more custom Web Components and then bundling them together into a single unified file.  Additionally, Component Inheritance may also be of interest.
 
 ## Project Structure
 
-It is recommended that one create a `components` folder within the project and place all the components within that. Additionally, ZephJS recommends keeping JavaScript, HTML, and CSS as separate files with the same name.  For example, if one is creating the `my-button` component, one might have the following directory structure:
+It is recommended that one create a `components` folder within the project and place all the components within that.  Additionally, ZephJS recommends keeping JavaScript, HTML, and CSS as separate files with the same name.  For example, if one is creating the `my-button` component, one might have the following directory structure:
 
 ```text
-compontents
+components
   	my-button.js
 	my-button.html
 	my-button.css
@@ -15,7 +15,7 @@ compontents
 
 This approach to organizing components keeps everything neatly together and consistently named.  Of course, this layout is merely a suggestion and other layouts are entirely feasible at the developer's discretion.
 
-Additionally, it is recommended to have a single file near the top of your structure that imports all components together. This is a requirement for the bundler described below.
+Additionally, it is recommended to have a single file near the top of your structure that imports all components together.  This is a requirement for the bundler described below.
 
 ## Installation
 
@@ -32,7 +32,7 @@ npm -g install zephjs
 
 ## Creating a Component
 
-For each component in the component library one should create a separate component definition file.  Fortunately ZephJS makes this super easy with its Command Line Tool:
+For each component in the component library one should create a separate component definition file.  Fortunately, ZephJS makes this super easy with its Command Line Tool:
 
 ```shell
 zeph create <component_name>
@@ -69,7 +69,7 @@ Often one wants to bundle multiple components, but the `bundle` tool can only ta
 ```javascript
 import "./src/my-button.js";
 import "./src/my-list.js";
-import "./src/my-calander.js";
+import "./src/my-calendar.js";
 import "./src/my-chart.js";
 ```
 

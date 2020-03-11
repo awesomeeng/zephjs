@@ -4,7 +4,7 @@
 
 - [Quick Start](./ComponentQuickStart.md)
 - **Component Concepts**
-- [Creating a New Component](./docs/ComponentCreation.md)
+- [Creating a New Component](./ComponentCreation.md)
 - [Importing ZephJS](./ComponentImporting.md)
 - [Defining the Component](./ComponentDefinition.md)
 - [Inheritance](./ComponentInheritance.md)
@@ -16,7 +16,7 @@
 - [Lifecycle Handlers](./ComponentLifecycleHandlers.md)
 - [Bindings](./ComponentBindings.md)
 - [Event Handlers](./ComponentEvents.md)
-- [Bundling for Distribution](./docs/ComponentBundling.md)
+- [Bundling for Distribution](./ComponentBundling.md)
 
 ### Understanding Core Concepts
 
@@ -26,19 +26,19 @@ Before jumping right into ZephJS it is a good idea to understand a few of the co
 
 Throughout the ZephJS documentation we are going to use terms like Component, Element, etc.  Here's a quick glossary how these terms relate to ZephJS.
 
- - **Web Components**: Web Components is a set of browser standards set to work together to enable the creation of encapsulated custom elements for reuse. You can learn more about Web Components at the [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/Web_Components).
+ - **Web Components**: Web Components is a set of browser standards set to work together to enable the creation of encapsulated custom elements for reuse.  You can learn more about Web Components at the [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/Web_Components).
 
- - **Component**: A component in ZephJS is a combination of its Component Name and the Component Definition. This is represented internally by the ZephComponent class.
+ - **Component**: A component in ZephJS is a combination of its Component Name and the Component Definition.  This is represented internally by the ZephComponent class.
 
- - **Component Name**: The component name is a string the associates the Component to the HTML it is used in. The Component Name is the HTML tag name once the Component is registered. The name must contain at least one dash character, as per the Custom Elements API.
+ - **Component Name**: The component name is a string the associates the Component to the HTML it is used in.  The Component Name is the HTML tag name once the Component is registered.  The name must contain at least one dash character, as per the Custom Elements API.
 
- - **Component Definition**: A component Defintion is a function that is executed to describe the Component. Inside of this function one uses zero or more Definition Methods. When the Definition Methods are executed they populate the Component Context which in turn is used to populate the Element when the Component is instatiated.
+ - **Component Definition**: A component Definition is a function that is executed to describe the Component.  Inside of this function one uses zero or more Definition Methods.  When the Definition Methods are executed, they populate the Component Context which in turn is used to populate the Element when the Component is instantiated.
 
  - **Definition Method**: A Definition Method is one of the predefined methods one uses inside of the Component Definition to describe the Component. Examples of a Definition Method include `html()`, `css()`, `attribute()`, `onAdd()` and the like.
 
- - **Component Context**: The Component Context is a descriptive object of the Component that is used when the Component is instantiated. During this instantiation, ZephJS goes through the Component Context and does various things based on the Component Definition.  For example, the the `html()` Definition Method was called in the Component Definition, during instantiation the contents of that `html()` call are append into the ShadowRoot of our new element.
+ - **Component Context**: The Component Context is a descriptive object of the Component that is used when the Component is instantiated.  During this instantiation, ZephJS goes through the Component Context and does various things based on the Component Definition.  For example, the the `html()` Definition Method was called in the Component Definition, during instantiation the contents of that `html()` call are append into the ShadowRoot of our new element.
 
- - **Element**: When we use Element we mean any instance of an HTML element, including any Custom Element defines with ZephJS.  In many cases we use `element` in ZephJS handlers (Lifecycle Handlers, Event Handlers) to refer to the custom element itself.
+ - **Element**: When we use Element, we mean any instance of an HTML element, including any Custom Element defined with ZephJS.  In many cases we use `element` in ZephJS handlers (Lifecycle Handlers, Event Handlers) to refer to the custom element itself.
 
  - **Custom Element**: In ZephJS nomenclature Custom Element always refers to a custom element defined with ZephJS.
 
@@ -50,7 +50,7 @@ Throughout the ZephJS documentation we are going to use terms like Component, El
 
  - **Property**: Any property on an Element.
 
- - **Content**: Unless specifically called Internal Content (see above), Content usually refers to the `innerHTML` value of an Element. This includes all child node and child text nodes.
+ - **Content**: Unless specifically called Internal Content (see above), Content usually refers to the `innerHTML` value of an Element.  This includes all child node and child text nodes.
 
  - **ShadowRoot**: See [Shadow DOM](#shadow-dom) below.
 
@@ -66,23 +66,23 @@ A custom element built with ZephJS has the following lifecycle, meaning it moves
 
 **Definition** &rArr; **Initialization** &rArr; **Creation** &rArr; **Addition** | **Removal** | **Adoption** | **Attribute** | **Property**
 
- - **Definition**: Definition happens when you define a component via the `ZephComponents.define()` call. It is where your definition methods are executed and the ComponentContext is created. This will only occur once for each custom element defined.
+ - **Definition**: Definition happens when you define a component via the `ZephComponents.define()` call.  It is where your definition methods are executed and the ComponentContext is created.  This will only occur once for each custom element defined.
 
- - **Initialization**: Occurs after an element is defined and registered with the Custom Elements API. This is directly following the Definition lifecycle event. This will only occur once for each custom element defined.
+ - **Initialization**: Occurs after an element is defined and registered with the Custom Elements API.  This is directly following the Definition lifecycle event.  This will only occur once for each custom element defined.
 
- - **Creation**: Occurs when someone instantiates a new instance of your custom element.  Each usage of your element in the html occurs a creation lifecycle event. This will occur multiple times for a given custom element, once for each time it is instanced.
+ - **Creation**: Occurs when someone instantiates a new instance of your custom element.  Each usage of your element in the html occurs a creation lifecycle event.  This will occur multiple times for a given custom element, once for each time it is instanced.
 
- - **Addition** | **Removal** | **Adoption**: Each of these occurs when an element is added or removed or adopted (moved from one document to another) to the DOM. This may occur multiple times for a single element as it moves around the DOM. For example, if I move a custom element from one DOM node to another both the Removal and Addition lifecycle events will occur.
+ - **Addition** | **Removal** | **Adoption**: Each of these occurs when an element is added or removed or adopted (moved from one document to another) to the DOM.  This may occur multiple times for a single element as it moves around the DOM.  For example, if I move a custom element from one DOM node to another both the Removal and Addition lifecycle events will occur.
 
- - **Attribute**: Occurs when a given attribute changes. The may occur multiple times for a single custom element as the attributes changes on that element.
+ - **Attribute**: Occurs when a given attribute changes.  This may occur multiple times for a single custom element as the attributes changes on that element.
 
- - **Property**: Occurs when a ZephJS defined property of the element changes. This may occur multipel times for a single cust element as the property changes over time.
+ - **Property**: Occurs when a ZephJS defined property of the element changes.  This may occur multiple times for a single custom element as the property changes over time.
 
 #### ZephJS Events
 
-ZephJS has several events it will fire on the `document` as it performs various functions. You can tap into these events with `document.addEventListener()` like any other event.
+ZephJS has several events it will fire on the `document` as it performs various functions.  You can tap into these events with `document.addEventListener()` like any other event.
 
- - **zeph:ready**: Fired after your page is loaded and there are no more `zeph:component:loading` events without a matching `zeph:component:defined` event. Essentially this is ZephJS saying it believes all of the components are defined are ready to use.
+ - **zeph:ready**: Fired after your page is loaded and there are no more `zeph:component:loading` events without a matching `zeph:component:defined` event.  Essentially this is ZephJS saying it believes all of the components are defined are ready to use.
 
  - **zeph:component:loading**: Fired when `ZephComponents.define()` is called, but before it is complete.  `ZephComponents.define()` can have internal definition methods that need to read data and as such returns a promise that will resolve when the definition when everything has read and is complete.
 
@@ -105,13 +105,13 @@ ZephJS does not enforce any specific conventions to how you layout your code, ho
 
 A Web Component is a set of Browser API standards for defining custom HTML elements that encapsulate their content (HTML), styling (CSS) and behavior (JavaScript) into a unified, reusable, HTML-compliant package.  You create a Web Component by defining a custom element name and supplying it with content, styling, and behaviors.
 
-However, as is often the case with browser standards, using Web Components can be a little confusing and esoteric.  ZephJS aims to solve that by defining a simple, lightweight wrapper around these standards and abstracting away the confusing bits. Using ZephJS makes your components simple and clean, easy to read, and easy to work with.  ZephJS is not the only solution out there to do this, but we think it's the best.
+However, as is often the case with browser standards, using Web Components can be a little confusing and esoteric.  ZephJS aims to solve that by defining a simple, lightweight wrapper around these standards and abstracting away the confusing bits.  Using ZephJS makes your components simple and clean, easy to read, and easy to work with.  ZephJS is not the only solution out there to do this, but we think it's the best.
 
 > See [Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Web/Web_Components) for more details.
 
 #### Custom Elements Registry
 
-The Custom Elements Registry is the API by which new custom elements are registered with the browser for use.  It involves calling the `customElements.define()` method with the name of the element you are defining and the class (which inherits from HTMLElement) for the element.  When the custom element is instantiated (by addinging the tag or element to the DOM), the class you registered is instantiated via its constructor.
+The Custom Elements Registry is the API by which new custom elements are registered with the browser for use.  It involves calling the `customElements.define()` method with the name of the element you are defining and the class (which inherits from HTMLElement) for the element.  When the custom element is instantiated (by adding the tag or element to the DOM), the class you registered is instantiated via its constructor.
 
 > See [MDN Using Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) for more details.
 
@@ -119,6 +119,6 @@ The Custom Elements Registry is the API by which new custom elements are registe
 
 Shadow DOM is the system by which custom elements encapsulate thier HTML and CSS and prevent those items from leaking outside of the custom element.  For example, setting a CSS style for a custom element to make its background red will not make the background red of other element outside of the custom element.
 
-Each element in your DOM may also have an associated ShadowRoot, which captures the encapsulated HTML and CSS within it. This ShadowRoot is itself a DOM structure and can be manipulated just like the regular browser DOM but it is otherwise disassociated from the browser DOM.
+Each element in your DOM may also have an associated ShadowRoot, which captures the encapsulated HTML and CSS within it.  This ShadowRoot is itself a DOM structure and can be manipulated just like the regular browser DOM but it is otherwise disassociated from the browser DOM.
 
 > See [MDN Using Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) for more details.
