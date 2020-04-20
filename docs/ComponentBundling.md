@@ -4,7 +4,7 @@
 
 - [Quick Start](./ComponentQuickStart.md)
 - [Component Concepts](./ComponentConcepts.md)
-- [Creating a New Component](./docs/ComponentCreation.md)
+- [Creating a New Component](./ComponentCreation.md)
 - [Importing ZephJS](./ComponentImporting.md)
 - [Defining the Component](./ComponentDefinition.md)
 - [Inheritance](./ComponentInheritance.md)
@@ -37,11 +37,11 @@ Often you want to bundle multiple components, but the `bundle` tool can only tak
 ```javascript
 import "./src/my-button";
 import "./src/my-list";
-import "./src/my-calander";
+import "./src/my-calendar";
 import "./src/my-chart";
 ```
 
-When this example is bundled, you end up with a single file that contains ZephJS, my-button, my-list, my-calander, and my-chart.
+When this example is bundled, you end up with a single file that contains ZephJS, my-button, my-list, my-calendar, and my-chart.
 
 ### Using ZephJS Bundle
 

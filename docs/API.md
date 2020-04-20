@@ -14,8 +14,6 @@
 <dl>
 <dt><a href="#ZephUtils">ZephUtils</a> : <code>object</code></dt>
 <dd></dd>
-<dt><a href="#ZephComponents">ZephComponents</a> : <code>object</code></dt>
-<dd></dd>
 </dl>
 
 ## Functions
@@ -23,6 +21,18 @@
 <dl>
 <dt><a href="#from">from(fromTagName)</a> ⇒ <code>void</code></dt>
 <dd></dd>
+<dt><a href="#inline">inline([disableShadowRoot])</a> ⇒ <code>void</code></dt>
+<dd><p>Definition Method used to tell the ZephComponent that it should not create a
+shadowRoot when created, and all the html work is going to be applied
+inline to the element.</p>
+<p>By default ZephJS creates a shadowRoot for each element that is of the
+custom component defined.  The HTML and CSS of these elements is then
+placed into that shadowRoot to prevent them from leaking outside.
+However, in some cases the component doesn&#39;t want a shadowRoot and the html
+should be applied inline the element.</p>
+<p>Because there is no shadowRoot the HTML content is appended to the elements
+children and the CSS is appended to the head (if not already there).</p>
+</dd>
 <dt><a href="#alias">alias(aliasName)</a> ⇒ <code>void</code></dt>
 <dd></dd>
 <dt><a href="#html">html(content, [options])</a> ⇒ <code>void</code></dt>
@@ -51,6 +61,8 @@
 <dd></dd>
 <dt><a href="#onAttribute">onAttribute(attributeName, listener)</a> ⇒ <code>void</code></dt>
 <dd></dd>
+<dt><a href="#onAttribute">onAttribute(attributeName, listener)</a> ⇒ <code>void</code></dt>
+<dd></dd>
 <dt><a href="#onProperty">onProperty(propertyName, listener)</a> ⇒ <code>void</code></dt>
 <dd></dd>
 <dt><a href="#onEvent">onEvent(eventName, listener)</a> ⇒ <code>void</code></dt>
@@ -65,7 +77,7 @@
 **Kind**: global class  
 **Summary**: ZephJS's representation of a component and all its descriptive metadata.
 This include the component name, its origin, the definition code, and the
-context produce by executing the definition code. All of these items
+context produce by executing the definition code.  All of these items
 are used to generate a unique Class which is used in by the
 Custom Elements registry.
 
@@ -73,7 +85,7 @@ It should be noted that this is not the same as the Element produced when
 using a component as an HTML tag or from document.createElement().
 ZephComponent is the definition of that element, not the element itself.
 
-ZephCompoonent is returned when you ask ZephComponents to get the
+ZephComponent is returned when you ask ZephComponents to get the
 component.  
 
 * [ZephComponent](#ZephComponent)
@@ -199,8 +211,8 @@ shell for it.
 <a name="new_ZephObserver_new"></a>
 
 ### new ZephObserver(element)
-Create an Element Observer for a given element. This does not
-actually start the observation, just sets it up. You must call
+Create an Element Observer for a given element.  This does not
+actually start the observation, just sets it up.  You must call
 start() to begin the observation.
 
 
@@ -428,7 +440,7 @@ Remove a listener for a specific event.
 <a name="ZephService+on"></a>
 
 ### *zephService.on(event, listener) ⇒ <code>void</code>*
-Register a listener for a specific event. Same as addEventListener.
+Register a listener for a specific event.  Same as addEventListener.
 
 **Kind**: instance method of [<code>ZephService</code>](#ZephService)  
 
@@ -458,7 +470,7 @@ Registers a one time listener for a specific event.
 <a name="ZephService+off"></a>
 
 ### *zephService.off(event, listener) ⇒ <code>void</code>*
-Remove a listener for a specific event. Same as removeEventListener.
+Remove a listener for a specific event.  Same as removeEventListener.
 
 **Kind**: instance method of [<code>ZephService</code>](#ZephService)  
 
@@ -493,7 +505,7 @@ Remove a listener for a specific event. Same as removeEventListener.
 <a name="ZephUtils.ready"></a>
 
 ### ZephUtils.ready() ⇒ <code>boolean</code>
-Returns true if ZephJS is in the "ready" state. ZephJS is in the "ready"
+Returns true if ZephJS is in the "ready" state.  ZephJS is in the "ready"
 state if ZephJS is loaded and all ZephComponents.define() methods are
 believed to be complete.
 
@@ -520,7 +532,7 @@ characters in ZephJS when minimized.
 <a name="ZephUtils.exists"></a>
 
 ### ZephUtils.exists(url, options) ⇒ <code>Promise</code>
-Performs a HEAD fetch request to determine if a given URL "exists". Returns
+Performs a HEAD fetch request to determine if a given URL "exists".  Returns
 a promise that will resolve to true or false depending on the result.
 
 **Kind**: static method of [<code>ZephUtils</code>](#ZephUtils)  
@@ -551,7 +563,7 @@ A simplified fetch wrapper.
 <a name="ZephUtils.fetchText"></a>
 
 ### ZephUtils.fetchText(url, options) ⇒ <code>Promise</code>
-Fetch but also resolves the content as plaintext. Useful for reading
+Fetch but also resolves the content as plain text.  Useful for reading
 HTML and CSS files.
 
 **Kind**: static method of [<code>ZephUtils</code>](#ZephUtils)  
@@ -567,8 +579,8 @@ HTML and CSS files.
 <a name="ZephUtils.fetchBinary"></a>
 
 ### ZephUtils.fetchBinary(url, options) ⇒ <code>Promise</code>
-Fetch but also resolves the content as binary. Useful for reading
-Images, audio, video, etc. Returns an object which contains the data
+Fetch but also resolves the content as binary.  Useful for reading
+Images, audio, video, etc.  Returns an object which contains the data
 and the contentType.
 
 **Kind**: static method of [<code>ZephUtils</code>](#ZephUtils)  
@@ -631,164 +643,13 @@ from that url.
 
 * * *
 
-<a name="ZephComponents"></a>
-
-## ZephComponents : <code>object</code>
-**Kind**: global namespace  
-**Summary**: Define the ZephComponents singleton which is our exposed
-API for defining new components.  
-
-* [ZephComponents](#ZephComponents) : <code>object</code>
-    * [.components](#ZephComponents+components) ⇒ <code>Array</code>
-    * [.names](#ZephComponents+names) ⇒ <code>Array</code>
-    * [.has(name)](#ZephComponents+has) ⇒ <code>Boolean</code>
-    * [.get(name)](#ZephComponents+get) ⇒ [<code>ZephComponent</code>](#ZephComponent)
-    * [.waitFor(name)](#ZephComponents+waitFor) ⇒ <code>Promise</code>
-    * [.define(name, code)](#ZephComponents+define) ⇒ <code>Promise</code>
-    * [.undefine(name)](#ZephComponents+undefine) ⇒ <code>void</code>
-
-
-* * *
-
-<a name="ZephComponents+components"></a>
-
-### zephComponents.components ⇒ <code>Array</code>
-Returns an array of all components defined with ZephJS.
-
-**Kind**: instance property of [<code>ZephComponents</code>](#ZephComponents)  
-
-* * *
-
-<a name="ZephComponents+names"></a>
-
-### zephComponents.names ⇒ <code>Array</code>
-Returns an array of all component names defined with ZephJS.
-
-**Kind**: instance property of [<code>ZephComponents</code>](#ZephComponents)  
-
-* * *
-
-<a name="ZephComponents+has"></a>
-
-### zephComponents.has(name) ⇒ <code>Boolean</code>
-Returns true if a component of a given name is already defined or
-in the process of being defined.
-
-**Kind**: instance method of [<code>ZephComponents</code>](#ZephComponents)  
-
-| Param | Type |
-| --- | --- |
-| name | <code>String</code> | 
-
-
-* * *
-
-<a name="ZephComponents+get"></a>
-
-### zephComponents.get(name) ⇒ [<code>ZephComponent</code>](#ZephComponent)
-Returns the ZephComponent for a component of the given name, if
-the component has been registered.
-
-**Kind**: instance method of [<code>ZephComponents</code>](#ZephComponents)  
-
-| Param | Type |
-| --- | --- |
-| name | <code>String</code> | 
-
-
-* * *
-
-<a name="ZephComponents+waitFor"></a>
-
-### zephComponents.waitFor(name) ⇒ <code>Promise</code>
-Returns a promise that resolve when the component of the given name
-completes its definition and registration process.  This is useful
-to ensure that component XYZ exists and is avialable before going
-off and doing something.  Most of the time this is unneceessary
-and ZephJS will take care of it.
-
-**Kind**: instance method of [<code>ZephComponents</code>](#ZephComponents)  
-
-| Param | Type |
-| --- | --- |
-| name | <code>String</code> | 
-
-
-* * *
-
-<a name="ZephComponents+define"></a>
-
-### zephComponents.define(name, code) ⇒ <code>Promise</code>
-Used to define a new ZephJS component of the given name with
-the given definition.
-
-Component names must be strings and must have at least one
-dash character within them.
-
-The code argument represents a function that within it defines
-the component through the use of one or more definition methods.
-
-The code argument has the signature
-
-		`(methods) => {}`
-
-where `methods` is an object which contains all of the definition
-methods one can use within a definition function. This is provided
-for developers who would prefer to access the definition methods
-via destructuring in the definition argument rather than importing
-each with an import statement. Either approach is valid and both
-can be used interchangable:
-
-	```javascript
-	import {ZephComponents} from "./Zeph.js";
-
-	ZephComponents.define("my-button",({html,css,attribute})=>{
-		html("./my-button.html");
-		css("./my-button.css");
-
-		attribute("icon","");
-	});
-	```
-
-This returns a promise that will resolve when all of the definition
-and registration is complete.  In most cases waiting for the
-promise to resolve is unnecessary, but it is provided in case
-you need to block until it is complete.
-
-**Kind**: instance method of [<code>ZephComponents</code>](#ZephComponents)  
-
-| Param | Type |
-| --- | --- |
-| name | <code>String</code> | 
-| code | <code>String</code> \| <code>function</code> | 
-
-
-* * *
-
-<a name="ZephComponents+undefine"></a>
-
-### zephComponents.undefine(name) ⇒ <code>void</code>
-Removes a ZephJS component.  It is very important to note here that
-the Custom Elements API does not provide a facility to unregister
-a component once it has been registered.  This function then does
-not actually remove the component, only ZephJS's awareness of it.
-
-**Kind**: instance method of [<code>ZephComponents</code>](#ZephComponents)  
-
-| Param | Type |
-| --- | --- |
-| name | <code>String</code> | 
-
-
-* * *
-
 <a name="from"></a>
 
 ## from(fromTagName) ⇒ <code>void</code>
 **Kind**: global function  
-**Summary**: Definition Method used for inheriting from another ZephComponent.  Inheritence
+**Summary**: Definition Method used for inheriting from another ZephComponent.  Inheritance
 works by cloning the inherited components Context, and then appending the
-new components context on top of that.  Inheritence does not actually
+new components context on top of that.  Inheritance does not actually
 inherit in the classic object oriented approach.  
 
 | Param | Type |
@@ -798,12 +659,37 @@ inherit in the classic object oriented approach.
 
 * * *
 
+<a name="inline"></a>
+
+## inline([disableShadowRoot]) ⇒ <code>void</code>
+Definition Method used to tell the ZephComponent that it should not create a
+shadowRoot when created, and all the html work is going to be applied
+inline to the element.
+
+By default ZephJS creates a shadowRoot for each element that is of the
+custom component defined.  The HTML and CSS of these elements is then
+placed into that shadowRoot to prevent them from leaking outside.
+However, in some cases the component doesn't want a shadowRoot and the html
+should be applied inline the element.
+
+Because there is no shadowRoot the HTML content is appended to the elements
+children and the CSS is appended to the head (if not already there).
+
+**Kind**: global function  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| [disableShadowRoot] | <code>Boolean</code> | <code>true</code> | 
+
+
+* * *
+
 <a name="alias"></a>
 
 ## alias(aliasName) ⇒ <code>void</code>
 **Kind**: global function  
-**Summary**: Definition Method used to provide one or more alias names for a componet.  In
-essence, when the component is registered with the Custome Element registry,
+**Summary**: Definition Method used to provide one or more alias names for a component.  In
+essence, when the component is registered with the Custom Element registry,
 if there are any aliases, those names are also registered at the same time
 using a clone of the original method.
 
@@ -823,13 +709,13 @@ shortcut names.
 **Kind**: global function  
 **Summary**: Definition Method to provide HTML content to a component when it is
 created.  The HTML provided becomes the content of the new element's
-Shadow DOM (and is refered to through this documentation as "the
+Shadow DOM (and is referred to through this documentation as "the
 content").
 
 The html() Definition Method can take either a url or relative filename
-or the actual HTML as string content. if a url or relative filename
+or the actual HTML as string content.  If a url or relative filename
 is given, ZephJS will download that url content, if possible, and use
-that as the content.  This allows developers to separate thier HTML
+that as the content.  This allows developers to separate their HTML
 from the Component Definition JavaScript.
 
 Each call to the html() Definition Method will be appended together
@@ -844,7 +730,7 @@ from downloading the html() content if it is a valid url or relative
 filename and just treat it like a literal content string.  This
 can be useful as sometimes ZephJS does not always know the difference
 between referenced content and literal content and may try
-to guess and load things that dont exist.  
+to guess and load things that don't exist.  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -865,9 +751,9 @@ created.  The CSS provided becomes a <style></style> element within
 the new element's Shadow DOM.
 
 The css() Definition Method can take either a url or relative filename
-or the actual CSS as string content. if a url or relative filename
+or the actual CSS as string content.  If a url or relative filename
 is given, ZephJS will download that url content, if possible, and use
-that as the content.  This allows developers to separate thier CSS
+that as the content.  This allows developers to separate their CSS
 from the Component Definition JavaScript.
 
 Each call to the css() Definition Method will be appended together
@@ -882,7 +768,7 @@ from downloading the css() content if it is a valid url or relative
 filename and just treat it like a literal content string.  This
 can be useful as sometimes ZephJS does not always know the difference
 between referenced content and literal content and may try
-to guess and load things that dont exist.  
+to guess and load things that don't exist.  
 
 | Param | Type | Default |
 | --- | --- | --- |
@@ -902,14 +788,14 @@ to guess and load things that dont exist.
 an image, audio clip, or video, with some element within
 the components internal content.
 
-In order for asset() to assoicate you must provide both
+In order for asset() to associate you must provide both
 the CSS Query Selector you want to associate to, and a
 url or filename to the external asset you want associated.
 
 The association is done by converting the asset into its
 base64 encoded binary data and making it part of a data:
 url.  This url is then associated with the appropriate
-`src` attribute on the selected elements. (The associating
+`src` attribute on the selected elements.  (The associating
 attribute can be changed with the `target` option.)
 
 asset() is really powerful for bundling purposes as the
@@ -940,7 +826,7 @@ method takes the attribute name and an initial value (or "undefined"
 if no value specified.)
 
 Using this method to define an attribute is strictly optional, but it will
-save having to buildout an onCreate() method and set attributes there.
+save having to build out an onCreate() method and set attributes there.
 
 The initial value passed in is set ONLY IF the element does not already
 have a value set for the attribute.  Setting an initial value of "undefined"
@@ -968,7 +854,7 @@ method takes the property name, an initial value, and an optional
 transform function.
 
 Using this method to define a property is strictly optional, but it will
-save having to buildout an onCreate() method and set properties there.
+save having to build out an onCreate() method and set properties there.
 
 The initial value passed in is set ONLY IF the element does not already
 have a value set for the property.
@@ -977,7 +863,7 @@ The transform function, if given, will be executed any time the
 property is changed.  It takes a single argument, x, which is the new
 value. Whatever it returns, will be what is set on the property. You can
 also through an exception in the transform function which would prevent
-the set from occuring; this can be useful in validation.  
+the set from occurring; this can be useful in validation.  
 
 | Param | Type |
 | --- | --- |
@@ -993,7 +879,7 @@ the set from occuring; this can be useful in validation.
 ## binding(sourceName, targetElement, targetName, transformFunction) ⇒ <code>void</code>
 **Kind**: global function  
 **Summary**: Definition Method to bind one part of the new element or its content
-to some other part of the new element or its content. Bindings are a
+to some other part of the new element or its content.  Bindings are a
 useful way to avoid having to write a lot of custom code to do
 some very common actions in custom elements.  They are highly
 recommended over custom code.
@@ -1046,12 +932,12 @@ It may match multiple elements and if so, each becomes a target.  If
 the string "." is used the target is the custom element itself.
 
 targetName is the X from above; it identifies the attribute, property,
-or content you want to modify when a change occurs. targetName is
+or content you want to modify when a change occurs.  targetName is
 optional and if left out the sourceName will also be used as the
 targetName, saving a little typing.
 
 transformFunction is an optional function that if given will be
-executed when the change is triggered.  It recieves the value being
+executed when the change is triggered.  It receives the value being
 set and whatever it returns is set instead.  Also, an exception
 thrown in the transformFunction will cause the binding to not
 set and thus prevent it.  
@@ -1071,7 +957,7 @@ set and thus prevent it.
 ## bindingAt(sourceElement, sourceName, targetElement, targetName, transformFunction) ⇒ <code>void</code>
 **Kind**: global function  
 **Summary**: Definition Method to bind one part of the new element or its content
-to some other part of the new element or its content. Bindings are a
+to some other part of the new element or its content.  Bindings are a
 useful way to avoid having to write a lot of custom code to do
 some very common actions in custom elements.  They are highly
 recommended over custom code.
@@ -1115,8 +1001,8 @@ The bindAt() method has the following signature:
   bindAt(sourceElement,sourceName,targetElement,targetName,transformFunction)
 
 sourceElement is the Y from above; it identifies the custom element or
-some element in the internal content to be watched. sourceElement is a
-CSS Query Selector string. If multiple elements match, each is bound
+some element in the internal content to be watched.  sourceElement is a
+CSS Query Selector string.  If multiple elements match, each is bound
 as described.If the string "." is used the source is the custom element
 itself.
 
@@ -1135,7 +1021,7 @@ optional and if left out the sourceName will also be used as the
 targetName, saving a little typing.
 
 transformFunction is an optional function that if given will be
-executed when the change is triggered.  It recieves the value being
+executed when the change is triggered.  It receives the value being
 set and whatever it returns is set instead.  Also, an exception
 thrown in the transformFunction will cause the binding to not
 set and thus prevent it.  
@@ -1169,7 +1055,7 @@ The function passed to onInit() is executed with the signature
   (name,component)
 
 - name is the component name,
-- componet is the ZephComponent instance describing the component.  
+- component is the ZephComponent instance describing the component.  
 
 | Param | Type |
 | --- | --- |
@@ -1262,7 +1148,7 @@ Lifecycle event.  If multiple onAdopt() methods are called, each
 will execute in order.
 
 The Adopt Lifecycle event occurs when an element of the component
-is adopted by a new document or document fragment. It is very
+is adopted by a new document or document fragment.  It is very
 rarely needed.
 
 The function passed to onAdopt() is executed with the signature
@@ -1274,6 +1160,35 @@ The function passed to onAdopt() is executed with the signature
 
 | Param | Type |
 | --- | --- |
+| listener | <code>function</code> | 
+
+
+* * *
+
+<a name="onAttribute"></a>
+
+## onAttribute(attributeName, listener) ⇒ <code>void</code>
+**Kind**: global function  
+**Summary**: Definition Method to register a function to execute on the Content
+Lifecycle event.  If multiple onContent() methods are called, each
+will execute in order.
+
+The Content Lifecycle event occurs when the inner content (text or
+DOM nodes) changes.  This includes changes to children DOM nodes of
+the element, but this does not include changes to those children.
+That is, direct children changing will trigger this, but
+grand-children changing will not.
+
+The function passed to onContent() is executed with the signature
+
+  (element,content)
+
+- element is the custom element.
+- content is the Document Fragment of the internal content.  
+
+| Param | Type |
+| --- | --- |
+| attributeName | <code>String</code> | 
 | listener | <code>function</code> | 
 
 
@@ -1345,7 +1260,7 @@ allows you to define the handlers without needing to write complicated
 onCreate() functions to deal with it.
 
 onEvent() attaches an event handler for the given event name to the
-custom element itself. For example:
+custom element itself.  For example:
 
   onEvent("click",myClickHandler);
 
@@ -1383,7 +1298,7 @@ all elements that match a given CSS Query Selector. For example:
   onEventAt("div > button.active","click",myClickHandler);
 
 Would execute myClickHandler when any matching internal content element
-receives a click event. If the selector matches more than one element
+receives a click event.  If the selector matches more than one element
 each element gets the event handler attach to it, so be careful.
 
 The given listener executes with the following signature:

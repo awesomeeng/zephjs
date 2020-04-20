@@ -16,7 +16,7 @@
 - [Lifecycle Handlers](./ComponentLifecycleHandlers.md)
 - [Bindings](./ComponentBindings.md)
 - [Event Handlers](./ComponentEvents.md)
-- [Bundling for Distribution](./docs/ComponentBundling.md)
+- [Bundling for Distribution](./ComponentBundling.md)
 
 ### Component Creation
 
@@ -45,7 +45,7 @@ zeph create <component-name> [filename]
 This command takes one require argument and one optional argument:
 
  - `component-name`: The name you want to give the new component, that is the tag name it will be registered under.  This name must contain a dash ("-") character.
- - `filename`: Optional filename to write the component out as. If not provided ZephJS will use the `component-name` as the filename.
+ - `filename`: Optional filename to write the component out as.  If not provided ZephJS will use the `component-name` as the filename.
 
 So for example:
 
@@ -65,13 +65,13 @@ Would create the following files in the current directory:
  6:	        and is released under the MIT licesne.
  7:	 */
  8:
- 9:	import {ZephComponents,html,css} from "./Zeph.js";
+ 9:	import {ZephComponents, html, css} from "./Zeph.js";
 10:
-11:	ZephComponents.define("my-button",()=>{
+11:	ZephComponents.define("my-button", ()=>{
 12:	        html("./my-button.html");
 13:	        css("./my-button.css");
 14:
-15:	        // Place your compnent defintion calls here. See the ZephJS documentation for more information.
+15:	        // Place your component definition calls here. See the ZephJS documentation for more information.
 16:	});
 17:
 ```
@@ -79,7 +79,7 @@ Would create the following files in the current directory:
 **my-button.html**
 ```html
 1:
-2:	<!-- Place your ZephJS html code here. See the ZephJS documentation for more information. -->
+2:	<!-- Place your ZephJS HTML code here. See the ZephJS documentation for more information. -->
 3:
 ```
 

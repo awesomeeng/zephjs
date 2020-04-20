@@ -4,7 +4,7 @@
 
 - [Quick Start](./ComponentQuickStart.md)
 - [Component Concepts](./ComponentConcepts.md)
-- [Creating a New Component](./docs/ComponentCreation.md)
+- [Creating a New Component](./ComponentCreation.md)
 - **Importing ZephJS**
 - [Defining the Component](./ComponentDefinition.md)
 - [Inheritance](./ComponentInheritance.md)
@@ -16,21 +16,21 @@
 - [Lifecycle Handlers](./ComponentLifecycleHandlers.md)
 - [Bindings](./ComponentBindings.md)
 - [Event Handlers](./ComponentEvents.md)
-- [Bundling for Distribution](./docs/ComponentBundling.md)
+- [Bundling for Distribution](./ComponentBundling.md)
 
 ### Importing ZephJS
 
 Writing a web component with ZephJS is done with the ZephComponents library.  To use ZephComponents we must first import it into our JavaScript:
 
 ```
-import {ZephComponents} from "./Zeph.js";
+import { ZephComponents } from "./Zeph.js";
 ```
 
 Additionally, all of the the definition methods we are going to use in our component definition need to be imported as well.  You could just wildcard this, but we prefer to call this out specifically.
 
 ```
-import {ZephComponents} from "./Zeph.js";
-import {html,css,attribute,property} from "./Zeph.js";
+import { ZephComponents } from "./Zeph.js";
+import { html, css, attribute, property } from "./Zeph.js";
 ```
 
 The following items can be imported from ZephJS:
@@ -76,26 +76,26 @@ The following definition methods can be imported from ZephJS:
 
 ### Definition Method without Importing
 
-Some users of ZephJS can find the need to `import` all of the definition methods a little confusion or not to thier taste and thus Zeph supports an alternate approach for using Definition Methods. (Note that you will still need to import ZephComponents.)
+Some users of ZephJS can find the need to `import` all of the definition methods a little confusion or not to their taste and thus Zeph supports an alternate approach for using Definition Methods.  (Note that you will still need to import ZephComponents.)
 
 ```javascript
 import {ZephComponents} from "./Zeph.js";
 
-ZephComponents.define("my-button",({html,css,attribute,onCreate})=>{
+ZephComponents.define("my-button", ({html, css, attribute, onCreate}) => {
 	html("./my-button.html");
 	css("./my-button.css");
 
-	attribute("icon","");
+	attribute("icon", "");
 
-	onCreate(()=>{
+	onCreate(() => {
 		...
 	});
 });
 ```
 
-In this case instead of using `import` to get the definition methods, we are using destructuring on the definition function to get the definition methods. ZephJS will hand an object containing all of the definition methods to the definiction function you provide to `ZephComponents.define()`.
+In this case instead of using `import` to get the definition methods, we are using destructuring on the definition function to get the definition methods.  ZephJS will hand an object containing all of the definition methods to the definition function you provide to `ZephComponents.define()`.
 
-Both `import` or the destructuring approach work identically, so this is purely a style descision for you the developer. ZephJS even allows you to mixed both approaches if you wanted.
+Both `import` or the destructuring approach work identically, so this is purely a style decision for you the developer.  ZephJS even allows you to mixed both approaches if you wanted.
 
 ### Wildcard Importing
 
@@ -104,13 +104,13 @@ A third approach to importing is the use of a wildcard character with your `impo
 ```javascript
 import * as Zeph from "./Zeph.js";
 
-Zeph.ZephComponents.define("my-button",()=>{
+Zeph.ZephComponents.define("my-button", () => {
 	Zeph.html("./my-button.html");
 	Zeph.css("./my-button.css");
 
 	Zeph.attribute("icon","");
 
-	Zeph.onCreate(()=>{
+	Zeph.onCreate(() => {
 		...
 	});
 });

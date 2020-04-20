@@ -27,11 +27,11 @@ If your browser does not support all of these technologies, you may be able to u
 
 #### What technologies is ZephJS watching for future inclusion?
 
- - `::part()` and `::theme()` - These are two new CSS Psuedo-selectors that will allow component authors to expose parts of their components for styling.  The best read on this is [Monica Dinculescu's excellent article](https://meowni.ca/posts/part-theme-explainer/).
+ - `::part()` and `::theme()` - These are two new CSS Pseudo-selectors that will allow component authors to expose parts of their components for styling.  The best read on this is [Monica Dinculescu's excellent article](https://meowni.ca/posts/part-theme-explainer/).
 
- - Constructable Style Sheets - This is a technique to allow stylesheets to be shared between the global space and each other; essentially allowing a component author to specify a global sheet that applies to all thier elements and potentially exposes that for consumers.  Here's the [Constructable Style Sheet specification](https://wicg.github.io/construct-stylesheets/).
+ - Constructable Style Sheets - This is a technique to allow stylesheets to be shared between the global space and each other; essentially allowing a component author to specify a global sheet that applies to all their elements and potentially exposes that for consumers.  Here's the [Constructable Style Sheet specification](https://wicg.github.io/construct-stylesheets/).
 
- - Decorators - Decorators are a programatic way to apply syntactic sugar into JavaScript that exposes certain behaviors.  Decorators are available in languages like TypeScript and Java already.  ZephJS is watching to see how the specification plays out and considering how it could use decorators instead of definition methods in the future. Here's the [Decorators specification](https://github.com/tc39/proposal-decorators)
+ - Decorators - Decorators are a programmatic way to apply syntactic sugar into JavaScript that exposes certain behaviors.  Decorators are available in languages like TypeScript and Java already.  ZephJS is watching to see how the specification plays out and considering how it could use decorators instead of definition methods in the future. Here's the [Decorators specification](https://github.com/tc39/proposal-decorators)
 
 ## Basic Usage
 
@@ -47,15 +47,15 @@ ZephComponents.define("my-button",()=>{
 });
 ```
 
-The `define()` method takes two arguments: the `name` of the component you want to define, and the `definition` of that component,\; which is a javascript function (arrow functions work great here).
+The `define()` method takes two arguments: the `name` of the component you want to define, and the `definition` of that component, which is a javascript function (arrow functions work great here).
 
-Within your `definition` function, you use zero or more [definition methods](./ComponentDefinition.md) to describe your component.  The include methods for specifing the html, css, atributes, properties, and events... everything your component needs.
+Within your `definition` function, you use zero or more [definition methods](./ComponentDefinition.md) to describe your component.  The include methods for specifying the html, css, attributes, properties, and events... everything your component needs.
 
-You can read more about [Component Definition](/ComponentDefinition.md) in our documentation.
+You can read more about [Component Definition](./ComponentDefinition.md) in our documentation.
 
 #### How do I add HTML content?
 
-Simple. Within your component definition, you call the `html()` definition method. This method takes as its first argument the HTML content your want to add, or a filename/URL reference to the HTML you want to add.
+Simple.  Within your component definition, you call the `html()` definition method.  This method takes as its first argument the HTML content your want to add, or a filename/URL reference to the HTML you want to add.
 
 You can read more about [Adding HTML Content](./ComponentMarkup.md) in our documentation.
 
@@ -73,13 +73,13 @@ Technically, **element** is an instance of `HTMLElement`, a single DOM node.  **
 
 #### How do I add CSS Styling?
 
-CSS is magically handled by ZephJS to be super easy.  Within your component definition, you call the `css()` definition method. This method takes as its first argument the CSS content your want to apply, or a filename/URL reference to the CSS you want to apply.
+CSS is magically handled by ZephJS to be super easy.  Within your component definition, you call the `css()` definition method.  This method takes as its first argument the CSS content your want to apply, or a filename/URL reference to the CSS you want to apply.
 
 You can read more about [Adding CSS styling](./ComponentStyling.md) in our documentation.
 
 #### Do I need to add attributes?
 
-Technically, you do not need to use the `attribute()` definition method to add attributes.  Just adding them in the HTML or with `setAttribute` is fine.  `attribute()` is more of a convenient way to describe the attributes of your component. It make the component more readable and it attributes more obvious.  It also will save you from having to provide a `onCreate` handler for setting default values.
+Technically, you do not need to use the `attribute()` definition method to add attributes.  Just adding them in the HTML or with `setAttribute` is fine.  `attribute()` is more of a convenient way to describe the attributes of your component.  It make the component more readable and it attributes more obvious.  It also will save you from having to provide a `onCreate` handler for setting default values.
 
 You can read more about [Adding Attributes](./ComponentAttributes.md) in our documentation.
 
@@ -91,35 +91,35 @@ You can read more about [Adding Properties](./ComponentProperties.md) in our doc
 
 ## Definition Methods
 
-#### How does inheritence work with `from()`?
+#### How does inheritance work with `from()`?
 
-Normally JavaScript inheritence works by defining a class and saying that it extends from some other class.  However, with WebComponents things get a little chaotic when using this approach, so ZephJS does it slightly differently.
+Normally JavaScript inheritance works by defining a class and saying that it extends from some other class.  However, with WebComponents things get a little chaotic when using this approach, so ZephJS does it slightly differently.
 
-Say we have two components `my-button` and `my-icon-button`.  On might say that `my-icon-button` inherits from `my-button`. The expected behavior would be that `my-button` produces a class which is then extended to create `my-icon-button`.
+Say we have two components `my-button` and `my-icon-button`.  One might say that `my-icon-button` inherits from `my-button`.  The expected behavior would be that `my-button` produces a class which is then extended to create `my-icon-button`.
 
-However, with ZephJS all components actually inherit directly from `HTMLElement`. Instead, when using the `from()` method ZephJS clones the component context referenced by `from()` which contains a synopsis of everything in that components definition.  This cloned context is then used as the starting context for the extending component.  This produce a new context that is informed by the extended class, but augmented by the extending class.
+However, with ZephJS all components actually inherit directly from `HTMLElement`.  Instead, when using the `from()` method ZephJS clones the component context referenced by `from()` which contains a synopsis of everything in that components definition.  This cloned context is then used as the starting context for the extending component.  This produce a new context that is informed by the extended class, but augmented by the extending class.
 
-ZephJS does this partially because of some of the weirdness with WebComponent inheritence, but it also means that component html, css, etc, are only downloaded once, and overall provides a cleaner inheritence structure.
+ZephJS does this partially because of some of the weirdness with WebComponent inheritance, but it also means that component html, css, etc, are only downloaded once, and overall provides a cleaner inheritance structure.
 
-The downside, of course, is there is no nice clear class inheritence structure in ZephJS.  Sorry.
+The downside, of course, is there is no nice clear class inheritance structure in ZephJS.  Sorry.
 
 You can read more about [Inheritance](./ComponentInheritance.md) in our documentation.
 
 #### What are the rules around using `alias()`?
 
-`alias()` provides a means to create duplicate tag names for a given component.  So long as the tag name provided by `alias()` is not already defined and conforms to the tag name requirements, have at it. All tag names must contain at least one dash ("-") character.
+`alias()` provides a means to create duplicate tag names for a given component.  So long as the tag name provided by `alias()` is not already defined and conforms to the tag name requirements, have at it.  All tag names must contain at least one dash ("-") character.
 
 #### Can `html()` be used multiple times? What happens?
 
 Yes, you can call `html()` in a single component definition multiple times.  If done so, the content provided by `html()` is appended to one another, **unless specifically stated not to append**.
 
-`html()` can take as its second argument an object of options.  One of those options `overwrite` if set to `true` will cause that `html()` call to **overwrite** all prior `html()` calls. Any subsequent `html()` call is appended, again, unless `overwrite` is set.
+`html()` can take as its second argument an object of options.  One of those options `overwrite` if set to `true` will cause that `html()` call to **overwrite** all prior `html()` calls.  Any subsequent `html()` call is appended, again, unless `overwrite` is set.
 
 #### Can `css()` be used multiple times?
 
 Yes, you can call `css()` in a single component definition multiple times.  If done so, the styles provided by `css()` is appended to one another, **unless specifically stated not to append**.
 
-`css()` can take as its second argument an object of options.  One of those options `overwrite` if set to `true` will cause that `css()` call to **overwrite** all prior `css()` calls. Any subsequent `css()` call is appended, again, unless `overwrite` is set.
+`css()` can take as its second argument an object of options.  One of those options `overwrite` if set to `true` will cause that `css()` call to **overwrite** all prior `css()` calls.  Any subsequent `css()` call is appended, again, unless `overwrite` is set.
 
 #### What happens if I define an `attribute()` multiple times?
 
@@ -141,15 +141,15 @@ You can read more about [Component Lifecycle Handlers](./ComponentLifeCycleHandl
 
 #### What happens if I use multiple lifecycle handlers like `onCreate()`?
 
-Using multiple Lifecycle Handler calls for the same lifecycle event is supported and each handler will execute independant of the other handlers.
+Using multiple Lifecycle Handler calls for the same lifecycle event is supported and each handler will execute independent of the other handlers.
 
-ZephJS does not garauntee that the handlers will execute in order.
+ZephJS does not guarantee that the handlers will execute in order.
 
 #### What happens if I list a handler for an `onEvent()` multiple times?
 
-You may provide multiple `onEvent()` and `onEventAt()` handlers for the same event (and same target elements). Each will execute independant of the others.
+You may provide multiple `onEvent()` and `onEventAt()` handlers for the same event (and same target elements). Each will execute independent of the others.
 
-ZephJS does not garauntee that the handlers will execute in order.
+ZephJS does not guarantee that the handlers will execute in order.
 
 ## Bindings
 
@@ -157,10 +157,10 @@ ZephJS does not garauntee that the handlers will execute in order.
 
 Fundamentally a binding propagates some value from one element/content to another element/content.  The value can be driven by a changing attribute, property, or content of a source element.  This can then be propagated to some other attribute, property, or content of a target element.
 
-For example, we can bind an attribute "value" of the custom element to propagate to the property "count" of a specific element ("div > .hello") within the internal content of that element, as shwon here:
+For example, we can bind an attribute "value" of the custom element to propagate to the property "count" of a specific element ("div > .hello") within the internal content of that element, as shown here:
 
 ```javascript
-bind("@value","div > .hello",".count");
+bind("@value", "div > .hello", ".count");
 ```
 
 Binding basically involve five things:
@@ -171,7 +171,7 @@ Binding basically involve five things:
    - **Property** names always start with the dot/period character(".") as in `.myProperty` or `.value`.
    - **content** names are always just a single dollar sign character ("$") as in `$`.
  - **Target element** is the element to which one wants the changed value propagated.
- - The **target name** is the attribute, property, or content to which the propagated value is written. Target Name uses a custom terminology (the same as Source Name) to indicate to what you are writing:
+ - The **target name** is the attribute, property, or content to which the propagated value is written.  Target Name uses a custom terminology (the same as Source Name) to indicate to what you are writing:
    - **attribute** names always start with the "at" character ("@") as in `@my-attribute` or `@value`.
    - **Property** names always start with the dot/period character(".") as in `.myProperty` or `.value`.
    - **content** names are always just a single dollar sign character ("$") as in `$`.
@@ -184,17 +184,17 @@ You can read more about [Bindings](./ComponentBindings.md) in our documentation.
 You can bind to an attribute of the element with the `bind()` method:
 
 ```javascript
-bind(sourceName,targetElement,targetName,transformFunction=null);
+bind(sourceName, targetElement, targetName, transformFunction = null);
 ```
 
 Or to an element within the internal content with `bindAt()`:
 
 ```javascript
-bind(sourceElement,sourceName,targetElement,targetName,transformFunction=null);
+bind(sourceElement, sourceName, targetElement, targetName, transformFunction = null);
 
 ```
 
-By providing an attribute descriptor for **sourceName** your are binding to that attribute. Attribute descriptors start with the "@" character and are followed by the name of the attribute. So for the "value" attribute, you would specify "@value".
+By providing an attribute descriptor for **sourceName** your are binding to that attribute.  Attribute descriptors start with the "@" character and are followed by the name of the attribute.  So for the "value" attribute, you would specify "@value".
 
 You can read more about [Bindings](./ComponentBindings.md) in our documentation.
 
@@ -203,16 +203,16 @@ You can read more about [Bindings](./ComponentBindings.md) in our documentation.
 You can bind to a property of the element with the `bind()` method:
 
 ```javascript
-bind(sourceName,targetElement,targetName,transformFunction=null);
+bind(sourceName, targetElement, targetName, transformFunction = null);
 ```
 
 Or to an element within the internal content with `bindAt()`:
 
 ```javascript
-bind(sourceElement,sourceName,targetElement,targetName,transformFunction=null);
+bind(sourceElement, sourceName, targetElement, targetName, transformFunction = null);
 ```
 
-By providing a property descriptor for **sourceName** your are binding to that property. Property descriptors start with the "." character and are followed by the name of the property. So for the "value" property, you would specify ".value".
+By providing a property descriptor for **sourceName** your are binding to that property.  Property descriptors start with the "." character and are followed by the name of the property.  So for the "value" property, you would specify ".value".
 
 You can read more about [Bindings](./ComponentBindings.md) in our documentation.
 
@@ -221,13 +221,13 @@ You can read more about [Bindings](./ComponentBindings.md) in our documentation.
 You can bind to the content of the element with the `bind()` method:
 
 ```javascript
-bind(sourceName,targetElement,targetName,transformFunction=null);
+bind(sourceName, targetElement, targetName, transformFunction = null);
 ```
 
 Or to an element within the internal content with `bindAt()`:
 
 ```javascript
-bind(sourceElement,sourceName,targetElement,targetName,transformFunction=null);
+bind(sourceElement, sourceName, targetElement, targetName, transformFunction = null);
 ```
 
 By providing the content descriptor for **sourceName** your are binding to that element's content. Content descriptors are the entire string of "$".
@@ -244,13 +244,13 @@ If a source or target for a `bind()` or a `bindAt()` returns no elements, nothin
 
 #### Can I modify a specific part of the content using bind?
 
-Yes and no.  Yes, if that content is selectable using a CSS Query Selector. No if otherwise. Basically, you can target a specific custom element or anything within that custom element's internal content to receive the propagated changes, but only if it is selectable.
+Yes and no.  Yes, if that content is selectable using a CSS Query Selector.  No if otherwise.  Basically, you can target a specific custom element or anything within that custom element's internal content to receive the propagated changes, but only if it is selectable.
 
 ## Events
 
 #### What events can `onEvent()` and `onEventAt()` handle?
 
-`onEvent()` and `onEventAt()` can receive any event that an element can recieve. Here's a list: [MDN Event Reference](https://developer.mozilla.org/en-US/docs/Web/Events)
+`onEvent()` and `onEventAt()` can receive any event that an element can recieve.  Here's a list: [MDN Event Reference](https://developer.mozilla.org/en-US/docs/Web/Events)
 
 You can read more about [Event Handling](./ComponentEvents.md) in our documentation.
 
@@ -260,7 +260,7 @@ You can read more about [Event Handling](./ComponentEvents.md) in our documentat
 
 If you are the component author, you use the `ccs()` definition method to provide your component CSS that defines the style of your component.  Your CSS Selector Rules can reference the custom element itself with `:host` and `:host()` or otherwise generally apply to the internal content of your component.
 
-If you are a component user, unless the component author intentionally wants you to modify the styling there is no way currently to address the inner content of a custom element via CSS Selector.  The internal elements content is intentionally isolated. There are some promising things coming in the future to address this. [Syling Web Components Using a Shard Style Sheet](https://www.smashingmagazine.com/2016/12/styling-web-components-using-a-shared-style-sheet/) provides a good overview of the situation.  Also you can read [Monica Dinculescu's excellent article](https://meowni.ca/posts/part-theme-explainer/) about the upcoming `:part` and `:theme` for a lot more details.
+If you are a component user, unless the component author intentionally wants you to modify the styling there is no way currently to address the inner content of a custom element via CSS Selector.  The internal elements content is intentionally isolated.  There are some promising things coming in the future to address this.  [Syling Web Components Using a Shard Style Sheet](https://www.smashingmagazine.com/2016/12/styling-web-components-using-a-shared-style-sheet/) provides a good overview of the situation.  Also you can read [Monica Dinculescu's excellent article](https://meowni.ca/posts/part-theme-explainer/) about the upcoming `:part` and `:theme` for a lot more details.
 
 You can read more about [Component Styling](./ComponentStyling.md) in our documentation.
 
@@ -280,9 +280,9 @@ You can read more about [The ZephJS CLI Tool](./CLI.md) in our documentation.
 
 #### How does the `bundle` command work?
 
-The `bundle` command is used to turn a ZephJS project spread across multiple files into a single cohessive JavaScript file for distribution or production systems.  It does this by parsing your ZephJS defininition JavaScript and using [Rollup](https://rollupjs.org/guide) to merge it all together.  Additionally any `html()`, `css()` or resource reference (`image()`, `font()`, etc) that references a file has that file contents inlined into the JavaScript.  This means all the details necessary to distribute your component or component library gets bundled up into a single file.
+The `bundle` command is used to turn a ZephJS project spread across multiple files into a single cohesive JavaScript file for distribution or production systems.  It does this by parsing your ZephJS definition JavaScript and using [Rollup](https://rollupjs.org/guide) to merge it all together.  Additionally any `html()`, `css()` or resource reference (`image()`, `font()`, etc) that references a file has that file contents inlined into the JavaScript.  This means all the details necessary to distribute your component or component library gets bundled up into a single file.
 
-#### I get a Windows Scripting Host error when I use the `zeph` command. Am I doing something wrong?
+#### I get a Windows Scripting Host error when I use the `zeph` command.  Am I doing something wrong?
 
 This problem only occurs in Windows OS based machines and only if you are executing the `zeph` command in a directory that contains the `Zeph.js` file.  This occurs because at some point you indicated that the default behavior for JavaScript files in your Windows system should be to execute them via Windows Scripting Host.  Fortunately, there is an easy fix.
 
