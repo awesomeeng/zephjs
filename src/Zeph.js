@@ -1269,7 +1269,7 @@ class ZephComponentExecution {
 	 * @param  {Function} listener
 	 * @return {void}
 	 *
-	 * @exports onAttribute
+	 * @exports onContent
 	 * @kind function
 	 */
 	onContent(listener) {
