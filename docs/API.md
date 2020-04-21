@@ -59,7 +59,7 @@ children and the CSS is appended to the head (if not already there).</p>
 <dd></dd>
 <dt><a href="#onAdopt">onAdopt(listener)</a> ⇒ <code>void</code></dt>
 <dd></dd>
-<dt><a href="#onAttribute">onAttribute(attributeName, listener)</a> ⇒ <code>void</code></dt>
+<dt><a href="#onContent">onContent(attributeName, listener)</a> ⇒ <code>void</code></dt>
 <dd></dd>
 <dt><a href="#onAttribute">onAttribute(attributeName, listener)</a> ⇒ <code>void</code></dt>
 <dd></dd>
@@ -1165,9 +1165,9 @@ The function passed to onAdopt() is executed with the signature
 
 * * *
 
-<a name="onAttribute"></a>
+<a name="onContent"></a>
 
-## onAttribute(attributeName, listener) ⇒ <code>void</code>
+## onContent(attributeName, listener) ⇒ <code>void</code>
 **Kind**: global function  
 **Summary**: Definition Method to register a function to execute on the Content
 Lifecycle event.  If multiple onContent() methods are called, each

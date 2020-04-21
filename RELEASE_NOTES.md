@@ -1,5 +1,41 @@
 # AwesomeComponents Release Notes
 
+#### **Version 1.3.0**
+
+ - Proofreading update to all the documentation thanks to @circleofconfusion who is the coolest!
+
+ - **Adds inline() definintion method to force the component to not use a shadow root for its content. When in inline mode, all html/css will be placed as descendants of the element instead of in the element shadow. For CSS this will insert the CSS at the top level of the document and this can have some side effects. Also when in inline mode, bindAt and eventAt will query inline instead of into the non-existent shadow.**
+
+ - **adds onContent() definition method for getting content change events.**
+
+ - **Adds ability for getAttribute to return more than just strings.**
+
+ - **Adds method() definition method for declaring methods on the created element.**
+
+ - Adds options argument to fecth() methods.
+
+ - adds tests for method().
+
+ - onAttribute() can now take a wildcard character as the attribute name and get notified of all attribute changes."
+
+ - fixes bug in binding removed attributes.
+
+ - Fixes bug in check.boolean.
+
+ - Cleaned up some errant debug statements.
+
+ - Updated dependencies.
+
+ - Removed justifcation section from docs.
+
+ - Adds contributor code of conduct.
+
+ - Fix minor licenses typo.
+
+ - Updating Help and Support Readme text.
+
+ - Remove zeph.full.js and make all references to it and zeph.min.js into just Zeph.js references.
+
 #### **Version 1.2.0**
 
  - **Adds a new definition method called asset(). This method is used to
@@ -12,7 +48,7 @@
  - Documentation updates for asset().
 
  - Test updates for asset().
- 
+
  - **Performance improvements for creating new elements which should result
  in a 3 fold reduction in time and overhead.**
 
