@@ -1,5 +1,9 @@
 # AwesomeComponents Release Notes
 
+#### **Version 1.3.1**
+
+ - Fixes an error in handleAttributeMutation which would occur when an attribute that is bound is changed.
+
 #### **Version 1.3.0**
 
  - Proofreading update to all the documentation thanks to @circleofconfusion who is the coolest!
