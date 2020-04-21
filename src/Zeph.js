@@ -2069,10 +2069,10 @@ class ZephObserver {
 		if (!this.attributes[name] || this.attributes[name].length<1) return;
 
 		let value = this.element.hasAttribute(name) ? this.element.getAttribute(name) : undefined;
-		this.attributes[name].forEach((handler)=>{
+		this.attributes[name] && this.attributes[name].forEach((handler)=>{
 			handler(value,name,this.element);
 		});
-		this.attributes["*"].forEach((handler)=>{
+		this.attributes["*"] && this.attributes["*"].forEach((handler)=>{
 			handler(value,name,this.element);
 		});
 	}
