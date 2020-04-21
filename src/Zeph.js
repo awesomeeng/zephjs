@@ -1776,7 +1776,7 @@ const zephPopulateElement = function zephPopulateElement(element,shadow,context)
 					handler = (value)=>{
 						let name = tgtname.slice(1);
 						value = transform(value);
-						let targets = tgtele instanceof HTMLElement && [tgtele] || [...shadow.querySelectorAll(tgtele)] || [];
+						let targets = tgtele instanceof HTMLElement && [tgtele] || context.disableShadowRoot && [...element.querySelectorAll(tgtele)] || [...shadow.querySelectorAll(tgtele)] || [];
 						targets.forEach((target)=>{
 							if (value===undefined) {
 								target.removeAttribute(name);
@@ -1791,7 +1791,7 @@ const zephPopulateElement = function zephPopulateElement(element,shadow,context)
 					handler = (value)=>{
 						let name = tgtname.slice(1);
 						value = transform(value);
-						let targets = tgtele instanceof HTMLElement && [tgtele] || [...shadow.querySelectorAll(tgtele)] || [];
+						let targets = tgtele instanceof HTMLElement && [tgtele] || context.disableShadowRoot && [...element.querySelectorAll(tgtele)] || [...shadow.querySelectorAll(tgtele)] || [];
 						targets.forEach((target)=>{
 							if (value===undefined) {
 								delete target[name];
@@ -1806,7 +1806,7 @@ const zephPopulateElement = function zephPopulateElement(element,shadow,context)
 					handler = (value)=>{
 						value = transform(value);
 						if (value===undefined) return;
-						let targets = tgtele instanceof HTMLElement && [tgtele] || [...shadow.querySelectorAll(tgtele)] || [];
+						let targets = tgtele instanceof HTMLElement && [tgtele] || context.disableShadowRoot && [...element.querySelectorAll(tgtele)] || [...shadow.querySelectorAll(tgtele)] || [];
 						targets.forEach((target)=>{
 							if (target.textContent!==value) target.textContent = value===undefined || value===null ? "" : value;
 						});
@@ -1899,7 +1899,7 @@ const zephPopulateElement = function zephPopulateElement(element,shadow,context)
 	// register events from onEventAt
 	if (context.eventsAt) {
 		context.eventsAt.forEach((obj)=>{
-			let selected = [...shadow.querySelectorAll(obj.selector)];
+			let selected = context.disableShadowRoot && [...element.querySelectorAll(obj.selector)] || [...shadow.querySelectorAll(obj.selector)] || [];
 			selected.forEach((sel)=>{
 				sel.addEventListener(obj.eventName,(event)=>{
 					obj.listener.call(sel,event,sel,element,shadow);
