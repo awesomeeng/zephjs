@@ -17,7 +17,7 @@
  * in the LICENSE file.
  */
 
-if (!window.customElements || !window.ShadowRoot || !document.body.attachShadow) {
+if (!window.customElements || !window.ShadowRoot) {
 	/* eslint-disable no-console */
 	console.error("ZephJS is not supported by this browser. Please consult the Browser Support section of the ZephJS documentation for more details.");
 	/* eslint-enable no-console */
