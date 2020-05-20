@@ -1527,12 +1527,19 @@ class ZephElementClass {
 					let template = markup.template;
 					let options = markup.options;
 
-					if (options.overwrite) shadow.innerHTML = "";
-
 					let clone = document.importNode(template.content,true);
 
-					if (shadow) shadow.appendChild(clone);
-					else element.appendChild(clone);
+					if (shadow) {
+						if (options.overwrite) shadow.innerHTML = "";
+						shadow.appendChild(clone);
+					}
+					else {
+						if (options.overwrite) element.innerHTML = "";
+						context.defer = context.defer || [];
+						context.defer.push(()=>{
+							element.appendChild(clone);
+						});
+					}
 				});
 
 				// Now, a new style tag and populate it with our CSS.
@@ -1689,6 +1696,11 @@ class ZephElementClass {
  * @return {void}
  */
 const zephPopulateElement = function zephPopulateElement(element,shadow,context) {
+	// Execute our defered whatevers.
+	if (context.defer) {
+		context.defer.forEach(f => f());
+	}
+
 	// Add our attributes
 	if (context.attributes) {
 		Object.values(context.attributes).forEach((attr)=>{
