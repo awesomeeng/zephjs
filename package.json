@@ -19,7 +19,7 @@
     "@awesomeeng/awesome-server": "1.4.0",
     "@awesomeeng/awesome-utils": "1.4.8",
     "@webcomponents/webcomponentsjs": "2.2.7",
-    "acorn": "6.1.0",
+    "acorn": "6.4.1",
     "rollup": "1.2.2"
   },
   "devDependencies": {
