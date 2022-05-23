@@ -6,7 +6,8 @@
   "contributors": [
     "Glen R. Goodwin"
   ],
-  "main": "./zeph.min.js",
+  "main": "./dist/src/index.js",
+  "types": "./types/src/index.d.ts",
   "engines": {
     "node": ">=10.5.0"
   },
@@ -14,22 +15,21 @@
     "zeph": "./bin/zeph"
   },
   "dependencies": {
-    "@awesomeeng/awesome-cli": "1.0.3",
-    "@awesomeeng/awesome-log": "3.0.2",
-    "@awesomeeng/awesome-server": "1.4.0",
-    "@awesomeeng/awesome-utils": "1.4.8",
+    "@awesomeeng/awesome-cli": "^1.0.3",
+    "@awesomeeng/awesome-log": "^4.2.4",
+    "@awesomeeng/awesome-server": "^1.6.2",
+    "@awesomeeng/awesome-utils": "^1.6.0",
     "@webcomponents/webcomponentsjs": "2.2.7",
     "acorn": "6.1.0",
     "rollup": "1.2.2"
   },
   "devDependencies": {
-    "eslint": "5.16.0",
+    "eslint": "^8.16.0",
     "esm": "3.2.5",
     "jsdoc-to-markdown": "^5.0.3",
     "minify": "4.1.1",
     "mocha": "^6.2.2"
   },
-  "optionalDependencies": {},
   "scripts": {
     "lint": "eslint src examples test bin/zeph",
     "docs": "jsdoc2md src/** --separators > docs/API.md",

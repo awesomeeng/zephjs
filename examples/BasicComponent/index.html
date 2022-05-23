@@ -4,21 +4,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Zeph - Examples - BasicComponent</title>
-		<script src="./awesome-hello.js" type="module"></script>
-		<script>
-			document.addEventListener("zeph:component:loading",(event)=>{
-				console.log("zeph:component:loading",event.detail.toString());
-			});
-			document.addEventListener("zeph:component:defined",(event)=>{
-				console.log("zeph:component:defined",event.detail.name);
-			});
-			document.addEventListener("zeph:component:undefined",(event)=>{
-				console.log("zeph:component:undefined",event.detail.name);
-			});
-			document.addEventListener("zeph:ready",()=>{
-				console.log("zeph:ready");
-			});
-		</script>
+		<script src="./dist/awesome-hello.js" type="module"></script>
 	</head>
 	<body>
 		<awesome-hello>Homer Simpson</awesome-hello>

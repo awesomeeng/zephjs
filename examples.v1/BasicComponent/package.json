@@ -1,9 +1,9 @@
 {
     "name": "Zeph/examples/BasicComponent",
-    "version": "3.0.0",
+    "version": "1.0.0",
     "author": "the awesome engineering company",
     "license": "(c) 2018-present, The Awesome Engineering Company, inc",
     "dependencies": {
-        "zephjs": "*"
+        "@awesomeeng/awesome-components": "*"
     }
 }

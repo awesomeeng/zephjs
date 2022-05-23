@@ -1,0 +1,28 @@
+{
+	"include": ["src/**/*.ts", "src/cli/CLI.js", "src/cli/commands/Serve.js", "src/cli/commands/Hello.js", "src/cli/commands/Create.js", "src/cli/commands/Bundle.j's"],
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "ES2020",
+		"rootDir": "./",
+		"outDir": "./dist",
+		"declarationDir": "./types",
+		"moduleResolution": "Node",
+		"declaration": true,
+		"experimentalDecorators": true,
+		// "emitDecoratorMetadata": true,
+		// "baseUrl": "./",
+		// "paths": {},
+		// "outFile": "./zeph.js",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		// "noImplicitAny": true,
+		"strictNullChecks": true,
+		"noImplicitThis": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": false,
+		"noImplicitReturns": true,
+		"skipLibCheck": true,
+		"allowJs": true,
+	}
+}

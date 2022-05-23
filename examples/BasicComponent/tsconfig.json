@@ -1,0 +1,25 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"experimentalDecorators": true,
+		// "emitDecoratorMetadata": true,
+		"module": "ES2020",
+		"rootDir": "./",
+		"moduleResolution": "Node",
+		"baseUrl": "./",
+		"paths": {
+			"./Zeph.js": ["node_modules/zephjs"],
+		},
+		"outDir": "./dist",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"noImplicitAny": false,
+		"strictNullChecks": true,
+		"noImplicitThis": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": false,
+		"noImplicitReturns": true,
+		"skipLibCheck": true
+	}
+}
