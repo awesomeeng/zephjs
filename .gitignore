@@ -2,3 +2,5 @@ node_modules
 Example.js
 zeph.bat
 glen*.*
+dist
+types
