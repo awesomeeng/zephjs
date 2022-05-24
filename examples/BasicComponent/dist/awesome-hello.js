@@ -14,7 +14,7 @@ let AwesomeHello = class AwesomeHello extends HTMLElement {
 };
 AwesomeHello = __decorate([
     zeph('awesome-hello'),
-    html('<h1>hello world</h1>'),
-    css('h1 { background: red; display: block; }')
+    html('./awesome-hello.html'),
+    css('./awesome-hello.css')
 ], AwesomeHello);
 export default AwesomeHello;

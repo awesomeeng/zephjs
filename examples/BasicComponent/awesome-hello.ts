@@ -3,8 +3,8 @@
 import {zeph,html,css} from "./Zeph.js";
 
 @zeph('awesome-hello')
-@html('<h1>hello world</h1>')
-@css('h1 { background: red; display: block; }')
+@html('./awesome-hello.html')
+@css('./awesome-hello.css')
 class AwesomeHello extends HTMLElement {
 	constructor() {
 		super();

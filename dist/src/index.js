@@ -193,7 +193,7 @@ class ZephComponent {
     html = null;
     constructor() {
     }
-    restyle(element) {
+    async restyle(element) {
         if (!element)
             return;
         const component = element[$COMPONENT];
@@ -201,10 +201,15 @@ class ZephComponent {
             return;
         if (!component.css)
             return;
+        if (component.css instanceof Promise) {
+            await component.css;
+        }
         const shadow = element[$SHADOW];
         let clone = component.css.template.content.cloneNode(true);
         if (shadow) {
+            console.log(1);
             [...shadow.childNodes].forEach((child) => {
+                console.log(2, child.tagName, child);
                 if (child.tagName === 'STYLE')
                     child.remove();
             });
@@ -218,7 +223,7 @@ class ZephComponent {
             element.appendChild(clone);
         }
     }
-    repaint(element) {
+    async repaint(element) {
         if (!element)
             return;
         const component = element[$COMPONENT];
@@ -226,6 +231,9 @@ class ZephComponent {
             return;
         if (!component.html)
             return;
+        if (component.html instanceof Promise) {
+            await component.html;
+        }
         const shadow = element[$SHADOW];
         let clone = component.html.template.content.cloneNode(true);
         if (shadow) {
@@ -283,15 +291,16 @@ function Html(content, options) {
         const component = ctor[$COMPONENT] = ctor[$COMPONENT] || new ZephComponent();
         if (!options.noRemote && content.match(/^\.\/|^\.\.\//)) {
             try {
-                Utils.tryprom(async (resolve) => {
+                const prom = Utils.tryprom(async (resolve) => {
                     let url = await Utils.resolveName(content, component.origin || document.URL.toString(), ".html");
                     if (url)
                         content = await Utils.fetchText(url);
                     let template = document.createElement("template");
                     template.innerHTML = content;
                     component.html = { template, options };
-                    // component.regenerateHTML(component);
+                    resolve();
                 });
+                component.html = prom;
             }
             catch (err) {
                 console.error("Unable to resolve or otherwise load '" + content + "'.", err);
@@ -301,7 +310,6 @@ function Html(content, options) {
             let template = document.createElement("template");
             template.innerHTML = content;
             component.html = { template, options };
-            // component.regenerateHTML(component);
         }
     };
 }
@@ -313,15 +321,16 @@ function Css(content, options) {
         const component = ctor[$COMPONENT] = ctor[$COMPONENT] || new ZephComponent();
         if (!options.noRemote && content.match(/^\.\/|^\.\.\//)) {
             try {
-                Utils.tryprom(async (resolve) => {
+                const prom = Utils.tryprom(async (resolve) => {
                     let url = await Utils.resolveName(content, component.origin || document.URL.toString(), ".css");
                     if (url)
                         content = await Utils.fetchText(url);
                     let template = document.createElement("template");
                     template.innerHTML = "<style>\n" + content + "\n</style>";
                     component.css = { template, options };
-                    // component.regenerateHTML(component);
+                    resolve();
                 });
+                component.css = prom;
             }
             catch (err) {
                 console.error("Unable to resolve or otherwise load '" + content + "'.", err);
