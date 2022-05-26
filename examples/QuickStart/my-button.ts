@@ -2,23 +2,34 @@
 
 /* eslint no-console: off */
 
-import {zeph,html,css,attribute} from "./Zeph.js";
-//,property,bind,onCreate,onEvent
+import {zeph,html,css,attribute,property} from "./Zeph.js";
+// bind,onCreate,onEvent
 
 @zeph('my-button')
 @html("./my-button.html")
 @css("./my-button.css")
 export default class MyButton extends HTMLElement {
-	@attribute
-	private icon = "";
+	// @attribute
+	// private icon = "";
 
-	@attribute('icon-placement')
-	private iconPlacement = "left";
+	// @attribute('icon-placement')
+	// private iconPlacement = "left";
 	
-	@attribute
-	private disabled;
+	// @attribute
+	// private disabled;
 
-	// property("clickCount",0);
+	@property
+	@attribute("data-click-count")
+	private clickCount = 0;
+
+	constructor() {
+		super();
+
+		setInterval(()=>{
+			console.log(100,"increment");
+			this.clickCount += 1;
+		},5000);
+	}	
 
 	// bind("@icon","button > img","@src");
 	// bind("@disabled","button");
@@ -42,5 +53,6 @@ export default class MyButton extends HTMLElement {
 		this.disabled = this.disabled;
 		this.icon = this.icon;
 		this.iconPlacement = this.iconPlacement
+		this.clickCount = this.clickCount;
 	}
 }

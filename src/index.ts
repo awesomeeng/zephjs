@@ -7,6 +7,7 @@ if (!window.customElements || !window.ShadowRoot) {
 const $CONTEXT = Symbol('ZephContext');
 const $SHADOW = Symbol('ZephShadowRoot');
 const $VALUES = Symbol('ZephValues');
+const $CHANGES = Symbol('ZephChanges');
 
 const READY = true;
 
@@ -207,7 +208,7 @@ class Utils {
 }
 
 class ZephContext {
-	static contextify(target:any) {
+	static contextify(target: any) {
 		let context = target[$CONTEXT] || target.prototype && target.prototype[$CONTEXT] || target.__proto__ && target.__proto__[$CONTEXT];
 		context = target[$CONTEXT] = context || new ZephContext();
 		return context;
@@ -215,18 +216,52 @@ class ZephContext {
 
 	name = null;
 	html = null;
-	attributes:Record<string,any> = {};
+	attributes: Record<string, any> = {};
+	properties: Record<string, boolean> = {};
 
-	constructor() {
+	public constructor() {
 	}
 
-	instantiate(element:any) {
+	public instantiate(element: any) {
 		this.applyStyle(element);
 		this.applyContent(element);
 		this.applyAttributes(element);
+		this.applyProperties(element);
 	}
 
-	async applyStyle(element: any) {
+	private createGetterSetter(element: any, propName: string, value: any = undefined, changeHandler?: (element: any, propName: string, value: any) => void) {
+		const values = element[$VALUES] = element[$VALUES] || {};
+		values[propName] = value;
+		
+		const changes = element[$CHANGES] = element[$CHANGES] || [];
+		if (changeHandler && changeHandler instanceof Function) changes.push(changeHandler);
+
+		let descriptor:any = Object.getOwnPropertyDescriptor(element,propName);
+		if (!descriptor[$CONTEXT]) {
+			console.log(10);
+			descriptor = {
+				configurable: true,
+				enumerable: true,
+				get: () => {
+					return values[propName];
+				},
+				set: function (value:any) {
+					console.log(1,this);
+					const changes = this[$CHANGES] || [];
+					console.log(3,changes);
+					values[propName] = value;
+					(changes || []).forEach(changeHandler => changeHandler(element, propName, value));
+				},
+			};
+		}
+		// we dont store anything in context, but we need to know the descriptor was set by us.
+		descriptor[$CONTEXT] = true;
+		
+		// const existing = Object.getOwnPropertyDescriptor(element,propName);
+		Object.defineProperty(element, propName, descriptor);
+	}
+
+	private async applyStyle(element: any) {
 		if (!element) return;
 
 		const context = element[$CONTEXT];
@@ -254,8 +289,8 @@ class ZephContext {
 			element.appendChild(clone);
 		}
 	}
-	
-	async applyContent(element: any) {
+
+	private async applyContent(element: any) {
 		if (!element) return;
 
 		const context = element[$CONTEXT];
@@ -267,82 +302,72 @@ class ZephContext {
 		}
 
 		const shadow = element[$SHADOW];
-		
+
 		let clone = context.html.template.content.cloneNode(true);
-		
+
 		if (shadow) {
-			[...shadow.childNodes].forEach((child:any) => {
+			[...shadow.childNodes].forEach((child: any) => {
 				if (child.tagName !== 'STYLE') child.remove();
 			})
 			shadow.appendChild(clone);
 		}
 		else {
-			[...element.childNodes].forEach((child:any) => {
-				if (child.tagName!=='STYLE') child.remove();
+			[...element.childNodes].forEach((child: any) => {
+				if (child.tagName !== 'STYLE') child.remove();
 			})
 			element.appendChild(clone);
 		}
 	}
 
-	applyAttributes(element: any) {
-		Object.keys(this.attributes).forEach((attrName:string) => {
-			
-			const propName:string = this.attributes[attrName];
-			
+	private applyAttributes(element: any) {
+		Object.keys(this.attributes).forEach((attrName: string) => {
+			const propName: string = this.attributes[attrName];
+
 			const existingPropValue = element[propName];
 			const existingAttrValue = element.getAttribute(attrName);
-			const value = existingPropValue;
-			if (value===undefined || value===null || value==="") value = existingAttrValue;
+			let value = existingPropValue;
+			if (value === undefined || value === null || value === "") value = existingAttrValue;
 
-			const changeHandler = (element:any, propName:string, value:any) => {
-				if (value===null || value===undefined) value = "";
+			const changeHandler = (element: any, propName: string, value: any) => {
+				if (value === null || value === undefined) value = "";
 				element.setAttribute(attrName, value);
 			};
-			console.log(1,attrName,propName,value);
-			
-			this.createProperty(element,propName,value,changeHandler);
 
-			changeHandler(element,propName,value);
+			this.createGetterSetter(element, propName, value, changeHandler);
+
+			changeHandler(element, propName, value);
 		});
 	}
 
-	createProperty(element:any,propName:string,value:any = undefined,changeHandler?:(element:any,propName:string,value:any) => void) {
-		const values = element[$VALUES] = element[$VALUES] || {};
-		values[propName] = value;
+	private applyProperties(element: any) {
+		Object.keys(this.properties).forEach((propName: string) => {
+			const existingPropValue = element[propName];
+			const value = existingPropValue;
 
-		// const existing = Object.getOwnPropertyDescriptor(element,propName);
-		Object.defineProperty(element, propName, {
-			configurable: false,
-			enumerable: true,
-			get: () => {
-				return values[propName];
-			},
-			set: (value) => {
-				values[propName] = value;
-				if (changeHandler && changeHandler instanceof Function) changeHandler(element,propName,value);
-			}
+			this.createGetterSetter(element, propName, value);
 		});
 	}
+
 }
 
 function Zeph(name?: string): any {
 	return function (ctor: any) {
 		const elementName = name || null;
 		if (!elementName) throw new Error('ZephJS Components must have a name and it must have a dash character. Please provide the name via the @zeph(<name>) argument.');
-		if (elementName.indexOf("-")<0) throw new Error('ZephJS Component must have a dash character in their element names. This is required, by the underlying WebComponents customElements.define call.');
-		
+		if (elementName.indexOf("-") < 0) throw new Error('ZephJS Component must have a dash character in their element names. This is required, by the underlying WebComponents customElements.define call.');
+
 		if (!(ctor instanceof HTMLElement) && !(ctor.prototype instanceof HTMLElement)) throw new Error('ZephJS Components must extend HTML or a child that extends HTLMElement.')
-		
+
 		const context = ZephContext.contextify(ctor as any);
 		context.elementName = elementName;
 		context.parentClass = ctor;
-		
+
 		const elementClass: any = class ZephElement extends (ctor as any) {
 			constructor() {
 				super();
-				
+
 				// element exist as this. populate it.
-				
+
 				const element = (this as any);
 
 				let shadow = null;
@@ -412,18 +437,18 @@ function Css(content: string, options: any): any {
 
 	return function (ctor: any): any {
 		const context = ZephContext.contextify(ctor);
-		
+
 		if (!options.noRemote && content.match(/^\.\/|^\.\.\//)) {
 			try {
 				const prom = Utils.tryprom(async (resolve: Function) => {
 					let url = await Utils.resolveName(content, context.origin || document.URL.toString(), ".css");
 					if (url) content = await Utils.fetchText(url);
-					
+
 					let template = document.createElement("template");
-					template.innerHTML = "<style>\n"+content+"\n</style>";
-					
+					template.innerHTML = "<style>\n" + content + "\n</style>";
+
 					context.css = { template, options };
-					
+
 					resolve();
 				});
 				context.css = prom;
@@ -433,31 +458,50 @@ function Css(content: string, options: any): any {
 		}
 		else {
 			let template = document.createElement("template");
-			template.innerHTML = "<style>\n"+content+"\n</style>";
-			
+			template.innerHTML = "<style>\n" + content + "\n</style>";
+
 			context.css = { template, options };
 		}
-		
+
 		return ctor;
 	};
 }
 
-function Attribute(target: any, name?:string): any {
+function Attribute(target: any, name?: string): any {
 	if (!target) throw new Error('Zeph @attribute decorator can not be called with emtpy arguments. Call it without the parenthesis, or provide the name as the sole argument.');
-	const attrFunc = function(attrName: string, target: any, propName: string):void {
+	const attrFunc = function (attrName: string, target: any, propName: string): void {
 		const context = ZephContext.contextify(target);
 
 		context.attributes = context.attributes || {};
-		if (context.attributes[attrName]) throw new Error("Zeph @attribute decorator of the name '"+attrName+"' is already in use.");
-		
+		if (context.attributes[attrName]) throw new Error("Zeph @attribute decorator of the name '" + attrName + "' is already in use.");
+
 		context.attributes[attrName] = propName;
 	}
-	
-	if (typeof target==='string') {
-		return (attrFunc as any).bind(null,target);
+
+	if (typeof target === 'string') {
+		return (attrFunc as any).bind(null, target);
 	}
 	else {
-		attrFunc(""+name,target,""+name);
+		attrFunc("" + name, target, "" + name);
+	}
+}
+
+function Property(target: any, name?: string): any {
+	if (!target) throw new Error('Zeph @property decorator can not be called with emtpy arguments. Call it without the parenthesis, or provide the name as the sole argument.');
+	const propFunc = function (attrName: string, target: any, propName: string): void {
+		const context = ZephContext.contextify(target);
+
+		context.properties = context.properties || {};
+		if (context.properties[attrName]) throw new Error("Zeph @property decorator of the name '" + attrName + "' is already in use.");
+
+		context.properties[attrName] = propName;
+	}
+
+	if (typeof target === 'string') {
+		return (propFunc as any).bind(null, target);
+	}
+	else {
+		propFunc("" + name, target, "" + name);
 	}
 }
 
@@ -465,5 +509,6 @@ export { Zeph, Zeph as ZEPH, Zeph as zeph };
 export { Html, Html as HTML, Html as html };
 export { Css, Css as CSS, Css as css };
 export { Attribute, Attribute as ATTRIBUTE, Attribute as attribute, Attribute as Attr, Attribute as ATTR, Attribute as attr };
+export { Property, Property as PROPERTY, Property as property, Property as Prop, Property as PROP, Property as prop };
 
 

@@ -6,6 +6,7 @@ if (!window.customElements || !window.ShadowRoot) {
 const $CONTEXT = Symbol('ZephContext');
 const $SHADOW = Symbol('ZephShadowRoot');
 const $VALUES = Symbol('ZephValues');
+const $CHANGES = Symbol('ZephChanges');
 const READY = true;
 class Check {
     static not = {
@@ -198,12 +199,43 @@ class ZephContext {
     name = null;
     html = null;
     attributes = {};
+    properties = {};
     constructor() {
     }
     instantiate(element) {
         this.applyStyle(element);
         this.applyContent(element);
         this.applyAttributes(element);
+        this.applyProperties(element);
+    }
+    createGetterSetter(element, propName, value = undefined, changeHandler) {
+        const values = element[$VALUES] = element[$VALUES] || {};
+        values[propName] = value;
+        const changes = element[$CHANGES] = element[$CHANGES] || [];
+        if (changeHandler && changeHandler instanceof Function)
+            changes.push(changeHandler);
+        let descriptor = Object.getOwnPropertyDescriptor(element, propName);
+        if (!descriptor[$CONTEXT]) {
+            console.log(10);
+            descriptor = {
+                configurable: true,
+                enumerable: true,
+                get: () => {
+                    return values[propName];
+                },
+                set: function (value) {
+                    console.log(1, this);
+                    const changes = this[$CHANGES] || [];
+                    console.log(3, changes);
+                    values[propName] = value;
+                    (changes || []).forEach(changeHandler => changeHandler(element, propName, value));
+                },
+            };
+        }
+        // we dont store anything in context, but we need to know the descriptor was set by us.
+        descriptor[$CONTEXT] = true;
+        // const existing = Object.getOwnPropertyDescriptor(element,propName);
+        Object.defineProperty(element, propName, descriptor);
     }
     async applyStyle(element) {
         if (!element)
@@ -266,7 +298,7 @@ class ZephContext {
             const propName = this.attributes[attrName];
             const existingPropValue = element[propName];
             const existingAttrValue = element.getAttribute(attrName);
-            const value = existingPropValue;
+            let value = existingPropValue;
             if (value === undefined || value === null || value === "")
                 value = existingAttrValue;
             const changeHandler = (element, propName, value) => {
@@ -274,26 +306,15 @@ class ZephContext {
                     value = "";
                 element.setAttribute(attrName, value);
             };
-            console.log(1, attrName, propName, value);
-            this.createProperty(element, propName, value, changeHandler);
+            this.createGetterSetter(element, propName, value, changeHandler);
             changeHandler(element, propName, value);
         });
     }
-    createProperty(element, propName, value = undefined, changeHandler) {
-        const values = element[$VALUES] = element[$VALUES] || {};
-        values[propName] = value;
-        // const existing = Object.getOwnPropertyDescriptor(element,propName);
-        Object.defineProperty(element, propName, {
-            configurable: false,
-            enumerable: true,
-            get: () => {
-                return values[propName];
-            },
-            set: (value) => {
-                values[propName] = value;
-                if (changeHandler && changeHandler instanceof Function)
-                    changeHandler(element, propName, value);
-            }
+    applyProperties(element) {
+        Object.keys(this.properties).forEach((propName) => {
+            const existingPropValue = element[propName];
+            const value = existingPropValue;
+            this.createGetterSetter(element, propName, value);
         });
     }
 }
@@ -411,7 +432,25 @@ function Attribute(target, name) {
         attrFunc("" + name, target, "" + name);
     }
 }
+function Property(target, name) {
+    if (!target)
+        throw new Error('Zeph @property decorator can not be called with emtpy arguments. Call it without the parenthesis, or provide the name as the sole argument.');
+    const propFunc = function (attrName, target, propName) {
+        const context = ZephContext.contextify(target);
+        context.properties = context.properties || {};
+        if (context.properties[attrName])
+            throw new Error("Zeph @property decorator of the name '" + attrName + "' is already in use.");
+        context.properties[attrName] = propName;
+    };
+    if (typeof target === 'string') {
+        return propFunc.bind(null, target);
+    }
+    else {
+        propFunc("" + name, target, "" + name);
+    }
+}
 export { Zeph, Zeph as ZEPH, Zeph as zeph };
 export { Html, Html as HTML, Html as html };
 export { Css, Css as CSS, Css as css };
 export { Attribute, Attribute as ATTRIBUTE, Attribute as attribute, Attribute as Attr, Attribute as ATTR, Attribute as attr };
+export { Property, Property as PROPERTY, Property as property, Property as Prop, Property as PROP, Property as prop };
