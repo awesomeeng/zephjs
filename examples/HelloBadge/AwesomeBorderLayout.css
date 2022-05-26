@@ -1,0 +1,21 @@
+:host {
+	display: grid;
+	grid-template-rows: min-content auto min-content;
+	height: 100%;
+}
+
+.center {
+	display: flex;
+}
+
+.center > .west {
+	flex: 0 1 auto;
+}
+
+.center > .center {
+	flex: 1 0 auto;
+}
+
+.center > .east {
+	flex: 0 1 auto;
+}

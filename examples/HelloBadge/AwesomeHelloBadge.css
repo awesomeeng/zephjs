@@ -1,0 +1,39 @@
+:host {
+	display: block;
+	margin: 25px;
+	border: 2px outset black;
+	border-radius: 20px;
+	width: 400px;
+	height: 250px;
+	overflow: hidden;
+}
+
+.top {
+	background: #71e6f5;
+}
+
+.top > .hello {
+	text-align: center;
+	font-size: 52px;
+	font-weight: bold;
+	font-family: sans-serif;
+	letter-spacing: 10px;
+	text-transform: uppercase;
+}
+
+.top > .greeting {
+	text-align: center;
+	font-size: 24px;
+	font-family: sans-serif;
+}
+
+.name {
+	width: 100%;
+	text-align: center;
+	align-self: center;
+	font-size: 64px;
+	font-family: cursive;
+	font-weight: bold;
+	text-transform: uppercase;
+	word-wrap: break-word;
+}

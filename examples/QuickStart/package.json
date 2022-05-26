@@ -1,0 +1,9 @@
+{
+    "name": "Zeph/examples/HelloBadge",
+    "version": "1.0.0",
+    "author": "the awesome engineering company",
+    "license": "(c) 2018-present, The Awesome Engineering Company, inc",
+    "dependencies": {
+        "@awesomeeng/awesome-components": "*"
+    }
+}

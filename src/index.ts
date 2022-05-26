@@ -4,8 +4,10 @@ if (!window.customElements || !window.ShadowRoot) {
 	/* eslint-enable no-console */
 }
 
-const $COMPONENT = Symbol('ZephComponent');
-const $SHADOW = Symbol('ShadowRoot');
+const $CONTEXT = Symbol('ZephContext');
+const $SHADOW = Symbol('ZephShadowRoot');
+const $VALUES = Symbol('ZephValues');
+
 const READY = true;
 
 class Check {
@@ -204,32 +206,43 @@ class Utils {
 	}
 }
 
-class ZephComponent {
+class ZephContext {
+	static contextify(target:any) {
+		let context = target[$CONTEXT] || target.prototype && target.prototype[$CONTEXT] || target.__proto__ && target.__proto__[$CONTEXT];
+		context = target[$CONTEXT] = context || new ZephContext();
+		return context;
+	}
+
 	name = null;
 	html = null;
+	attributes:Record<string,any> = {};
 
 	constructor() {
 	}
 
-	async restyle(element: any) {
+	instantiate(element:any) {
+		this.applyStyle(element);
+		this.applyContent(element);
+		this.applyAttributes(element);
+	}
+
+	async applyStyle(element: any) {
 		if (!element) return;
 
-		const component = element[$COMPONENT];
-		if (!component) return;
-		if (!component.css) return;
+		const context = element[$CONTEXT];
+		if (!context) return;
+		if (!context.css) return;
 
-		if (component.css instanceof Promise) {
-			await component.css;
+		if (context.css instanceof Promise) {
+			await context.css;
 		}
 
 		const shadow = element[$SHADOW];
 
-		let clone = component.css.template.content.cloneNode(true);
+		let clone = context.css.template.content.cloneNode(true);
 
 		if (shadow) {
-			console.log(1);
 			[...shadow.childNodes].forEach((child: any) => {
-				console.log(2,child.tagName,child);
 				if (child.tagName === 'STYLE') child.remove();
 			})
 			shadow.appendChild(clone);
@@ -242,20 +255,20 @@ class ZephComponent {
 		}
 	}
 	
-	async repaint(element: any) {
+	async applyContent(element: any) {
 		if (!element) return;
 
-		const component = element[$COMPONENT];
-		if (!component) return;
-		if (!component.html) return;
+		const context = element[$CONTEXT];
+		if (!context) return;
+		if (!context.html) return;
 
-		if (component.html instanceof Promise) {
-			await component.html;
+		if (context.html instanceof Promise) {
+			await context.html;
 		}
 
 		const shadow = element[$SHADOW];
 		
-		let clone = component.html.template.content.cloneNode(true);
+		let clone = context.html.template.content.cloneNode(true);
 		
 		if (shadow) {
 			[...shadow.childNodes].forEach((child:any) => {
@@ -270,41 +283,84 @@ class ZephComponent {
 			element.appendChild(clone);
 		}
 	}
+
+	applyAttributes(element: any) {
+		Object.keys(this.attributes).forEach((attrName:string) => {
+			
+			const propName:string = this.attributes[attrName];
+			
+			const existingPropValue = element[propName];
+			const existingAttrValue = element.getAttribute(attrName);
+			const value = existingPropValue;
+			if (value===undefined || value===null || value==="") value = existingAttrValue;
+
+			const changeHandler = (element:any, propName:string, value:any) => {
+				if (value===null || value===undefined) value = "";
+				element.setAttribute(attrName, value);
+			};
+			console.log(1,attrName,propName,value);
+			
+			this.createProperty(element,propName,value,changeHandler);
+
+			changeHandler(element,propName,value);
+		});
+	}
+
+	createProperty(element:any,propName:string,value:any = undefined,changeHandler?:(element:any,propName:string,value:any) => void) {
+		const values = element[$VALUES] = element[$VALUES] || {};
+		values[propName] = value;
+
+		// const existing = Object.getOwnPropertyDescriptor(element,propName);
+		Object.defineProperty(element, propName, {
+			configurable: false,
+			enumerable: true,
+			get: () => {
+				return values[propName];
+			},
+			set: (value) => {
+				values[propName] = value;
+				if (changeHandler && changeHandler instanceof Function) changeHandler(element,propName,value);
+			}
+		});
+	}
 }
 
 function Zeph(name?: string): any {
 	return function (ctor: any) {
-		const elementName = name || ctor.name || null;
-		if (!elementName) throw new Error('Unable to figure our the name for this component. Please provide the name via the @zeph(<name>) argument, or provided a class name.');
-
-		const component = ctor[$COMPONENT] = ctor[$COMPONENT] || new ZephComponent();
-		component.elementName = elementName;
-		component.parentClass = ctor;
-
-		const elementClass: any = class ZephElement extends ctor {
+		const elementName = name || null;
+		if (!elementName) throw new Error('ZephJS Components must have a name and it must have a dash character. Please provide the name via the @zeph(<name>) argument.');
+		if (elementName.indexOf("-")<0) throw new Error('ZephJS Component must have a dash character in their element names. This is required, by the underlying WebComponents customElements.define call.');
+		
+		if (!(ctor instanceof HTMLElement) && !(ctor.prototype instanceof HTMLElement)) throw new Error('ZephJS Components must extend HTML or a child that extends HTLMElement.')
+		
+		const context = ZephContext.contextify(ctor as any);
+		context.elementName = elementName;
+		context.parentClass = ctor;
+		
+		const elementClass: any = class ZephElement extends (ctor as any) {
 			constructor() {
 				super();
-
+				
 				// element exist as this. populate it.
 				
 				const element = (this as any);
 
-				element[$COMPONENT] = component;
-				
 				let shadow = null;
-				if (!component.disableShadowRoot) {
-					shadow = this.shadowRoot || this.attachShadow({
+				if (!context.disableShadowRoot) {
+					shadow = element.shadowRoot || element.attachShadow({
 						mode: "open"
 					});
 				}
+				element[$CONTEXT] = context;
 				element[$SHADOW] = shadow;
 
-				component.restyle(this);
-				component.repaint(this);
+				context.instantiate(element);
+
+				return element;
 			}
 		}
-		elementClass[$COMPONENT] = component;
-		component.elementClass = elementClass;
+		elementClass[$CONTEXT] = context;
+		context.elementClass = elementClass;
 
 		window.customElements.define(elementName, elementClass);
 
@@ -318,22 +374,22 @@ function Html(content: string, options: any): any {
 	}, options || {});
 
 	return function (ctor: any): any {
-		const component = ctor[$COMPONENT] = ctor[$COMPONENT] || new ZephComponent();
+		const context = ZephContext.contextify(ctor);
 
 		if (!options.noRemote && content.match(/^\.\/|^\.\.\//)) {
 			try {
 				const prom = Utils.tryprom(async (resolve: Function) => {
-					let url = await Utils.resolveName(content, component.origin || document.URL.toString(), ".html");
+					let url = await Utils.resolveName(content, context.origin || document.URL.toString(), ".html");
 					if (url) content = await Utils.fetchText(url);
 
 					let template = document.createElement("template");
 					template.innerHTML = content;
 
-					component.html = { template, options };
+					context.html = { template, options };
 
 					resolve();
 				});
-				component.html = prom;
+				context.html = prom;
 			} catch (err) {
 				console.error("Unable to resolve or otherwise load '" + content + "'.", err);
 			}
@@ -342,8 +398,10 @@ function Html(content: string, options: any): any {
 			let template = document.createElement("template");
 			template.innerHTML = content;
 
-			component.html = { template, options };
+			context.html = { template, options };
 		}
+
+		return ctor;
 	};
 }
 
@@ -353,22 +411,22 @@ function Css(content: string, options: any): any {
 	}, options || {});
 
 	return function (ctor: any): any {
-		const component = ctor[$COMPONENT] = ctor[$COMPONENT] || new ZephComponent();
-
+		const context = ZephContext.contextify(ctor);
+		
 		if (!options.noRemote && content.match(/^\.\/|^\.\.\//)) {
 			try {
 				const prom = Utils.tryprom(async (resolve: Function) => {
-					let url = await Utils.resolveName(content, component.origin || document.URL.toString(), ".css");
+					let url = await Utils.resolveName(content, context.origin || document.URL.toString(), ".css");
 					if (url) content = await Utils.fetchText(url);
-
+					
 					let template = document.createElement("template");
 					template.innerHTML = "<style>\n"+content+"\n</style>";
 					
-					component.css = { template, options };
-
+					context.css = { template, options };
+					
 					resolve();
 				});
-				component.css = prom;
+				context.css = prom;
 			} catch (err) {
 				console.error("Unable to resolve or otherwise load '" + content + "'.", err);
 			}
@@ -376,14 +434,36 @@ function Css(content: string, options: any): any {
 		else {
 			let template = document.createElement("template");
 			template.innerHTML = "<style>\n"+content+"\n</style>";
-
-			component.css = { template, options };
-
-			// component.regenerateHTML(component);
+			
+			context.css = { template, options };
 		}
+		
+		return ctor;
 	};
+}
+
+function Attribute(target: any, name?:string): any {
+	if (!target) throw new Error('Zeph @attribute decorator can not be called with emtpy arguments. Call it without the parenthesis, or provide the name as the sole argument.');
+	const attrFunc = function(attrName: string, target: any, propName: string):void {
+		const context = ZephContext.contextify(target);
+
+		context.attributes = context.attributes || {};
+		if (context.attributes[attrName]) throw new Error("Zeph @attribute decorator of the name '"+attrName+"' is already in use.");
+		
+		context.attributes[attrName] = propName;
+	}
+	
+	if (typeof target==='string') {
+		return (attrFunc as any).bind(null,target);
+	}
+	else {
+		attrFunc(""+name,target,""+name);
+	}
 }
 
 export { Zeph, Zeph as ZEPH, Zeph as zeph };
 export { Html, Html as HTML, Html as html };
 export { Css, Css as CSS, Css as css };
+export { Attribute, Attribute as ATTRIBUTE, Attribute as attribute, Attribute as Attr, Attribute as ATTR, Attribute as attr };
+
+
