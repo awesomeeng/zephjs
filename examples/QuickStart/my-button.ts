@@ -9,14 +9,14 @@ import {zeph,html,css,attribute,property} from "./Zeph.js";
 @html("./my-button.html")
 @css("./my-button.css")
 export default class MyButton extends HTMLElement {
-	// @attribute
-	// private icon = "";
+	@attribute
+	private icon = "";
 
-	// @attribute('icon-placement')
-	// private iconPlacement = "left";
+	@attribute('icon-placement')
+	private iconPlacement = "left";
 	
-	// @attribute
-	// private disabled;
+	@attribute
+	private disabled;
 
 	@property
 	@attribute("data-click-count")

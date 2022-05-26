@@ -301,7 +301,9 @@ class ZephContext {
             let value = existingPropValue;
             if (value === undefined || value === null || value === "")
                 value = existingAttrValue;
-            const changeHandler = (element, propName, value) => {
+            const changeHandler = (element, changePropName, value) => {
+                if (propName !== changePropName)
+                    return;
                 if (value === null || value === undefined)
                     value = "";
                 element.setAttribute(attrName, value);
