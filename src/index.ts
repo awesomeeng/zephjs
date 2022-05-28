@@ -207,6 +207,17 @@ class Utils {
 	}
 }
 
+type ZephContextOnType = {
+	handler: Function;
+	selector: string;
+}
+
+type ZephContextEventType = {
+	eventType: string,
+	selector: string,
+	handler: Function;
+}
+
 class ZephContext {
 	static contextify(target: any) {
 		let context = target[$CONTEXT] || target.prototype && target.prototype[$CONTEXT] || target.__proto__ && target.__proto__[$CONTEXT];
@@ -218,6 +229,9 @@ class ZephContext {
 	html = null;
 	attributes: Record<string, any> = {};
 	properties: Record<string, boolean> = {};
+	onCreate: Function[] = []
+	onEvent: ZephContextEventType[] = [];
+	onEventHandlers: Record<string,Function> = {};
 
 	public constructor() {
 	}
@@ -227,28 +241,26 @@ class ZephContext {
 		this.applyContent(element);
 		this.applyAttributes(element);
 		this.applyProperties(element);
+		this.applyOnEventHandlers(element);
 	}
 
 	private createGetterSetter(element: any, propName: string, value: any = undefined, changeHandler?: (element: any, propName: string, value: any) => void) {
 		const values = element[$VALUES] = element[$VALUES] || {};
 		values[propName] = value;
-		
+
 		const changes = element[$CHANGES] = element[$CHANGES] || [];
 		if (changeHandler && changeHandler instanceof Function) changes.push(changeHandler);
 
-		let descriptor:any = Object.getOwnPropertyDescriptor(element,propName);
+		let descriptor: any = Object.getOwnPropertyDescriptor(element, propName);
 		if (!descriptor[$CONTEXT]) {
-			console.log(10);
 			descriptor = {
 				configurable: true,
 				enumerable: true,
 				get: () => {
 					return values[propName];
 				},
-				set: function (value:any) {
-					console.log(1,this);
+				set: function (value: any) {
 					const changes = this[$CHANGES] || [];
-					console.log(3,changes);
 					values[propName] = value;
 					(changes || []).forEach(changeHandler => changeHandler(element, propName, value));
 				},
@@ -256,7 +268,7 @@ class ZephContext {
 		}
 		// we dont store anything in context, but we need to know the descriptor was set by us.
 		descriptor[$CONTEXT] = true;
-		
+
 		// const existing = Object.getOwnPropertyDescriptor(element,propName);
 		Object.defineProperty(element, propName, descriptor);
 	}
@@ -329,10 +341,10 @@ class ZephContext {
 			if (value === undefined || value === null || value === "") value = existingAttrValue;
 
 			const changeHandler = (element: any, changePropName: string, value: any) => {
-				if (propName!==changePropName) return;
-				
-				if (value === null || value === undefined) value = "";
-				element.setAttribute(attrName, value);
+				if (propName !== changePropName) return;
+
+				if (value === null || value === undefined) element.removeAttribute(attrName);
+				else element.setAttribute(attrName, value);
 			};
 
 			this.createGetterSetter(element, propName, value, changeHandler);
@@ -350,6 +362,40 @@ class ZephContext {
 		});
 	}
 
+	private applyOnEventHandlers(element: any) {
+		this.onEvent.forEach(({eventType,selector,handler}) => {
+			const eventHandlerName = eventType+":::::"+selector;
+			let zephHandler = this.onEventHandlers[eventHandlerName];
+			
+			const e = selector && element.querySelector(selector) || element || null;
+			if (!e) return;
+
+			if (zephHandler) e.removeEventListener(zephHandler);
+
+			zephHandler = this.onEventHandlers[eventHandlerName] = (event) => {
+				const handlers = this.onEvent.filter({type,sel} >= type===eventType && sel===selector);
+				handlers.forEach(handler => {
+					try {
+						handler(event,element);
+					} catch (ex) {
+						console.error("Zeph error while calling handler for event '"+eventType+"' and selector '"+selector+"'.",ex);
+					}
+				});
+			};
+
+		});
+
+	}
+
+	public executeOnCreate(element:any) {
+		this.onCreate.forEach((handler:Function)=>{
+			try {
+				handler.call(element, element);
+			} catch (ex) {
+				console.error(ex);
+			}
+		});
+	}
 }
 
 function Zeph(name?: string): any {
@@ -381,7 +427,11 @@ function Zeph(name?: string): any {
 				element[$CONTEXT] = context;
 				element[$SHADOW] = shadow;
 
+				// instantiate our`
 				context.instantiate(element);
+
+				// fire onCreate events
+				context.executeOnCreate(element);
 
 				return element;
 			}
@@ -507,10 +557,48 @@ function Property(target: any, name?: string): any {
 	}
 }
 
+function onCreate(target: any, name: string): any {
+	if (!name) throw new Error('Zeph @onCreate decorator must be called on a method function.');
+
+	const handler = target[name];
+
+	const onCreateFunc = function (target: any): void {
+		const context = ZephContext.contextify(target);
+
+		context.on.create = context.on.create || [];
+		context.on.create.push(handler)
+	}
+
+	if (typeof target === 'string') return onCreateFunc;
+	else onCreateFunc(target);
+}
+
+function onEvent(target: any, eventType: string, selector: string = ''): any {
+	const onEventFunc = function (eventType: string, target: any, propName: string): void {
+		const context = ZephContext.contextify(target);
+
+		const handler = target[propName]
+
+		context.on = context.on || {};
+		context.on.event = context.on.event || {};
+		context.on.event[eventType] = context.on.event[eventType] || [];
+		context.on.event[eventType].push({
+			eventType
+			selector,
+			handler
+		});
+	}
+
+	if (typeof target === 'string') return onEventFunc.bind(null, "click");
+	else onEventFunc("click", target, eventType);
+}
+
 export { Zeph, Zeph as ZEPH, Zeph as zeph };
 export { Html, Html as HTML, Html as html };
 export { Css, Css as CSS, Css as css };
 export { Attribute, Attribute as ATTRIBUTE, Attribute as attribute, Attribute as Attr, Attribute as ATTR, Attribute as attr };
 export { Property, Property as PROPERTY, Property as property, Property as Prop, Property as PROP, Property as prop };
+export { onCreate, onCreate as ONCREATE, onCreate as oncreate };
+export { onEvent, onEvent as ONEVENT, onEvent as onevent };
 
 
