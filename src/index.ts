@@ -207,11 +207,6 @@ class Utils {
 	}
 }
 
-type ZephContextOnType = {
-	handler: Function;
-	selector: string;
-}
-
 type ZephContextEventType = {
 	eventType: string,
 	selector: string,
@@ -260,7 +255,7 @@ class ZephContext {
 					return values[propName];
 				},
 				set: function (value: any) {
-					const changes = this[$CHANGES] || [];
+					const changes:any[] = this[$CHANGES] || [];
 					values[propName] = value;
 					(changes || []).forEach(changeHandler => changeHandler(element, propName, value));
 				},
@@ -364,25 +359,15 @@ class ZephContext {
 
 	private applyOnEventHandlers(element: any) {
 		this.onEvent.forEach(({eventType,selector,handler}) => {
-			const eventHandlerName = eventType+":::::"+selector;
-			let zephHandler = this.onEventHandlers[eventHandlerName];
-			
-			const e = selector && element.querySelector(selector) || element || null;
-			if (!e) return;
-
-			if (zephHandler) e.removeEventListener(zephHandler);
-
-			zephHandler = this.onEventHandlers[eventHandlerName] = (event) => {
-				const handlers = this.onEvent.filter({type,sel} >= type===eventType && sel===selector);
-				handlers.forEach(handler => {
-					try {
-						handler(event,element);
-					} catch (ex) {
-						console.error("Zeph error while calling handler for event '"+eventType+"' and selector '"+selector+"'.",ex);
-					}
-				});
-			};
-
+			const e = selector && element && element.querySelector(selector) || element || null;
+			e.addEventListener(eventType,(event:Event)=>{
+				try {
+					handler.call(element,event,e);
+				} catch (ex) {
+					console.error("ZephJS had an error when calling '"+eventType+"' event.");
+					console.error(ex);
+				}
+			});
 		});
 
 	}
@@ -565,8 +550,8 @@ function onCreate(target: any, name: string): any {
 	const onCreateFunc = function (target: any): void {
 		const context = ZephContext.contextify(target);
 
-		context.on.create = context.on.create || [];
-		context.on.create.push(handler)
+		context.onCreate = context.onCreate || [];
+		context.onCreate.push(handler)
 	}
 
 	if (typeof target === 'string') return onCreateFunc;
@@ -579,13 +564,11 @@ function onEvent(target: any, eventType: string, selector: string = ''): any {
 
 		const handler = target[propName]
 
-		context.on = context.on || {};
-		context.on.event = context.on.event || {};
-		context.on.event[eventType] = context.on.event[eventType] || [];
-		context.on.event[eventType].push({
-			eventType
+		context.onEvent = context.onEvent || [];
+		context.onEvent.push({
+			eventType,
 			selector,
-			handler
+			handler,
 		});
 	}
 

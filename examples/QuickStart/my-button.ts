@@ -49,4 +49,9 @@ export default class MyButton extends HTMLElement {
 
 		console.log("Button '"+element.getAttribute("name")+"' clicked "+element.clickCount+" times.");
 	}
+
+	@onEvent("click")
+	onClick2(event,element) {
+		console.log("Button event 2");
+	}
 }

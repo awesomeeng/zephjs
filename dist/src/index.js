@@ -323,24 +323,16 @@ class ZephContext {
     }
     applyOnEventHandlers(element) {
         this.onEvent.forEach(({ eventType, selector, handler }) => {
-            const eventHandlerName = eventType + ":::::" + selector;
-            let zephHandler = this.onEventHandlers[eventHandlerName];
-            const e = selector && element.querySelector(selector) || element || null;
-            if (!e)
-                return;
-            if (zephHandler)
-                e.removeEventListener(zephHandler);
-            zephHandler = this.onEventHandlers[eventHandlerName] = (event) => {
-                const handlers = this.onEvent.filter({ type, sel } >= type === eventType && sel === selector);
-                handlers.forEach(handler => {
-                    try {
-                        handler(event, element);
-                    }
-                    catch (ex) {
-                        console.error("Zeph error while calling handler for event '" + eventType + "' and selector '" + selector + "'.", ex);
-                    }
-                });
-            };
+            const e = selector && element && element.querySelector(selector) || element || null;
+            e.addEventListener(eventType, (event) => {
+                try {
+                    handler.call(element, event, e);
+                }
+                catch (ex) {
+                    console.error("ZephJS had an error when calling '" + eventType + "' event.");
+                    console.error(ex);
+                }
+            });
         });
     }
     executeOnCreate(element) {
@@ -494,8 +486,8 @@ function onCreate(target, name) {
     const handler = target[name];
     const onCreateFunc = function (target) {
         const context = ZephContext.contextify(target);
-        context.on.create = context.on.create || [];
-        context.on.create.push(handler);
+        context.onCreate = context.onCreate || [];
+        context.onCreate.push(handler);
     };
     if (typeof target === 'string')
         return onCreateFunc;
@@ -506,13 +498,11 @@ function onEvent(target, eventType, selector = '') {
     const onEventFunc = function (eventType, target, propName) {
         const context = ZephContext.contextify(target);
         const handler = target[propName];
-        context.on = context.on || {};
-        context.on.event = context.on.event || {};
-        context.on.event[eventType] = context.on.event[eventType] || [];
-        context.on.event[eventType].push({
+        context.onEvent = context.onEvent || [];
+        context.onEvent.push({
             eventType,
             selector,
-            handler
+            handler,
         });
     };
     if (typeof target === 'string')
