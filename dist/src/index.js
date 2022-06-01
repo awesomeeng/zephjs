@@ -201,6 +201,9 @@ class ZephContext {
     attributes = {};
     properties = {};
     onCreate = [];
+    onAdd = [];
+    onRemove = [];
+    onAdopt = [];
     onEvent = [];
     onEventHandlers = {};
     constructor() {
@@ -300,7 +303,7 @@ class ZephContext {
             const existingPropValue = element[propName];
             const existingAttrValue = element.getAttribute(attrName);
             let value = existingPropValue;
-            if (value === undefined || value === null || value === "")
+            if (existingAttrValue !== undefined && existingAttrValue !== null)
                 value = existingAttrValue;
             const changeHandler = (element, changePropName, value) => {
                 if (propName !== changePropName)
@@ -329,14 +332,43 @@ class ZephContext {
                     handler.call(element, event, e);
                 }
                 catch (ex) {
-                    console.error("ZephJS had an error when calling '" + eventType + "' event.");
                     console.error(ex);
                 }
             });
         });
     }
-    executeOnCreate(element) {
+    executeOnCreate(element, shadowRoot) {
         this.onCreate.forEach((handler) => {
+            try {
+                handler.call(element, element);
+            }
+            catch (ex) {
+                console.error(ex);
+            }
+        });
+    }
+    executeOnAdd(element, shadowRoot) {
+        this.onAdd.forEach((handler) => {
+            try {
+                handler.call(element, element);
+            }
+            catch (ex) {
+                console.error(ex);
+            }
+        });
+    }
+    executeOnRemove(element, shadowRoot) {
+        this.onRemove.forEach((handler) => {
+            try {
+                handler.call(element, element);
+            }
+            catch (ex) {
+                console.error(ex);
+            }
+        });
+    }
+    executeOnAdopt(element, shadowRoot) {
+        this.onAdopt.forEach((handler) => {
             try {
                 handler.call(element, element);
             }
@@ -376,6 +408,21 @@ function Zeph(name) {
                 // fire onCreate events
                 context.executeOnCreate(element);
                 return element;
+            }
+            connectedCallback() {
+                const context = ZephContext.contextify(this);
+                const shadow = this[$SHADOW];
+                context.executeOnAdd(this, shadow);
+            }
+            disconnectedCallback() {
+                const context = ZephContext.contextify(this);
+                const shadow = this[$SHADOW];
+                context.executeOnRemove(this, shadow);
+            }
+            adoptedCallback() {
+                const context = ZephContext.contextify(this);
+                const shadow = this[$SHADOW];
+                context.executeOnAdopt(this, shadow);
             }
         };
         elementClass[$CONTEXT] = context;
@@ -480,24 +527,78 @@ function Property(target, name) {
         propFunc("" + name, target, "" + name);
     }
 }
-function onCreate(target, name) {
-    if (!name)
-        throw new Error('Zeph @onCreate decorator must be called on a method function.');
-    const handler = target[name];
-    const onCreateFunc = function (target) {
+function onCreate(target = null, name = "") {
+    const createFunc = function (target, name) {
+        if (!name)
+            throw new Error('ZephJS @onCreate must be called on a method.');
+        const handler = target[name];
+        if (!handler || !(handler instanceof Function))
+            throw new Error('ZephJS @onCreate must be called on a method.');
         const context = ZephContext.contextify(target);
         context.onCreate = context.onCreate || [];
         context.onCreate.push(handler);
     };
-    if (typeof target === 'string')
-        return onCreateFunc;
+    if (target)
+        return createFunc(target, name);
     else
-        onCreateFunc(target);
+        return createFunc;
 }
-function onEvent(target, eventType, selector = '') {
-    const onEventFunc = function (eventType, target, propName) {
+function onAdd(target = null, name = "") {
+    const addFunc = function (target, name) {
+        if (!name)
+            throw new Error('ZephJS @onAdd must be called on a method.');
+        const handler = target[name];
+        if (!handler || !(handler instanceof Function))
+            throw new Error('ZephJS @onAdd must be called on a method.');
         const context = ZephContext.contextify(target);
-        const handler = target[propName];
+        context.onAdd = context.onAdd || [];
+        context.onAdd.push(handler);
+    };
+    if (target)
+        return addFunc(target, name);
+    else
+        return addFunc;
+}
+function onRemove(target = null, name = "") {
+    const removeFunc = function (target, name) {
+        if (!name)
+            throw new Error('ZephJS @onRemove must be called on a method.');
+        const handler = target[name];
+        if (!handler || !(handler instanceof Function))
+            throw new Error('ZephJS @onRemove must be called on a method.');
+        const context = ZephContext.contextify(target);
+        context.onRemove = context.onRemove || [];
+        context.onRemove.push(handler);
+    };
+    if (target)
+        return removeFunc(target, name);
+    else
+        return removeFunc;
+}
+function onAdopt(target = null, name = "") {
+    const adoptFunc = function (target, name) {
+        if (!name)
+            throw new Error('ZephJS @onAdopt must be called on a method.');
+        const handler = target[name];
+        if (!handler || !(handler instanceof Function))
+            throw new Error('ZephJS @onAdopt must be called on a method.');
+        const context = ZephContext.contextify(target);
+        context.onAdopt = context.onAdopt || [];
+        context.onAdopt.push(handler);
+    };
+    if (target)
+        return adoptFunc(target, name);
+    else
+        return adoptFunc;
+}
+function onEvent(target = null, methodName = "", eventType = null, selector = "") {
+    if (typeof eventType !== 'string')
+        eventType = "click";
+    if (!selector)
+        selector = "";
+    const eventFunc = function (target, methodName) {
+        const context = ZephContext.contextify(target);
+        const handler = target[methodName];
         context.onEvent = context.onEvent || [];
         context.onEvent.push({
             eventType,
@@ -505,10 +606,10 @@ function onEvent(target, eventType, selector = '') {
             handler,
         });
     };
-    if (typeof target === 'string')
-        return onEventFunc.bind(null, "click");
+    if (typeof target === "string")
+        return eventFunc;
     else
-        onEventFunc("click", target, eventType);
+        return eventFunc(target, methodName);
 }
 export { Zeph, Zeph as ZEPH, Zeph as zeph };
 export { Html, Html as HTML, Html as html };
@@ -516,4 +617,7 @@ export { Css, Css as CSS, Css as css };
 export { Attribute, Attribute as ATTRIBUTE, Attribute as attribute, Attribute as Attr, Attribute as ATTR, Attribute as attr };
 export { Property, Property as PROPERTY, Property as property, Property as Prop, Property as PROP, Property as prop };
 export { onCreate, onCreate as ONCREATE, onCreate as oncreate };
+export { onAdd, onAdd as ONADD, onAdd as onadd };
+export { onRemove, onRemove as ONREMOVE, onRemove as onremove };
+export { onAdopt, onAdopt as ONADOPT, onAdopt as onadopt };
 export { onEvent, onEvent as ONEVENT, onEvent as onevent };

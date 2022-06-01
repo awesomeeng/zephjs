@@ -2,7 +2,7 @@
 
 /* eslint no-console: off */
 
-import {zeph,html,css,attribute,property,onCreate,onEvent} from "./Zeph.js";
+import {zeph,html,css,attribute,property,onCreate,onAdd,onRemove,onAdopt,onEvent} from "./Zeph.js";
 // bind
 
 @zeph('my-button')
@@ -50,8 +50,18 @@ export default class MyButton extends HTMLElement {
 		console.log("Button '"+element.getAttribute("name")+"' clicked "+element.clickCount+" times.");
 	}
 
-	@onEvent("click")
-	onClick2(event,element) {
-		console.log("Button event 2");
+	@onAdd
+	added(element) {
+		console.log("Button added");
+	}
+
+	@onRemove
+	removed(element) {
+		console.log("Button removed");
+	}
+
+	@onAdopt
+	adopted(element) {
+		console.log("Button adopt");
 	}
 }
