@@ -429,6 +429,10 @@ function Zeph(name?: string): any {
 		context.parentClass = ctor;
 
 		const elementClass: any = class ZephElement extends (ctor as any) {
+			static get observedAttributes(): string[] {
+				return Object.keys(context && context.attributes || {});
+			}
+
 			constructor() {
 				super();
 
@@ -470,6 +474,15 @@ function Zeph(name?: string): any {
 				const context = ZephContext.contextify(this);
 				const shadow = (this as any)[$SHADOW];
 				context.executeOnAdopt(this, shadow);
+			}
+			
+			attributeChangedCallback(attributeName, oldValue, newValue) {
+				const context = ZephContext.contextify(this);
+				const propName = (context.attributes || {})[attributeName] || attributeName;
+				console.log(1,attributeName,oldValue,newValue);
+				const value = this.getAttribute(attributeName,true) || newValue;
+				console.log(2,value);
+				if (this[propName]!==newValue) this[propName] = newValue;
 			}
 		}
 		elementClass[$CONTEXT] = context;

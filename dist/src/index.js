@@ -391,6 +391,9 @@ function Zeph(name) {
         context.elementName = elementName;
         context.parentClass = ctor;
         const elementClass = class ZephElement extends ctor {
+            static get observedAttributes() {
+                return Object.keys(context && context.attributes || {});
+            }
             constructor() {
                 super();
                 // element exist as this. populate it.
@@ -423,6 +426,15 @@ function Zeph(name) {
                 const context = ZephContext.contextify(this);
                 const shadow = this[$SHADOW];
                 context.executeOnAdopt(this, shadow);
+            }
+            attributeChangedCallback(attributeName, oldValue, newValue) {
+                const context = ZephContext.contextify(this);
+                const propName = (context.attributes || {})[attributeName] || attributeName;
+                console.log(1, attributeName, oldValue, newValue);
+                const value = this.getAttribute(attributeName, true) || newValue;
+                console.log(2, value);
+                if (this[propName] !== newValue)
+                    this[propName] = newValue;
             }
         };
         elementClass[$CONTEXT] = context;
