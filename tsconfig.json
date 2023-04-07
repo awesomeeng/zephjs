@@ -1,5 +1,5 @@
 {
-	"include": ["src/**/*.ts", "src/cli/CLI.js", "src/cli/commands/Serve.js", "src/cli/commands/Hello.js", "src/cli/commands/Create.js", "src/cli/commands/Bundle.j's"],
+	"include": ["src/**.ts", "src/cli/**.js"],
 	"compilerOptions": {
 		"target": "ES2022",
 		"module": "ES2020",
@@ -10,9 +10,6 @@
 		"declaration": true,
 		"experimentalDecorators": true,
 		// "emitDecoratorMetadata": true,
-		// "baseUrl": "./",
-		// "paths": {},
-		// "outFile": "./zeph.js",
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"strict": true,

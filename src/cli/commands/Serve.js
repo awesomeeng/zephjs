@@ -54,12 +54,8 @@ class Create extends AwesomeCLI.AbstractCommand {
 			process.exit(1);
 		}
 
-		server.serve("/Zeph.js",zeph);
-		server.serve("*/Zeph.js",zeph);
-		server.serve("/zeph.js",zeph);
-		server.serve("*/zeph.js",zeph);
-		server.serve("/zeph.min.js",zephmin);
-		server.serve("*/zeph.min.js",zephmin);
+		server.serve(/^(\/dist)?\/?Zeph.js$/i,zeph);
+		server.serve(/^(\/dist)?\/?Zeph.min.js$/i,zephmin);
 		Log.info("Serving ZephJS from "+Path.dirname(zephmin));
 
 		let cwd = process.cwd();

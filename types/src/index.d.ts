@@ -1,6 +1,6 @@
 declare function Zeph(name?: string): any;
-declare function Html(content: string, options: any): any;
-declare function Css(content: string, options: any): any;
+declare function Html(content: string, options?: any): any;
+declare function Css(content: string, options?: any): any;
 declare function Attribute(target: any, name?: string): any;
 declare function Property(target: any, name?: string): any;
 declare function onCreate(target?: any, name?: string): any;

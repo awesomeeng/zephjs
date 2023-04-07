@@ -29,13 +29,14 @@
     "jsdoc-to-markdown": "^5.0.3",
     "minify": "4.1.1",
     "mocha": "^6.2.2"
-  },
-  "scripts": {
-    "lint": "eslint src examples test bin/zeph",
+},
+"scripts": {
+	"lint": "eslint src examples test bin/zeph",
     "docs": "jsdoc2md src/** --separators > docs/API.md",
     "test": "mocha test",
     "tests": "mocha test",
-    "minify": "minify src/Zeph.js > zeph.min.js"
+    "minify": "minify src/Zeph.js > zeph.min.js",
+	"debug": "tsc -w src/**/*.ts"
   },
   "description": "Ultra light and easy to use Web Component framework for building and distributing independant components and integrating them together for web pages and web applications.",
   "directories": {

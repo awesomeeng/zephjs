@@ -7,7 +7,27 @@ const $CONTEXT = Symbol('ZephContext');
 const $SHADOW = Symbol('ZephShadowRoot');
 const $VALUES = Symbol('ZephValues');
 const $CHANGES = Symbol('ZephChanges');
+const $ATTRIBUTES = Symbol("ZephAttrbitues");
 const READY = true;
+(function AttributeOverloader() {
+    const proto = HTMLElement.__proto__.prototype;
+    const origSetAttribute = proto.setAttribute;
+    const origGetAttribute = proto.getAttribute;
+    proto.setAttribute = function (name, value) {
+        Check.string(name, 'name');
+        Check.not.empty(name, 'name');
+        this[$ATTRIBUTES] = this[$ATTRIBUTES] || {};
+        this[$ATTRIBUTES][name] = value;
+        return origSetAttribute.call(this, name, value);
+    };
+    proto.getAttribute = function (name, preventCoercion = false) {
+        Check.string(name, 'name');
+        Check.not.empty(name, 'name');
+        if (preventCoercion && this[$ATTRIBUTES] && this[$ATTRIBUTES][name] !== undefined)
+            return this[$ATTRIBUTES][name];
+        return origGetAttribute.call(this, name);
+    };
+})();
 class Check {
     static not = {
         // throw an exception if arg is undefined.
@@ -428,13 +448,11 @@ function Zeph(name) {
                 context.executeOnAdopt(this, shadow);
             }
             attributeChangedCallback(attributeName, oldValue, newValue) {
+                console.log(3, attributeName);
                 const context = ZephContext.contextify(this);
                 const propName = (context.attributes || {})[attributeName] || attributeName;
-                console.log(1, attributeName, oldValue, newValue);
                 const value = this.getAttribute(attributeName, true) || newValue;
-                console.log(2, value);
-                if (this[propName] !== newValue)
-                    this[propName] = newValue;
+                // if (this[propName]!==newValue) this[propName] = value;
             }
         };
         elementClass[$CONTEXT] = context;
