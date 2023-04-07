@@ -2,7 +2,7 @@
 
 /* eslint no-console: off */
 
-import {zeph,html,css,attribute,property,onCreate,onAdd,onRemove,onAdopt,onEvent} from "./Zeph.js";
+import {zeph,html,css,attribute,property,onCreate,onAdd,onRemove,onAdopt,onEvent} from "zephjs";
 // bind
 
 @zeph('my-button')
